@@ -104,6 +104,7 @@ if [ -f /etc/bash_completion ]; then
 fi
 
 alias '..=cd ..'
+alias '...=cd ..; cd ..;'
 alias 'ls=ls --color -h'
 alias 'l=ls -al'
 alias 'df=df -h'
