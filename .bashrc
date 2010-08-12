@@ -14,6 +14,8 @@ export HISTCONTROL=ignoreboth
 # append to the history file, don't overwrite it
 shopt -s histappend
 
+shopt -s cdspell # fixes typos within a cd command
+
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 
 # We want the bash to behave the VI way
