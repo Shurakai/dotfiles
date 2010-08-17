@@ -1,3 +1,4 @@
+URxvt*iconFile:            /usr/share/icons/gnome/32x32/apps/gnome-terminal.png
 URxvt.saveLines: 10000
 URxvt.scrollBar: false
 URxvt.foreground: white
