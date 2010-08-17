@@ -554,6 +554,14 @@ alias -g ...='../..'
 alias -g ....='../../..'
 alias -g .....='../../../..'
 
+# Allows us to use the directory stack ( google for it ) as a directory history
+# We bind dh to dirs -v so we can list all the directories on the stack.
+# Changing to a directory with number n can be achieved via cd -n
+# Additionally we set the number of saved directories to 10
+DIRSTACKSIZE=10
+setopt autopushd pushdminus pushdsilent pushdtohome
+alias dh='dirs -v'
+
 # If the window naming feature is used (see above) then use ".zsh" (leading
 # dot) as title name after running clear so it's clear to me that the window
 # is empty. I open so much windows that I don't know in which I have something
