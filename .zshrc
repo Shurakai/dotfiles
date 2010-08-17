@@ -3,7 +3,24 @@
 # MISCELLANEOUS SETTINGS
 
 # Be paranoid, new files are readable/writable by me only.
+# This is especially a good thing within the home directory,
+# so nobody can read my files. On the other hand, there might
+# be some places where we don't want umask 077 - we use the chpwd( ) function for this.
 umask 077
+chpwd () { # Taken from http://matt.blissett.me.uk/linux/zsh/zshrc
+    case $PWD in
+        $HOME)
+            if [[ $(umask) -ne 077 ]]; then
+                umask 0077
+                echo -e "\033[01;32mumask: private \033[m"
+            fi;;
+        *)
+            if [[ $(umask) -ne 022 ]]; then
+                umask 0022
+                echo -e "\033[01;31mumask: world readable \033[m"
+            fi;;
+    esac
+}
 
 # Disable beeps.
 setopt nobeep
