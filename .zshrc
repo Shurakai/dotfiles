@@ -9,7 +9,7 @@
 umask 077
 chpwd () { # Taken from http://matt.blissett.me.uk/linux/zsh/zshrc
     case $PWD in
-        $HOME)
+        ($HOME|$HOME/*)) # Everything in ~ should be private!
             if [[ $(umask) -ne 077 ]]; then
                 umask 0077
                 echo -e "\033[01;32mumask: private \033[m"
