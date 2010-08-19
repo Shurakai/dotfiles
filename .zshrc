@@ -3,24 +3,8 @@
 # MISCELLANEOUS SETTINGS
 
 # Be paranoid, new files are readable/writable by me only.
-# This is especially a good thing within the home directory,
-# so nobody can read my files. On the other hand, there might
-# be some places where we don't want umask 077 - we use the chpwd( ) function for this.
+# Make sure you know about the chpwd_umask function within this file!
 umask 077
-chpwd () { # Taken from http://matt.blissett.me.uk/linux/zsh/zshrc
-    case $PWD in
-        ($HOME|$HOME/*)) # Everything in ~ should be private!
-            if [[ $(umask) -ne 077 ]]; then
-                umask 0077
-                echo -e "\033[01;32mumask: private \033[m"
-            fi;;
-        *)
-            if [[ $(umask) -ne 022 ]]; then
-                umask 0022
-                echo -e "\033[01;31mumask: world readable \033[m"
-            fi;;
-    esac
-}
 
 # Disable beeps.
 setopt nobeep
@@ -323,7 +307,24 @@ $green%B%n%b$default@$green%B%m%b$default %(1j.$yellow%j$default.)%# \
 }
 add-zsh-hook precmd prompt_precmd
 
-
+# Being paranoid and setting umask 077 is especially a good thing within the home directory,
+# so nobody can read my files. On the other hand, there might
+# be some places where we don't want umask 077 - we use the chpwd( ) function for this.
+chpwd_umask() { # Taken from http://matt.blissett.me.uk/linux/zsh/zshrc
+    case $PWD in
+        ($HOME|$HOME/*)) # Everything in ~ should be private!
+            if [[ $(umask) -ne 077 ]]; then
+                umask 0077
+                echo -e "\033[01;32mumask: private \033[m"
+            fi;;
+        *)
+            if [[ $(umask) -ne 022 ]]; then
+                umask 0022
+                echo -e "\033[01;31mumask: world readable \033[m"
+            fi;;
+    esac
+}
+add-zsh-hook chpwd chpwd_umask
 # When screen, xterm or rxvt is used set the name of the window to the
 # currently running program.
 #
