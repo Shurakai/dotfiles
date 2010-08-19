@@ -1,0 +1,73 @@
+# Screen configuration file.
+#
+# Features which are only available in (very) recent screen releases or in
+# current Git are marked with "(GIT)" so they can be removed by the setup
+# script on machines with older versions.
+
+
+# Don't display startup message.
+startup_message off
+
+# Use visual bell instead of audible bell.
+vbell on
+
+# Increase the scrollback buffer.
+defscrollback 10000
+
+# Ignore case when searching.
+ignorecase on
+
+# I prefer zsh as my shell.
+shell zsh
+
+
+# CAPTION AND HARDSTATUS
+
+# Use white on light blue background for highlighting and text messages (and
+# for window borders in split mode).
+sorendition = Bw
+
+# Make sure the temporary variable we use is empty. Thanks to
+# http://gist.github.com/133000 for the idea to use setenv and to TauPan in
+# #screen on Freenode (2010-03-10 16:11) for reminding me of it and searching
+# it again.
+unsetenv s
+
+# Always display the caption.
+setenv s "$s%{= Bw}" # - white on light blue background, also reset all
+                     #   attributes (necessary so everything is displayed
+                     #   correctly)
+setenv s "$s%3n"     # - window number
+setenv s "$s "       # - space
+setenv s "$s%t"      # - window name
+caption always "$s"
+unsetenv s
+# Always display the status line with open windows and the hostname.
+setenv s "$s%w" # - number and names of windows
+setenv s "$s%=" # - right align the following text
+setenv s "$s%l" # - load average
+setenv s "$s "  # - space
+setenv s "$s%H" # - hostname
+hardstatus alwayslastline "$s"
+unsetenv s
+
+
+# BINDINGS
+
+# Remove some bindings I don't use to prevent using them accidentally. You
+# probably don't want to copy this.
+bind K  # kill
+bind k  # kill
+bind \\ # quit
+bind ^Z # suspend
+bind z  # suspend
+bind ^S # xoff
+bind s  # xoff
+bind ^Q # xon
+bind q  # xon
+bind ^G # visual bell
+bind D  # power detach
+
+# Run urlview on current screen content. Very useful to follow links. Make
+# sure hardcopy_append is off before using this command.
+bind ^B eval "hardcopy $HOME/.screen-urlview" "screen urlview $HOME/.screen-urlview"
