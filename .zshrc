@@ -325,6 +325,13 @@ chpwd_umask() { # Taken from http://matt.blissett.me.uk/linux/zsh/zshrc
     esac
 }
 add-zsh-hook chpwd chpwd_umask
+
+
+# These variables are used as named directories. This means you can change
+# into these directories by typing cd ~<directory>
+# Make sure the variable's value starts with a / (otherwise it won't work!)
+export nexxone=/var/workspaces/nexxone
+
 # When screen, xterm or rxvt is used set the name of the window to the
 # currently running program.
 #
