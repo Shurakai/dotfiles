@@ -20,12 +20,21 @@ setopt autocd
 # When entering a nonexistent command name automatically try to find a similar
 # one.
 setopt correct
+SPROMPT="zsh: correct %R to %r? ([Y]es / [N]o / [A]bort / [E]dit)"
 
 # Enable zsh's extended glob abilities.
 setopt extendedglob
 
+# Enable patterns like {A-D} for "A B C D".
+setopt braceccl
+
 # Don't exit if <C-d> is pressed.
 setopt ignoreeof
+
+# Make variables, for example home-directory names or named directory (see hash -r)
+# directly cd'able. (E.g., if you have set hash -r log=/var/log/, then you normally can cd into log
+# via cd ~log. However, with this option set, cd log is okay, too)
+setopt cdable_vars
 
 # KEY BINDINGS
 
@@ -152,6 +161,7 @@ bindkey -a '^P' history-beginning-search-backward # binding for Vi-mode
 # after calling ^P.
 
 bindkey -a '^N' history-beginning-search-forward
+
 # PROMPT SETTINGS
 
 # Use colorized output, necessary for prompts and completions.
@@ -330,7 +340,7 @@ add-zsh-hook chpwd chpwd_umask
 # These variables are used as named directories. This means you can change
 # into these directories by typing cd ~<directory>
 # Make sure the variable's value starts with a / (otherwise it won't work!)
-export nexxone=/var/workspaces/nexxone
+hash -d nexxone=/var/workspaces/nexxone
 
 # When screen, xterm or rxvt is used set the name of the window to the
 # currently running program.
