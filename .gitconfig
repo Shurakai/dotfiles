@@ -1,6 +1,6 @@
 [user]
-	name = Christian Heinrich
-	email = christian.heinrich@livando.com
+    name = Christian Heinrich
+    email = christian.heinrich@livando.com
 [color]
   branch = auto
   diff = auto
@@ -20,11 +20,41 @@
   changed = green
   untracked = cyan
 [alias]
+  # Shortcuts for often used commands.
+  # Thanks to Simon Ruderich, http://ruderich.org/simon/config/gitconfig
+  c  = commit -v
+  ci = commit -v
+  d  = diff --patience
+  di = diff --patience
+  dc = diff --patience --cached
+  s  = status
   st = status
-  ci = commit
-  br = branch
+  l  = log
+  ls = log --stat
+  lp = log -p --patience
+  glog = log --pretty=oneline --graph --all
+  a  = add
+  ap = add -p
+  au = add -u
   co = checkout
-  df = diff
+  b  = branch -av
+  br = branch -av
+  m  = merge
+  me = merge
+  f  = fetch
+  fe = fetch
+  t  = tag
+  p  = push
+  pu = push
+  ru = remote update
+  fs = fsck --strict --full
+  ss = stash save
+  ssk = stash save --keep-index
+  sa = stash apply
+  sl = stash list
+  fp = format-patch
   lg = log -p
 [merge]
-	tool = vimdiff
+    tool = vimdiff
+
+# vim: ft=gitconfig
