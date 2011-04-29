@@ -1,4 +1,4 @@
-# Zsh configuration file.
+
 
 # MISCELLANEOUS SETTINGS
 
@@ -490,12 +490,20 @@ zmodload zsh/complist
 # #zsh on Freenode (2009-08-07 21:05) for reminding me of the $fpath problem.
 autoload -U compinit && compinit -d ~/.zsh/cache/zcompdump
 
+zstyle ':completion:*' menu select
+
 # Use cache to speed up completions.
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path ~/.zsh/cache
 
 # Complete arguments and fix spelling mistakes when possible.
 zstyle ':completion:*' completer _complete _match _correct _approximate
+zstyle ':completion:*' completer _complete _match _approximate
+zstyle ':completion:*:match:*' original only
+zstyle -e ':completion:*:approximate:*' max-errors 'reply=( $(( ($#PREFIX+$#SUFFIX)/3 )) numeric )'
+
+# cd directory stack menu
+zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
 
 # Make sure the list of possible completions is displayed after pressing <TAB>
 # the first time.
@@ -508,7 +516,8 @@ bindkey '^I' expand-or-complete-prefix
 zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}'
 
 # Use ls like colors for completions.
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+#zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' list-colors  'reply=( "=(#b)(*$PREFIX)(?)*=00=$color[green]=$color[bg-green]" )'
 
 # Make completion lists scrollable so "do you wish to see all n possibilities"
 # is no longer displayed.
@@ -531,6 +540,31 @@ zstyle ':completion:*' ignore-line yes
 # Except for mv and cp, because I often want to use to similar names, so I
 # complete to the same and change it.
 zstyle ':completion:*:(mv|cp):*' ignore-line no
+
+zstyle ':completion:*:processes' command ps --forest -A -o pid,cmd
+zstyle ':completion:*:processes' list-colors '=(#b)( #[0-9]#)[^[/0-9a-zA-Z]#(*)=34=37;1=30;1'
+#zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
+zstyle ':completion:*:(killall|pkill|kill):*' menu yes select
+zstyle ':completion:*:(killall|pkill|kill):*' force-list always
+
+# Complete the hosts and - last but not least - the remote directories. Try it:
+# $ scp file username@<TAB><TAB>:/<TAB>
+zstyle ':completion:*:(ssh|scp|ftp):*' hosts $hosts
+zstyle ':completion:*:(ssh|scp|ftp):*' users $users
+
+#$ man write<TAB>
+# manual page, section 1:
+# write
+# manual page, section 1p:
+# write
+# ...
+# Its evil. Isn't it?!
+# From http://www.strcat.de/dotfiles/dot.zshstyle
+#
+# If you are not familiar with the different manpage sections
+# (and therefore, the reason for using this directive), read
+# http://en.wikipedia.org/wiki/Man_page (Section: Usage)
+zstyle ':completion:*:manuals' separate-sections true
 
 # Provide a fallback completer which always completes files. Useful when Zsh's
 # completion is too "smart". Thanks to Frank Terbeck <ft@bewatermyfriend.org>
@@ -571,7 +605,7 @@ exec 2>>(while read -r -k -u 0 line; do
 done &)
 
 # Make sure aliases are expanded when using sudo.
-source ./.dotfiles/.zsh_aliases
+source ~/.dotfiles/.zsh_aliases
 alias sudo='sudo '
 
 # Global aliases for often used commands in the command line.
