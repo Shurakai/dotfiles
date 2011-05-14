@@ -16,6 +16,8 @@ alias agu='sudo apt-get update && sudo apt-get upgrade'
 alias acse='apt-cache search'
 alias acsh='apt-cache show'
 
+alias lessc=/var/lib/gems/1.8/bin/lessc
+
 # Global aliases for often used commands in the command line.
 alias -g E='2>&1'
 alias -g L='E | less'
