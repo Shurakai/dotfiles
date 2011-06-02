@@ -1,5 +1,3 @@
-
-
 # MISCELLANEOUS SETTINGS
 
 # Be paranoid, new files are readable/writable by me only.
@@ -39,20 +37,10 @@ setopt cdable_vars
 # KEY BINDINGS
 
 # Not all bindings are done here, only those not specific to a given section.
-
-# Use Vi(m) style key bindings.
-bindkey -v
-
-# Also use jj to insert vim mode and exit insert mode.
-bindkey 'jj' vi-cmd-mode
-
 # I don't need the arrow keys, I use ^N and ^P for this (see below).
 bindkey -r '^[OA' '^[OB' '^[OC' '^[OD' '^[[A' '^[[B' '^[[C' '^[[D'
 # Also not in Vi mode.
 bindkey -a -r '^[OA' '^[OB' '^[OC' '^[OD' '^[[A' '^[[B' '^[[C' '^[[D'
-
-# Using CTRL-r should allow us to search incrementally.
-bindkey '^R' history-incremental-search-backward
 
 # Allow backspacing over characters. ( Not allowed normally due to vi restrictions )
 bindkey '^?' backward-delete-char
@@ -119,48 +107,13 @@ SAVEHIST=50000
 HISTFILE=~/.zsh/history
 
 # Append to the history file instead of overwriting it and do it immediately
-
 # when a command is executed.
-
 setopt appendhistory
 setopt incappendhistory
 
 # If the same command is run multiple times store it only once in the history.
-
 setopt histignoredups
 
-# Vim like completions of previous executed commands (also enter Vi-mode). If
-# called at the beginning it just recalls old commands (like cursor up), if
-# called after typing something, only lines starting with the typed are
-# returned. Very useful to get old commands quickly. Thanks to Mikachu in #zsh
-# on Freenode (2010-01-17 12:47) for the information how to a use function
-# with bindkey.
-
-zle -N my-vi-history-beginning-search-backward
-
-my-vi-history-beginning-search-backward() {
-    local not_at_beginning_of_line
-    if [[ $CURSOR -ne 0 ]]; then
-        not_at_beginning_of_line=yes
-    fi
-
-    zle history-beginning-search-backward
-
-    # Start Vi-mode and stay at the same position (Vi-mode moves one left,
-    # this counters it).
-    zle vi-cmd-mode
-    if [[ -n $not_at_beginning_of_line ]]; then
-        zle vi-forward-char
-    fi
-}
-bindkey '^P' my-vi-history-beginning-search-backward
-bindkey -a '^P' history-beginning-search-backward # binding for Vi-mode
-
-# Here only Vi-mode is necessary as ^P enters Vi-mode and ^N only makes sense
-
-# after calling ^P.
-
-bindkey -a '^N' history-beginning-search-forward
 
 # PROMPT SETTINGS
 
@@ -173,168 +126,6 @@ local blue="%{${fg[blue]}%}"
 local green="%{${fg[green]}%}"
 local yellow="%{${fg[yellow]}%}"
 local default="%{${fg[default]}%}"
-
-# vcs_info was added in 4.3.9 but it works in earlier versions too. So load it
-# if the necessary files are available in ~/.zsh/functions/vcs_info (often a
-# symbolic link to current checkout of Zsh's sources).
-if [[ $ZSH_VERSION == (4.3.<9->|4.<4->*|<5->*) ||
-      -d ~/.zsh/functions/vcs_info ]]; then
-    # Update fpath to allow loading the vcs_info functions.
-    if [[ -d ~/.zsh/functions/vcs_info ]]; then
-       fpath=(~/.zsh/functions/vcs_info/
-              ~/.zsh/functions/vcs_info/Backends
-              $fpath)
-    fi
-
-    # Load vcs_info to display information about version control repositories.
-    autoload -Uz vcs_info
-    # Only look for git and mercurial repositories; the only I use.
-    zstyle ':vcs_info:*' enable git hg
-    # Check the repository for changes so they can be used in %u/%c (see
-    # below). This comes with a speed penalty for bigger repositories.
-    zstyle ':vcs_info:*' check-for-changes true
-
-    # Set style of vcs_info display. The current branch (green) and VCS (blue)
-    # is displayed. If there is an special action going on (merge, rebase)
-    # it's also displayed (red). Also display if there are unstaged or staged
-    # (%u/%c) changes.
-    if [[ $ZSH_VERSION == (4.3.<11->|4.<4->*|<5->*) ||
-          -d ~/.zsh/functions/vcs_info ]]; then
-        zstyle ':vcs_info:*' formats \
-            "($green%b%u%c$default:$blue%s$default)"
-        zstyle ':vcs_info:*' actionformats \
-            "($green%b%u%c$default/$red%a$default:$blue%s$default)"
-    else
-        # In older versions %u and %c are not defined yet and are not
-        # correctly expanded.
-        zstyle ':vcs_info:*' formats \
-            "($green%b$default:$blue%s$default)"
-        zstyle ':vcs_info:*' actionformats \
-            "($green%b$default/$red%a$default:$blue%s$default)"
-    fi
-    # Set style for formats/actionformats when unstaged (%u) and staged (%c)
-    # changes are detected in the repository; check-for-changes must be set to
-    # true for this to work. Thanks to Bart Trojanowski
-    # (http://jukie.net/~bart/blog/pimping-out-zsh-prompt) for the idea
-    # (2010-03-11 00:20).
-    zstyle ':vcs_info:*' unstagedstr '¹'
-    zstyle ':vcs_info:*' stagedstr   '²'
-
-    # Default to running vcs_info. If possible we prevent running it later for
-    # speed reasons. If set to a non empty value vcs_info is run.
-    FORCE_RUN_VCS_INFO=1
-
-    # Cache system inspired by Bart Trojanowski
-    # (http://jukie.net/~bart/blog/pimping-out-zsh-prompt).
-    #zstyle ':vcs_info:*+pre-get-data:*' hooks pre-get-data
-    +vi-pre-get-data() {
-        # Only Git and Mercurial support and need caching. Abort if any other
-        # VCS is used.
-        [[ "$vcs" != git && "$vcs" != hg ]] && return
-
-        # If the shell just started up or we changed directories (or for other
-        # custom reasons) we must run vcs_info.
-        if [[ -n $FORCE_RUN_VCS_INFO ]]; then
-            FORCE_RUN_VCS_INFO=
-            return
-        fi
-
-        # Don't run vcs_info by default to speed up the shell.
-        ret=1
-        # If a git/hg command was run then run vcs_info as the status might
-        # need to be updated.
-        case "$(fc -ln $(($HISTCMD-1)))" in
-            git* | g\ *)
-                ret=0
-                ;;
-            hg*)
-                ret=0
-                ;;
-        esac
-    }
-
-    # Must run vcs_info when changing directories.
-    prompt_chpwd() {
-        FORCE_RUN_VCS_INFO=1
-    }
-    add-zsh-hook chpwd prompt_chpwd
-
-    # Used by prompt code below to determine if vcs_info should be run.
-    RUN_VCS_INFO=1
-else
-    RUN_VCS_INFO=
-fi
-
-# Set the prompt. A two line prompt is used. On the top left the current
-# working directory is displayed, on the right vcs_info (if available). On the
-# bottom left current username and host is shown, the exit code of the last
-# command if it wasn't 0, the number of running jobs if not 0.
-#
-# The prompt is in green and blue to make easily detectable, the error exit
-# code in red and bold and the job count in yellow.
-#
-# Thanks to Adam's prompt for the basic idea of this prompt.
-prompt_precmd() {
-    # Regex to remove elements which take no space. Used to calculate the
-    # width of the top prompt. Thanks to Bart's and Adam's prompt code in
-    # Functions/Prompts/prompt_*_setup.
-    local zero='%([BSUbfksu]|([FB]|){*})'
-
-    # Call vcs_info before every prompt.
-    if [[ -n $RUN_VCS_INFO ]]; then
-        vcs_info
-    else
-        vcs_info_msg_0_=
-    fi
-
-    local width width_left width_right
-    local top_left top_right
-
-    # Display vcs_info (if used) on the right in the top prompt.
-    top_right="${vcs_info_msg_0_}"
-    width_right=${#${(S%%)top_right//$~zero/}}
-    # Remove vcs_info if it would get too long.
-    if [[ $(( COLUMNS - 4 - 1 - width_right )) -lt 0 ]]; then
-        top_right=
-        width_right=0
-    fi
-
-    # Display current directory on the left in the top prompt. Truncate the
-    # directory if necessary.
-    width=$(( COLUMNS - 4 - 1 - width_right ))
-    top_left=".-$default%b($yellow%$width<..<%~%<<$default)%B$blue"
-
-    # Calculate the width of the top prompt to fill the middle with "-".
-    width_left=${#${(S%%)top_left//$~zero/}}
-    width_right=${#${(S%%)top_right//$~zero/}}
-    width=$(( COLUMNS - width_left - width_right ))
-
-    PROMPT="$blue%B$top_left${(l:$width::-:)}%b$default$top_right
-$blue%B'%b$default\
-$green%B%n%b$default@$green%B%m%b$default %(1j.$yellow%j$default.)%# \
-%(?..($red%B%?%b$default%) )"
-
-}
-add-zsh-hook precmd prompt_precmd
-
-# Being paranoid and setting umask 077 is especially a good thing within the home directory,
-# so nobody can read my files. On the other hand, there might
-# be some places where we don't want umask 077 - we use the chpwd( ) function for this.
-chpwd_umask() { # Taken from http://matt.blissett.me.uk/linux/zsh/zshrc
-    case $PWD in
-        ($HOME|$HOME/*)) # Everything in ~ should be private!
-            if [[ $(umask) -ne 077 ]]; then
-                umask 0077
-                echo -e "\033[01;32mumask: private \033[m"
-            fi;;
-        *)
-            if [[ $(umask) -ne 022 ]]; then
-                umask 0022
-                echo -e "\033[01;31mumask: world readable \033[m"
-            fi;;
-    esac
-}
-add-zsh-hook chpwd chpwd_umask
 
 # When screen, xterm or rxvt is used set the name of the window to the
 # currently running program.
@@ -598,26 +389,13 @@ exec 2>>(while read -r -k -u 0 line; do
     print -n $'\0';
 done &)
 
-# Make sure aliases are expanded when using sudo.
-source ~/.dotfiles/.zsh_aliases
-alias sudo='sudo '
-
 # Allows us to use the directory stack ( google for it ) as a directory history
 # We bind dh to dirs -v so we can list all the directories on the stack.
 # Changing to a directory with number n can be achieved via cd -n
 # Additionally we set the number of saved directories to 10
 DIRSTACKSIZE=10
 setopt autopushd pushdminus pushdsilent pushdtohome
-alias dh='dirs -v'
 
-# If the window naming feature is used (see above) then use ".zsh" (leading
-# dot) as title name after running clear so it's clear to me that the window
-# is empty. I open so much windows that I don't know in which I have something
-# important. This helps me to remember which windows are empty (I run clear
-# after I finished my work in a window).
-if [[ -n $window_reset ]]; then
-    alias clear='clear; window_reset=yes; window_precmd reset'
-fi
 
 # Display all branches (except stash) in gitk but only 200 commits as this is
 # much faster. Also put in the background and disown. Thanks to sitaram in
@@ -656,5 +434,9 @@ if [[ $TERM != dumb && -z $STY ]]; then
         exec screen -r $session
     fi
 fi
+
+# Load configuration files for zsh
+dotfiles=$HOME/.dotfiles
+for zsh_file ($dotfiles/zsh/*.zsh) source $zsh_file
 
 # vim: ft=zsh
