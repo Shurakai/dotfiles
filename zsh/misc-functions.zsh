@@ -35,7 +35,7 @@ define() {
 }
 
 # Man inside vim
-man() { vim -X -M -c "Man $*" -c "set nomodifiable" -c "only" }
+#man() { vim -X -M -c "man $*" -c "set nomodifiable" -c "only" }
 
 # Calculator
 calc(){ awk "BEGIN{ print $* }" ;}
