@@ -384,10 +384,10 @@ TRAPINT() {
 # perfect and doesn't work with su and git for example, but it can handle most
 # interactive output quite well (even with no trailing new line) and in cases
 # it doesn't work, the E alias can be used as workaround.
-exec 2>>(while read -r -k -u 0 line; do
-    printf '\e[91m%s\e[0m' "$line";
-    print -n $'\0';
-done &)
+#exec 2>>(while read -r -k -u 0 line; do
+#    printf '\e[91m%s\e[0m' "$line";
+#    print -n $'\0';
+#done &)
 
 # Allows us to use the directory stack ( google for it ) as a directory history
 # We bind dh to dirs -v so we can list all the directories on the stack.
