@@ -108,11 +108,11 @@ HISTFILE=~/.zsh/history
 
 # Append to the history file instead of overwriting it and do it immediately
 # when a command is executed.
-setopt appendhistory
-setopt incappendhistory
+setopt append_history
+setopt inc_append_history
 
 # If the same command is run multiple times store it only once in the history.
-setopt histignoredups
+setopt hist_ignore_dups
 
 
 # PROMPT SETTINGS
