@@ -34,6 +34,10 @@ setopt ignoreeof
 # via cd ~log. However, with this option set, cd log is okay, too)
 setopt cdable_vars
 
+# Setup right prompt to display history number because I juse
+# bang completion quite frequently.
+RPS1='%h'
+
 # KEY BINDINGS
 
 # Not all bindings are done here, only those not specific to a given section.
