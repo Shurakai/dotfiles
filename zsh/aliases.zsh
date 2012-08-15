@@ -7,7 +7,7 @@ alias which='type -p'
 alias du='du -h'
 alias dh='dirs -v' # Shows nice directory history. See autopushd!
 alias top='htop'
-alias grep='/bin/grep -i --color=always'
+alias grep='/bin/grep -i -n --color=always'
 export EDITOR=/usr/bin/vim
 export CFLAGS=' -O2 -mtune=core2 -march=core2 -D_SMP'
 export CONCURRENCY_LEVEL=4
