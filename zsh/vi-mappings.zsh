@@ -17,8 +17,8 @@ function zle-line-init {
 # From http://zshwiki.org/home/examples/zlewidgets
 rprompt_cached=$RPROMPT
 function zle-line-init zle-keymap-select {
-  RPROMPT="${${KEYMAP/vicmd/$MODE_INDICATOR}/(main|viins)/$rprompt_cached}"
-  zle reset-prompt
+  PROMPT="${${KEYMAP/vicmd/$MODE_INDICATOR}/(main|viins)/$rprompt_cached}"
+#  zle reset-prompt
 }
 
 # Accept RETURN in vi command mode.
@@ -27,15 +27,16 @@ function accept_line {
   builtin zle .accept-line
 }
 
-zle -N zle-line-init
+#zle -N zle-line-init
 zle -N zle-keymap-select
 zle -N accept_line
 zle -N edit-command-line
 
+
 # Avoid binding ^J, ^M,  ^C, ^?, ^S, ^Q, etc.
 bindkey -d # Reset to default.
 bindkey -v # Use vi key bindings.
-bindkey -M vicmd "^M" accept_line # Alow RETURN in vi command.
+bindkey -M vicmd "^M" accept_line # Allow RETURN in vi command.
 bindkey -M vicmd v edit-command-line # ESC-v to edit in an external editor.
 
 # Vi mappings adapted to colemak layout
