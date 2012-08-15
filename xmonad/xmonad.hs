@@ -66,14 +66,18 @@ myLayoutHook = avoidStruts $ toggleLayouts Full $smartBorders (
     delta   = 0.01
 
 
-myWorkspaces = ["1:web", "2:term", "3:mail", "4:media", "5:pdf", "6:skype", "7:", "8", "9:"]
+myWorkspaces = ["1:web", "2:term", "3:mail", "4:vocabulary", "5:pdf", "6:skype", "7:media", "8", "9:"]
 
 myManageHook = composeAll [ isFullscreen --> doF W.focusDown <+> doFullFloat
                           , className =? "Evolution"       --> doShift "3:mail"
                           , className =? "Firefox"         --> doShift "1:web"
                           , className =? "URxvt"           --> doShift "2:term"
-                          , className =? "Video"           --> doShift "4:media"
-                          , className =? "banshee"         --> doShift "4:media"
+                          , className =? "Video"           --> doShift "7:media"
+                          , className =? "banshee"         --> doShift "7:media"
+                          , className =? "Vlc"             --> doShift "7:media"
+                          , className =? "Evince"          --> doShift "5:pdf"
+                          , className =? "Skype"           --> doShift "6:skype"
+                          , className =? "jmemorize-core-Main" --> doShift "4:vocabulary"
                           , className =? "Gimp"            --> doFloat
                           ]
 

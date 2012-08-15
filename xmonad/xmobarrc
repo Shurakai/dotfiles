@@ -1,21 +1,23 @@
+-- Wetter für Köln: Code ist KCMI
+
 Config { font = "xft:Times New Roman-10"
        , bgColor = "black"
        , fgColor = "grey"
        , position = TopW L 85
        , lowerOnStart = True
        , commands = [
-                      Run Network "wlan0" ["-t","wlan: <rx> / <tx>","-L"," 0","-H","32","--normal","green","--high","red"] 20
-                    , Run Network "eth0"  ["-t","eth: <rx> / <tx>" ,"-L"," 0","-H","32","--normal","green","--high","red"] 20
+                      Run Network "wlan1" ["-t","wlan: <rx> / <tx>","-L"," 0","-H","32","--normal","green","--high","red"] 20
+                    , Run Network "eth1"  ["-t","eth: <rx> / <tx>" ,"-L"," 0","-H","32","--normal","green","--high","red"] 20
                     , Run Cpu             ["-t","CPU: <total>"     ,"-L","10","-H","50","--low","green","--normal","yellow","--high","red"] 20
 --		    , Run Battery         ["-t","Akku: <left>%"     ,"-L","35","-H","80","--low","red","--normal","yellow","--high","green"] 20
 --		    , Run Thermal "THM0"  ["-t","<temp>°C"         ,"-L","30","-H","45","--low","green","--normal","yellow","--high","red"] 20
                     , Run Memory          ["-t","Mem: <usedratio>%"] 20
                     , Run Date "%d. %B %R" "date" 300
-                    , Run Weather "EDDK"  ["-t","<tempC>°C","-L","15","-H","27","--normal","yellow","--high","red","--low","lightblue"] 6000
+                    , Run Weather "KCMI"  ["-t","<tempC>°C","-L","15","-H","27","--normal","yellow","--high","red","--low","lightblue"] 6000
                     , Run StdinReader
                     ]
        , sepChar = "%"
        , alignSep = "}{"
---       , template = "%StdinReader% }{ %cpu% @ %THM0% | %battery% | %memory% | %wlan0% | <fc=lightblue>%date%</fc> @ %EDDK% "
-       , template = "%StdinReader% }{ %cpu% | %memory% | %wlan0% | <fc=lightblue>%date%</fc> @ %EDDK% "
+--       , template = "%StdinReader% }{ %cpu% @ %THM0% | %battery% | %memory% | %wlan1% | <fc=lightblue>%date%</fc> @ %KCMI% "
+       , template = "%StdinReader% }{ %cpu% | %memory% | %wlan1% | <fc=lightblue>%date%</fc> @ %KCMI% "
        }
