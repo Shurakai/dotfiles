@@ -51,6 +51,7 @@ bindkey -M viins "^L" clear-screen
 bindkey -M viins "^W" backward-kill-word
 bindkey -M viins "^A" beginning-of-line
 bindkey -M viins "^E" end-of-line
+bindkey -M viins "^?" backward-delete-char
 
 # Also use jj to insert vim mode and exit insert mode.
 bindkey 'jj' vi-cmd-mode
