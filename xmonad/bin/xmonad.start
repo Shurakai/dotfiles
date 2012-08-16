@@ -1,0 +1,31 @@
+#!/bin/bash
+ 
+# Load resources
+ 
+xrdb -merge .Xresources
+
+# Disable PC-Speaker
+xset b off
+# Enable xkbevd (config: .xkb/xkbevd.cf)
+xkbevd -bg
+
+# Set up an icon tray
+ 
+trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --widthtype percent --width 8 --tint black --heighttype pixel --height 19 --transparent true --alpha 0 &
+
+# Set background 
+ 
+# xsetroot -solid midnightblue &
+xsetroot -bitmap Bilder/THINK-I.jpg
+ 
+# Fire up apps
+gnome-settings-daemon &
+update-notifier &
+system-config-printer-applet &
+nm-applet --sm-disable &
+gnome-power-manager &
+gnome-volume-control-applet &
+
+xscreensaver -no-splash &
+
+exec xmonad
