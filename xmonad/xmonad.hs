@@ -20,6 +20,7 @@ import XMonad.Layout.Named
 import XMonad.Layout.StackTile
 import XMonad.Layout.Roledex
 import XMonad.Layout.ToggleLayouts
+import XMonad.Layout.PerWorkspace
 import XMonad.Prompt
 import XMonad.Prompt.Shell
 -- import XMonad.Prompt.Man
@@ -48,7 +49,9 @@ main = do
         } `additionalKeys` myKeys
 
 
-myLayoutHook = avoidStruts $ toggleLayouts Full $smartBorders (
+myLayoutHook = avoidStruts $ toggleLayouts Full $
+        onWorkspace "3:mail" (Grid) $
+        smartBorders (
         named "Tall" tiled
     ||| named "Mirror Tall" (Mirror tiled)
     ||| Full
