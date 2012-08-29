@@ -1,0 +1,11 @@
+If you just installed your new Ubuntu system, make sure to copy these files:
+
+* .evolution (mail) , .gconf/apps/evolution (mail, calendar?) and .config/evolution (filters)
+use evolution --force-shutdown before copying 
+* .gnome2(3?)/keyrings 
+
+* .ssh
+* .gnupg
+* .purple (pidgin)
+* .mozilla 
+* .vim
