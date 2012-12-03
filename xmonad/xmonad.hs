@@ -107,5 +107,10 @@ myKeys = [ ((controlMask, xK_Print), spawn "sleep 0.2; scrot")
          --, ((modm,               xK_F1),    manPrompt defaultXPConfig)
          , ((modm,               xK_F2),    shellPrompt defaultXPConfig)
          --, ((modm,               xK_F3),    sshPrompt defaultXPConfig)
+         -- To figure out what your key name is, use the command `xev`.
+         -- The 0 below means that you do not have to press MOD-Key
+         , ((0                     , 0x1008FF11), spawn "amixer set Master 2-")
+         , ((0                     , 0x1008FF13), spawn "amixer set Master 2+")
+         , ((0                     , 0x1008FF12), spawn "amixer set Master toggle")
          ]
 
