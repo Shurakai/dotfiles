@@ -13,3 +13,8 @@ use "gconftool-2 --shutdown && evolution --force-shutdown" before copying!!! (ot
 * .purple (pidgin)
 * .mozilla
 * .vim
+
+
+If you want to play proprietary DVDs, you might need to install
+
+* libdvdcss2 / libdvdread4 and then run the script to download and install the codec
