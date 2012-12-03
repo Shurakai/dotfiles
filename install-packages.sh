@@ -2,7 +2,9 @@
 
 typeset -A packages
 # suckless-tools = dmenu
-packages=(xmonad 'xmonad xmobar suckless-tools trayer' screen "screen" "rxvt-unicode-256color" "rxvt-unicode-256color" git "git" "evolution" "evolution" keepassx keepassx )
+# xloadimage = background-image and fill borders with background-color
+# xscreensaver = lock workspace
+packages=(xmonad 'xmonad xmobar suckless-tools trayer xloadimage xscreensaver' screen "screen" "rxvt-unicode-256color" "rxvt-unicode-256color" git "git" "evolution" "evolution" keepassx keepassx vim vim exuberant-ctags exuberant-ctags)
 
 for package in ${(k)packages}
 do
@@ -11,7 +13,7 @@ do
     dpkg -s $package > /dev/null &> /dev/null
     if [ $? -gt 0 ]
       then
-        echo -n "$package is not installed. Do you want to install $package? [y/N]" 
+        echo -n "$package is not installed. Do you want to install $package? [y/N]"
         read install
 
         if [ $install = "y" ]
