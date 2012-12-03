@@ -1,0 +1,20 @@
+#!/usr/bin/env zsh
+# On login, we need to autostart some programs...
+
+# Load background image
+xloadimage -onroot -border black -fullscreen /home/heinrich/Pictures/wallpapers/phi.jpg
+
+# Load evolution-notification program - will notify of appointments, events
+dbus-launch /usr/lib/evolution/3.2/evolution-alarm-notify &
+
+# Set up an icon tray
+
+trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --widthtype percent --width 8 --tint black --heighttype pixel --height 19 --transparent true --alpha 0 &
+
+nm-applet --sm-disable &
+
+gnome-sound-applet &
+
+xscreensaver -no-splash &
+
+exec xmonad

@@ -1,0 +1,12 @@
+To load .xsession files by default, we need to make some changes to the xsession-files loaded by gdm/lightdm etc.
+
+Edit /usr/share/xsessions/xmonad.desktop and change
+
+EXEC=xmonad
+
+to
+
+EXEC=/etc/X11/Xsession
+
+
+This will make sure that the ~/.xsession file will be sourced.
