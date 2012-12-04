@@ -115,6 +115,9 @@ HISTFILE=~/.zsh/history
 setopt append_history
 setopt inc_append_history
 
+# Every time we exec `history`, load history file
+setopt share_history
+
 # If the same command is run multiple times store it only once in the history.
 setopt hist_ignore_dups
 
