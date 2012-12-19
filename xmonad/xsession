@@ -5,7 +5,7 @@
 xloadimage -onroot -border black -fullscreen /home/heinrich/Pictures/wallpapers/phi.jpg
 
 # Load evolution-notification program - will notify of appointments, events
-dbus-launch /usr/lib/evolution/3.2/evolution-alarm-notify &
+/usr/lib/evolution/3.2/evolution-alarm-notify &
 
 # Set up an icon tray
 
