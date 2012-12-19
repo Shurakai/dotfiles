@@ -18,3 +18,14 @@ use "gconftool-2 --shutdown && evolution --force-shutdown" before copying!!! (ot
 If you want to play proprietary DVDs, you might need to install
 
 * libdvdcss2 / libdvdread4 and then run the script to download and install the codec
+
+
+== Disable "recently used files" ==
+
+(This feature is used e. g. by Eye Of Gnome, the image viewer)
+
+unlink ~/.local/share/recently-used.xbel
+touch ~/.local/share/recently-used.xbel
+sudo chattr +i ~/.local/share/recently-used.xbel
+
+chattr +i makes the file immutable, i. e. unchangeable
