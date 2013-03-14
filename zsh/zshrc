@@ -444,7 +444,7 @@ if [[ $TERM != dumb && -z $STY ]]; then
 fi
 
 # Load configuration files for zsh
-dotfiles=$HOME/.dotfiles
-for zsh_file ($dotfiles/zsh/*.zsh) source $zsh_file
+dotfiles=`dirname $(readlink -f $HOME/.zshrc)`
+for zsh_file ($dotfiles/*.zsh) source $zsh_file
 
 # vim: ft=zsh
