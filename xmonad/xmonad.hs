@@ -69,7 +69,7 @@ myLayoutHook = avoidStruts $ toggleLayouts Full $
     delta   = 0.01
 
 
-myWorkspaces = ["1:web", "2:term", "3:mail", "4:vocabulary", "5:pdf", "6:skype", "7:media", "8", "9:"]
+myWorkspaces = ["1:web", "2:term", "3:mail", "4:vocabulary", "5:pdf", "6:skype", "7:media", "8", "9:chrome"]
 
 myManageHook = composeAll [ isFullscreen --> doF W.focusDown <+> doFullFloat
                           , className =? "Evolution"       --> doShift "3:mail"
@@ -78,8 +78,10 @@ myManageHook = composeAll [ isFullscreen --> doF W.focusDown <+> doFullFloat
                           , className =? "Video"           --> doShift "7:media"
                           , className =? "banshee"         --> doShift "7:media"
                           , className =? "Vlc"             --> doShift "7:media"
+                          , className =? "rhythmbox"       --> doShift "7:media"
                           , className =? "Evince"          --> doShift "5:pdf"
                           , className =? "Skype"           --> doShift "6:skype"
+                          , className =? "Chromium-browser" --> doShift "9:chrome"
                           , className =? "jmemorize-core-Main" --> doShift "4:vocabulary"
                           , className =? "Gimp"            --> doFloat
                           ]
