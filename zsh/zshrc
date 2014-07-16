@@ -34,6 +34,9 @@ setopt ignoreeof
 # via cd ~log. However, with this option set, cd log is okay, too)
 setopt cdable_vars
 
+# Run background processes at a lower priority. This is ZSH default, but I still mention it here.
+setopt bgnice
+
 # Setup right prompt to display history number because I juse
 # bang completion quite frequently.
 RPS1='%h'
@@ -105,22 +108,54 @@ autoload zmv
 # HISTORY SETTINGS
 
 # Use history and store it in ~/.zsh/history.
-
+# HISTSIZE and SAVEHIST *must* be set for automatic reading
+# and writing of history lines to work.
 HISTSIZE=50000
 SAVEHIST=50000
 HISTFILE=~/.zsh/history
 
 # Append to the history file instead of overwriting it and do it immediately
 # when a command is executed.
-setopt append_history
-setopt inc_append_history
+setopt APPEND_HISTORY
+setopt INC_APPEND_HISTORY
 
-# Every time we exec `history`, load history file
-# This option actually sucks, at least for me.
-# setopt share_history
+# Shares history between different shells running on the same host.
+# This option actually sucks, at least for me. Remove the "NO" if you
+# want to use this option.
+setopt NO_SHARE_HISTORY
+
+# This option enables logging of (i) execution date and (ii) the time it ran.
+setopt EXTENDED_HISTORY
+
+# Do not save commands that begin with a space
+setopt HIST_IGNORE_SPACE
 
 # If the same command is run multiple times store it only once in the history.
-setopt hist_ignore_dups
+setopt HIST_IGNORE_DUPS
+
+# When history gets crammed, remove duplicates. Until then, do nothing
+setopt HIST_EXPIRE_DUPS_FIRST
+
+# If duplicate commands were saved, searches backward with editor commands won't
+# find those commands more than once.
+setopt HIST_FIND_NO_DUPS
+
+# Expand substitutions while typing so you can see what you substituted :)
+# (You can undo by exiting the insert mode and press "u" for undo! (vi-mode))
+# See http://zsh.sourceforge.net/Guide/zshguide02.html#l6 2.5.3, "bang-history"
+setopt HIST_VERIFY
+
+# Remove blanks that mean nothing to the shell (ignores quoted blanks)
+setopt HIST_REDUCE_BLANKS
+
+# If you tried to redirect output to a file, say "/tmp/test", but that file existed
+# you might get an error if you only used "> /tmp/test". With this option set, zsh
+# will alter that command to ">| /tmp/test" so you can just go back to the previous
+# command and execute it again if you like, without editing!
+setopt HIST_ALLOW_CLOBBER
+
+# Do not store "history" or "fc" commands.
+setopt HIST_NO_STORE
 
 
 # PROMPT SETTINGS
