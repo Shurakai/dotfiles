@@ -162,6 +162,8 @@ setopt HIST_ALLOW_CLOBBER
 # Do not store "history" or "fc" commands.
 setopt HIST_NO_STORE
 
+# Disable mail checks
+MAILCHECK=0
 
 # PROMPT SETTINGS
 
