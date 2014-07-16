@@ -41,7 +41,10 @@ setopt bgnice
 
 # Setup right prompt to display history number because I juse
 # bang completion quite frequently.
-RPS1='%h'
+# Additionally, %* displays the time including seconds. If you don't like
+# that, you can replace it with %t (12h format) or %T (24h format), both
+# without seconds
+RPS1='%h at %*'
 
 # KEY BINDINGS
 
