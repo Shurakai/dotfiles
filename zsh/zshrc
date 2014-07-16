@@ -5,7 +5,7 @@
 umask 077
 
 # Disable beeps.
-setopt nobeep
+setopt NO_BEEP
 
 # Prevent overwriting existing files with '> filename', use '>| filename'
 # (or >!) instead.
@@ -13,12 +13,14 @@ setopt noclobber
 
 # Entering the name of a directory (if it's not a command) will automatically
 # cd to that directory.
-setopt autocd
+setopt AUTOCD
 
 # When entering a nonexistent command name automatically try to find a similar
 # one.
-setopt correct
+setopt CORRECT
 SPROMPT="zsh: correct %R to %r? ([Y]es / [N]o / [A]bort / [E]dit)"
+
+setopt NO_CORRECT_ALL
 
 # Enable zsh's extended glob abilities.
 setopt extendedglob
