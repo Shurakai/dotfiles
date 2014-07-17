@@ -39,12 +39,17 @@ bindkey -v # Use vi key bindings.
 bindkey -M vicmd "^M" accept_line # Allow RETURN in vi command.
 bindkey -M vicmd v edit-command-line # ESC-v to edit in an external editor.
 
+# Remove all escapes from vi insert mode. Removes delay when pressing ESC
+# to go back to vi cmd mode. (Though you should use 'jj' anyways)
+# Source: The manual.
+bindkey -rpM viins '\e'
+
 # Vi mappings adapted to colemak layout
 bindkey ' ' magic-space
 bindkey -M vicmd "gg" beginning-of-history
 bindkey -M vicmd "G" end-of-history
-bindkey -M vicmd "e" history-search-backward
-bindkey -M vicmd "n" history-search-forward
+#bindkey -M vicmd "N" history-search-backward
+#bindkey -M vicmd "n" history-search-forward
 bindkey -M vicmd "?" history-incremental-search-backward
 bindkey -M vicmd "/" history-incremental-search-forward
 bindkey -M viins "^L" clear-screen
@@ -56,7 +61,20 @@ bindkey -M viins "^?" backward-delete-char
 # Also use jj to insert vim mode and exit insert mode.
 bindkey 'jj' vi-cmd-mode
 
-# Vim like completions of previous executed commands (also enter Vi-mode). If
+# Inserts / removes a leading "#".
+bindkey -M vicmd ',c ' vi-pound-insert
+
+# Buffer stack bindings.
+# See http://zsh.sourceforge.net/Guide/zshguide04.html#l75 section 4.6.3
+# and http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#Zsh-Line-Editor
+# (get-line, push-line, push-line-or-edit)
+bindkey -M vicmd ',gl' get-line
+bindkey -M vicmd ',pl' push-line-or-edit
+bindkey -M vicmd ',psl' push-line
+
+
+
+# Vim like completions of previously executed commands (also enter Vi-mode). If
 # called at the beginning it just recalls old commands (like cursor up), if
 # called after typing something, only lines starting with the typed are
 # returned. Very useful to get old commands quickly. Thanks to Mikachu in #zsh
@@ -85,3 +103,17 @@ bindkey -a '^P' history-beginning-search-backward # binding for Vi-mode
 # Here only Vi-mode is necessary as ^P enters Vi-mode and ^N only makes sense
 # after calling ^P.
 bindkey -a '^N' history-beginning-search-forward
+
+# Searches should be repeatable, even incremental searches
+# This doesn't really work right now, but it might be a good
+# starting point.
+# See http://www.zsh.org/mla/users/2002/msg00626.html
+# for source.
+function vi-repeat-incremental-search-backward {
+  bindkey -e
+  zle -U $'\C-r'
+  zle history-incremental-search-backward
+  bindkey -v
+}
+zle -N vi-repeat-incremental-search-backward
+bindkey -a N vi-repeat-incremental-search-backward
