@@ -26,17 +26,16 @@ function accept_line {
   RPROMPT=$rprompt_cached
   builtin zle .accept-line
 }
+zle -N accept_line
+bindkey -M vicmd "^M" accept_line # Allow RETURN in vi command.
 
 #zle -N zle-line-init
 zle -N zle-keymap-select
-zle -N accept_line
 zle -N edit-command-line
-
 
 # Avoid binding ^J, ^M,  ^C, ^?, ^S, ^Q, etc.
 bindkey -d # Reset to default.
 bindkey -v # Use vi key bindings.
-bindkey -M vicmd "^M" accept_line # Allow RETURN in vi command.
 bindkey -M vicmd v edit-command-line # ESC-v to edit in an external editor.
 
 # Remove all escapes from vi insert mode. Removes delay when pressing ESC
