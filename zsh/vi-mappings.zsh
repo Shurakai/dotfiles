@@ -7,36 +7,18 @@
 # Allow command line editing in an external editor.
 autoload -Uz edit-command-line
 
-# This comes from the vi-mode plugin
-function zle-line-init {
-  zle reset-prompt
-}
-
 # If I am using vi keys, I want to know what mode I'm currently using.
-# zle-keymap-select is executed every time KEYMAP changes.
 # From http://zshwiki.org/home/examples/zlewidgets
-rprompt_cached=$RPROMPT
-function zle-line-init zle-keymap-select {
-  PROMPT="${${KEYMAP/vicmd/$MODE_INDICATOR}/(main|viins)/$rprompt_cached}"
-#  zle reset-prompt
+function display_vi_mode() {
+  print -- "${${KEYMAP/vicmd/-- NORMAL --}/(main|viins)/-- INSERT --}"
 }
 
-# Accept RETURN in vi command mode.
-function accept_line {
-  RPROMPT=$rprompt_cached
-  builtin zle .accept-line
-}
-zle -N accept_line
-bindkey -M vicmd "^M" accept_line # Allow RETURN in vi command.
-
-#zle -N zle-line-init
-zle -N zle-keymap-select
 zle -N edit-command-line
 
 # Avoid binding ^J, ^M,  ^C, ^?, ^S, ^Q, etc.
 bindkey -d # Reset to default.
 bindkey -v # Use vi key bindings.
-bindkey -M vicmd v edit-command-line # ESC-v to edit in an external editor.
+bindkey -M vicmd v edit-command-line # v to edit in an external editor.
 
 # Remove all escapes from vi insert mode. Removes delay when pressing ESC
 # to go back to vi cmd mode. (Though you should use 'jj' anyways)
@@ -71,7 +53,14 @@ bindkey -M vicmd ',gl' get-line
 bindkey -M vicmd ',pl' push-line-or-edit
 bindkey -M vicmd ',psl' push-line
 
+# If you're like me and you sometimes forget to write words or arguments in the correct
+# order, this binding is for you - it transposes to words, delimited by blanks (and
+# only blanks!)
+# If you want to transpose words depending on your current cursor position, check out
+# number 4.7.7 http://zsh.sourceforge.net/Guide/zshguide04.html#l75
+bindkey -M vicmd ',tw' transpose-words
 
+bindkey -M vicmd ',dw' delete-word
 
 # Vim like completions of previously executed commands (also enter Vi-mode). If
 # called at the beginning it just recalls old commands (like cursor up), if
