@@ -44,7 +44,9 @@ setopt bgnice
 # Additionally, %* displays the time including seconds. If you don't like
 # that, you can replace it with %t (12h format) or %T (24h format), both
 # without seconds
-RPS1='%h at %*'
+# This is deprecated since this prompt will be setup with vi-mode details
+# and the current time
+# RPS1='%h at %*'
 
 # KEY BINDINGS
 
@@ -485,8 +487,42 @@ if [[ $TERM != dumb && -z $STY ]]; then
     fi
 fi
 
-# Load configuration files for zsh
-dotfiles=`dirname $(readlink -f $HOME/.zshrc)`
-for zsh_file ($dotfiles/*.zsh) source $zsh_file
+config_dir=`dirname $(readlink -f $HOME/.zshrc)`
 
+# Load configuration files for zsh
+for zsh_file ($config_dir/*.zsh) source $zsh_file
+
+# The following libraries are from oh-my-zsh
+source $config_dir/lib/git.zsh
+
+# Source other plugins, such as vim text objections ('ciw', change
+# inner word etc.)
+source $config_dir/plugins/**/*.zsh
+
+# Load theme
+DEFAULT_USER="heinrich"
+source $config_dir/themes/agnoster-fcamblor.zsh
+
+# Prompt gets updated before every command to make sure
+# we have an up-to-date prompt
+prompt_precmd() {
+PROMPT="%{%f%b%k%}$(build_prompt)
+%h %% "
+}
+add-zsh-hook precmd prompt_precmd
+
+setup_right_prompt() {
+    # The following two lines make sure that deleting a text object
+    # does not move the prompt up a line. see
+    # https://github.com/hchbaw/opp.zsh/issues/1
+    setopt localoptions no_ksharrays
+    [[ "${@[2]-}" == opp ]] && return
+
+    # Define right prompt.
+    RPS1=$(display_vi_mode)
+    RPS1+=" "%*
+    zle reset-prompt
+}
+zle -N zle-keymap-select setup_right_prompt
+zle -N zle-line-init     setup_right_prompt
 # vim: ft=zsh
