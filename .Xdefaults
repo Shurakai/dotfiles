@@ -9,7 +9,10 @@ URxvt.perl-ext-common: default,matcher
 URxvt.urlLauncher: firefox
 URxvt.matcher.button: 1
 URxvt.matcher.pattern.1: \\bwww\\.[\\w-]\\.[\\w./?&@#-]*[\\w/-]
-URxvt.font: xft:Bitstream Vera Sans Mono:pixelsize=12
+!URxvt.font: xft:Bitstream Vera Sans Mono:pixelsize=12
+!URxvt.font: xft:Source Code Pro for Powerline:pixelsize=15
+URxvt.font: xft:Meslo LG M DZ for Powerline:pixelsize=15
+
 
 !fade text n% upon unfocus
 urxvt*fading:             20
@@ -25,3 +28,4 @@ urxvt*scrollTtyKeypress:  true
 urxvt*scrollWithBuffer:   false
 !!jump to bottom (prompt) on tty output
 urxvt*scrollTtyOutput:    false
+
