@@ -51,6 +51,9 @@ setenv s "$s%H" # - hostname
 hardstatus alwayslastline "$s"
 unsetenv s
 
+screen 0
+screen 1
+screen -fn -t irc 9 irssi
 
 # BINDINGS
 
