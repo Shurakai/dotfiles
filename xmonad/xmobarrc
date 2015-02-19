@@ -8,7 +8,7 @@ Config { font = "xft:Times New Roman-10"
        , lowerOnStart = True
        , commands = [
                       Run Network "wlan0" ["-t","wlan: <rx> / <tx>","-L"," 0","-H","32","--normal","green","--high","red"] 20
-                    , Run Network "eth0"  ["-t","eth: <rx> / <tx>" ,"-L"," 0","-H","32","--normal","green","--high","red"] 20
+                    , Run Network "eth1"  ["-t","eth: <rx> / <tx>" ,"-L"," 0","-H","32","--normal","green","--high","red"] 20
                     , Run Cpu             ["-t","CPU: <total> %"     ,"-L","10","-H","50","--low","green","--normal","yellow","--high","red"] 20
 --		    , Run Battery         ["-t","Akku: <left>%"     ,"-L","35","-H","80","--low","red","--normal","yellow","--high","green"] 20
 		    , Run Thermal "THM0"  ["-t","<temp>°C"         ,"-L","30","-H","45","--low","green","--normal","yellow","--high","red"] 20
@@ -20,5 +20,5 @@ Config { font = "xft:Times New Roman-10"
        , sepChar = "%"
        , alignSep = "}{"
 --       , template = "%StdinReader% }{ %cpu% @ %THM0% | %battery% | %memory% | %wlan0% | <fc=lightblue>%date%</fc> @ %EDDK% "
-       , template = "%StdinReader% }{ %cpu% | %memory% | %wlan0% | %eth0% | <fc=lightblue>%date%</fc> @ %EDDK% "
+       , template = "%StdinReader% }{ %cpu% | %memory% | %wlan0% | %eth1% | <fc=lightblue>%date%</fc> @ %EDDK% "
        }
