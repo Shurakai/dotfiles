@@ -19,6 +19,14 @@ If you want to play proprietary DVDs, you might need to install
 
 * libdvdcss2 / libdvdread4 and then run the script to download and install the codec
 
+== Install Powerline fonts -- required for ZSH prompt ==
+See http://askubuntu.com/questions/283908/how-can-i-install-and-use-powerline-plugin
+
+Basically, clone the github repository and move the *folders* to ~/.fonts/ and then run
+
+    fc-cache -v ~/.fonts/
+
+That should do.
 
 == Disable "recently used files" ==
 
