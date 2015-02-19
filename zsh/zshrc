@@ -503,6 +503,12 @@ source $config_dir/plugins/**/*.zsh
 DEFAULT_USER="heinrich"
 source $config_dir/themes/agnoster-fcamblor.zsh
 
+# Ignore filetypes when completing using the vi or vim commands.
+# (Very helpful when you want to open a file XYZ.tex and all the other
+# files were already automatically generated, like XYZ.aux etc. -- these
+# files will not be offered by completion, just XYZ.tex!)
+zstyle ':completion:*:*:vi:*:*files' ignored-patterns '*?.aux' '*?.bbl' '*?.blg' '*?.out' '*?.idx' '*?.idl' '*?.log' '*?.toc' '*?.snm' '*?.nav' '*?.pdf' '*?.bak' '*\~'
+
 # Prompt gets updated before every command to make sure
 # we have an up-to-date prompt
 prompt_precmd() {

@@ -37,6 +37,11 @@ define() {
 # Man inside vim
 #man() { vim -X -M -c "man $*" -c "set nomodifiable" -c "only" }
 
+# Look something up in the zsh manual
+zman() {
+  PAGER="less -g -s '+/^       "$1"'" man zshall
+}
+
 # Calculator
 calc(){ awk "BEGIN{ print $* }" ;}
 

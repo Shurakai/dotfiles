@@ -12,6 +12,9 @@ autoload -Uz edit-command-line
 function display_vi_mode() {
   print -- "${${KEYMAP/vicmd/-- NORMAL --}/(main|viins)/-- INSERT --}"
 }
+foreground-vi() {
+  fg %vi
+}
 
 zle -N edit-command-line
 
@@ -19,6 +22,9 @@ zle -N edit-command-line
 bindkey -d # Reset to default.
 bindkey -v # Use vi key bindings.
 bindkey -M vicmd v edit-command-line # v to edit in an external editor.
+
+zle -N foreground-vi
+bindkey '^Z' foreground-vi
 
 # Remove all escapes from vi insert mode. Removes delay when pressing ESC
 # to go back to vi cmd mode. (Though you should use 'jj' anyways)
