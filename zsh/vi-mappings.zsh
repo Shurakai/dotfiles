@@ -111,3 +111,10 @@ function vi-repeat-incremental-search-backward {
 }
 zle -N vi-repeat-incremental-search-backward
 bindkey -a N vi-repeat-incremental-search-backward
+
+cmdT() {                                                                                                                                                       -- NORMAL -- 16:53:06
+   </dev/tty vim -c CommandT
+}
+
+zle -N cmdT
+bindkey "^T" cmdT
