@@ -69,8 +69,12 @@ myLayoutHook = avoidStruts $ toggleLayouts Full $
     delta   = 0.01
 
 
-myWorkspaces = ["1:web", "2:term", "3:mail", "4:vocabulary", "5:pdf", "6:skype", "7:media", "8", "9:chrome"]
+myWorkspaces = ["1:web", "2:term", "3:mail", "4:vocabulary", "5:pdf", "6:skype", "7:media", "8:VirtualBox", "9:chrome"]
 
+
+-- These classNames can be retrieved by executing the command
+--      xprop | grep "WM_WINDOW_ROLE\|WM_CLASS"
+-- in a terminal. (Click on the window to retrieve the information)
 myManageHook = composeAll [ isFullscreen --> doF W.focusDown <+> doFullFloat
                           , className =? "Evolution"       --> doShift "3:mail"
                           , className =? "Firefox"         --> doShift "1:web"
@@ -83,6 +87,7 @@ myManageHook = composeAll [ isFullscreen --> doF W.focusDown <+> doFullFloat
                           , className =? "Skype"           --> doShift "6:skype"
                           , className =? "Chromium-browser" --> doShift "9:chrome"
                           , className =? "jmemorize-core-Main" --> doShift "4:vocabulary"
+                          , className =? "VirtualBox" --> doShift "8:VirtualBox"
                           , className =? "Gimp"            --> doFloat
                           ]
 
