@@ -54,6 +54,19 @@
   sl = stash list
   fp = format-patch
   lg = log -p
+
+  # These are from http://www.reddit.com/r/git/comments/1xlvyt/does_anyone_out_there_just_use_git_itself_in_the/cfcqh0a,
+  # la = list all
+  # lb = list branch
+  # s  = short
+  # ss = super short
+  la=log --oneline --graph --all --decorate
+  las=log --oneline --graph --all --decorate -20
+  lass=log --oneline --graph --all --decorate -8
+  lb=log --oneline --graph --decorate
+  lbs=log --oneline --graph --decorate -20
+  lbss=log --oneline --graph --decorate -8
+
 [merge]
     tool = vimdiff
 
