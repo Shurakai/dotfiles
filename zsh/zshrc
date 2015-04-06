@@ -137,8 +137,13 @@ setopt EXTENDED_HISTORY
 # Do not save commands that begin with a space
 setopt HIST_IGNORE_SPACE
 
-# If the same command is run multiple times store it only once in the history.
+# If the same command is run multiple times (without any other command being
+# run in the meantime), store it only once in the history.
 setopt HIST_IGNORE_DUPS
+
+# Prohibits any command to be listed twice in the whole history file (even
+# if it is not the previous command, see HIST_IGNORE_DUPS)
+setopt HIST_IGNORE_ALL_DUPS
 
 # When history gets crammed, remove duplicates. Until then, do nothing
 setopt HIST_EXPIRE_DUPS_FIRST
@@ -447,6 +452,7 @@ TRAPINT() {
 # Additionally we set the number of saved directories to 10
 DIRSTACKSIZE=10
 setopt autopushd pushdminus pushdsilent pushdtohome
+setopt pushd_ignore_dups
 
 
 # Display all branches (except stash) in gitk but only 200 commits as this is
