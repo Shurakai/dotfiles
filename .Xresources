@@ -29,47 +29,29 @@ urxvt*scrollWithBuffer:   false
 !!jump to bottom (prompt) on tty output
 urxvt*scrollTtyOutput:    false
 
-!URxvt.color4:           SteelBlue
-! This is a colorscheme I found somewhere on the
-! web. Dunno where, and I forgot the name too. But
-! it might be easy to find again...
-
-!define t_background #2d2d2d
-!define t_current_line #393939
-!define t_selection #515151
-!define t_foreground #cccccc
-!define t_comment #999999
-!define t_red #f2777a
-!define t_orange #f99157
-!define t_yellow #ffcc66
-!define t_green #99cc99
-!define t_aqua #66cccc
-!define t_blue #6699cc
-!define t_purple #cc99cc
-!*.foreground: t_foreground
-!*.background: t_background
-!*.cursorColor: #aeafad
-!! Black / Grey
-!*.color0: #000000
-!*.color8: #666666
-!! Red / Bright Red
-!*.color1: t_red
-!*.color9: #FF3334
-!! Green + Bright Green
-!*.color2: t_green
-!*.color10: #9ec400
-!! Yellow (Orange) + Bright Yellow (Yellow)
-!*.color3: t_orange
-!*.color11: t_yellow
-!Blue + Bright Blue
-!*.color4: t_blue
-*.color12: RoyalBlue
-!Magenta (Purple) + Bright Magenta
-!*.color5: t_purple
-!*.color13: #b777e0
-!! Cyan (Aqua) + Bright Cyan
-!*.color6: t_aqua
-!*.color14: #54ced6
-!! Light Grey (Selection) + White (Current Line)
-!*.color7: t_selection
-!*.color15: t_current_line
+! black
+!*color0:  #2E3436
+!*color8:  #555753
+! red
+urxvt*color1:  #a40000
+urxvt*color9:  #EF2929
+! green
+urxvt*color2:  #4E9A06
+urxvt*color10: #8AE234
+! yellow
+urxvt*color3:  #C4A000
+urxvt*color11: #FCE94F
+! blue
+!*color4:  #3465A4
+!*color12: #729FCF
+urxvt*color4: #003EFF
+urxvt*color12: RoyalBlue
+! purple
+urxvt*color5:  #75507B
+urxvt*color13: #AD7FA8
+! orange (replaces cyan)
+urxvt*color6:  #ce5c00
+urxvt*color14: #fcaf3e
+! white
+urxvt*color7:  #babdb9
+urxvt*color15: #EEEEEC
