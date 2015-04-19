@@ -531,6 +531,10 @@ setup_right_prompt() {
     [[ "${@[2]-}" == opp ]] && return
 
     # Define right prompt.
+    # Personally, I like to see the VI mode I'm in explicitly, but it's also
+    # possible to change the cursor color. See for a working example here (but
+    # make sure that you use the last one - the first one will fail with GNU screen!)
+    # http://andreasbwagner.tumblr.com/post/804629866/zsh-cursor-color-vi-mode
     RPS1=$(display_vi_mode)
     RPS1+=" "%*
     zle reset-prompt
