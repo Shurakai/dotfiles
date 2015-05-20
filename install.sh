@@ -11,7 +11,7 @@ if [ ! -d $HOME/bin ]
      mkdir $HOME/bin
 fi
 
-filenames=(.screenrc .screenrc .gitconfig .gitconfig .Xresources .Xresources .Xmodmap .Xmodmap "xmonad/xsession" ".xsession" "xmonad/" ".xmonad" "xmonad/xmobarrc" ".xmobarrc" "zsh/zshrc" .zshrc)
+filenames=(.cgvgrc .screenrc .screenrc .gitconfig .gitconfig .Xresources .Xresources .Xmodmap .Xmodmap "xmonad/xsession" ".xsession" "xmonad/" ".xmonad" "xmonad/xmobarrc" ".xmobarrc" "zsh/zshrc" .zshrc)
 for file in ${(k)filenames}
 do
     if [ ! -e $HOME/$filenames[$file] ]
