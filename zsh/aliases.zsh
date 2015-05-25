@@ -12,11 +12,17 @@ export EDITOR=/usr/bin/vim
 export CFLAGS=' -O2 -mtune=core2 -march=core2 -D_SMP'
 export CONCURRENCY_LEVEL=4
 
-# apt-get shortcuts
-alias agi='sudo apt-get install'
-alias agu='sudo apt-get update && sudo apt-get upgrade'
-alias acse='apt-cache search'
-alias acsh='apt-cache show'
+# apt-get shortcuts;
+# only for Ubuntu or Debian
+LSB_DISTRIBUTOR=`lsb_release -i -s`
+
+if [[ "$LSB_DISTRIBUTOR" == "Ubuntu" ]] || [[ "$LSB_DISTRIBUTOR" == "Debian" ]]
+then
+  alias agi='sudo apt-get install'
+  alias agu='sudo apt-get update && sudo apt-get upgrade'
+  alias acse='apt-cache search'
+  alias acsh='apt-cache show'
+fi
 
 alias be=~/bin/be # BugsEverywhere bugtracker
 alias lessc=/var/lib/gems/1.8/bin/lessc
