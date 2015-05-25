@@ -24,7 +24,6 @@ then
   alias acsh='apt-cache show'
 fi
 
-alias be=~/bin/be # BugsEverywhere bugtracker
 alias lessc=/var/lib/gems/1.8/bin/lessc
 
 # Global aliases for often used commands in the command line.
