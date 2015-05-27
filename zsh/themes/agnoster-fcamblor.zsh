@@ -112,12 +112,24 @@ prompt_git() {
           # We should consider this as an untracked branch
           upstream_status="gone"
       else
-          upstream_infos=$(git branch -vv | grep "* $ref" | sed 's@.*\[\(.*\)\].*@\1@g')
-          upstream=$(echo $upstream_infos | cut -d':' -f1)
-          if [[ $(echo $upstream_infos | grep ':' | wc -l) -eq 0 ]]; then
-              upstream_status="synced"
+          # c.heinrich I changed this line here to work with commits like
+          # [TAG] Did this and that.
+          # Otherwise, you get errors like: 'fatal: Unknown commit TAG'
+          upstream_infos=$(git branch -vv | grep "* $ref" | sed 's@ \+@ @g' | cut -d ' ' -f4 )
+          upstream=$(echo $upstream_infos | sed 's@\[@@g' | sed 's@\]@@g' )
+
+          # c.heinrich: This case explicitly checks if the name for the remote
+          # branch is also available via git branch -r; because if there is no
+          # remote tracking branch but a [TAG] was used in the commit message,
+          # this would be mistaken and might cause an error.
+          if [[ $(git branch -r | grep "$upstream$" | wc -l) -eq 0 ]]; then
+              upstream_status="gone"
           else
-              upstream_status=$(echo $upstream_infos | cut -d':' -f2 | tr -d ' ')
+            if [[ $(echo $upstream_infos | grep ':' | wc -l) -eq 0 ]]; then
+                upstream_status="synced"
+            else
+                upstream_status=$(echo $upstream_infos | cut -d':' -f2 | tr -d ' ')
+            fi
           fi
       fi
 
