@@ -1,2 +1,5 @@
 # This file configures cgvg on a per-user basis.
 SEARCH=(.*$)
+
+# Exclude files that I don't need.
+EXCLUDE=^(c)?tags$|.*\.out$|.*doc/.*\.html$|.*\.js
