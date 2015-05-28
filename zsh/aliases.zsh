@@ -1,5 +1,5 @@
 alias ls='ls --color=auto -h'
-alias l='ls -al'
+alias l='ls -Al'
 alias df='df -h'
 alias mkdir='mkdir -p -v'
 alias rm='rm -i'
