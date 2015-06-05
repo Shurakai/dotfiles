@@ -44,8 +44,3 @@ zman() {
 
 # Calculator
 calc(){ awk "BEGIN{ print $* }" ;}
-
-# Search on twitter
-twitter() {
-  echo "/search $*" | ttytter -script -anonymous
-}
