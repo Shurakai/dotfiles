@@ -3,14 +3,17 @@ alias l='ls -Al'
 alias df='df -h'
 alias mkdir='mkdir -p -v'
 alias rm='rm -i'
-alias which='type -p'
+# Removed this alias, because "type -p" will have the following
+# output:
+#       % which vim
+#       vim is /usr/local/bin/vim
+# This output is not suitable for further use.
+#alias which='type -p'
 alias du='du -h'
 alias dh='dirs -v' # Shows nice directory history. See autopushd!
 alias top='htop'
 alias grep='/bin/grep -i -n --color=always'
-export EDITOR=/usr/bin/vim
-export CFLAGS=' -O2 -mtune=core2 -march=core2 -D_SMP'
-export CONCURRENCY_LEVEL=4
+export EDITOR=`which vim`
 
 # apt-get shortcuts;
 # only for Ubuntu or Debian
