@@ -38,10 +38,5 @@ alias -g U='| uniq'
 alias -g H='| head'
 alias -g T='| tail'
 
-# Make going up directories simple.
-alias -g ...='../..'
-alias -g ....='../../..'
-alias -g .....='../../../
-
 # Make sure aliases are expanded when using sudo.
 alias sudo='sudo '

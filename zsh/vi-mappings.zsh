@@ -123,3 +123,15 @@ cmdT() {                                                                        
 
 zle -N cmdT
 bindkey "^T" cmdT
+
+# Make going up directories simple.
+# This code comes directly from man 1 zsh-lovers
+rationalise-dot() {
+  if [[ $LBUFFER = *.. ]]; then
+    LBUFFER+=/..
+  else
+    LBUFFER+=.
+  fi
+}
+zle -N rationalise-dot
+bindkey -M viins '\.' rationalise-dot
