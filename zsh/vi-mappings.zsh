@@ -51,6 +51,7 @@ bindkey -M viins "^?" backward-delete-char
 
 # Also use jj to insert vim mode and exit insert mode.
 bindkey 'jj' vi-cmd-mode
+bindkey 'jk' vi-cmd-mode
 
 # Inserts / removes a leading "#".
 bindkey -M vicmd ',c ' vi-pound-insert
