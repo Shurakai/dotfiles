@@ -21,7 +21,7 @@ zle -N edit-command-line
 # Avoid binding ^J, ^M,  ^C, ^?, ^S, ^Q, etc.
 bindkey -d # Reset to default.
 bindkey -v # Use vi key bindings.
-bindkey -M vicmd v edit-command-line # v to edit in an external editor.
+bindkey -M vicmd v edit-command-line # type v to edit in an external editor.
 
 zle -N foreground-vi
 bindkey '^Z' foreground-vi
@@ -31,7 +31,11 @@ bindkey '^Z' foreground-vi
 # Source: The manual.
 bindkey -rpM viins '\e'
 
-# Vi mappings adapted to colemak layout
+# Magic-space executes history expansion and inserts a space
+# afterwards. For instance,
+# ~% !133<space> will replace !133 with command
+# no 133 in your history, if <space> is bound to magic-space;
+# otherwise, it will just insert a plain space.
 bindkey ' ' magic-space
 bindkey -M vicmd "gg" beginning-of-history
 bindkey -M vicmd "G" end-of-history
@@ -60,7 +64,7 @@ bindkey -M vicmd ',pl' push-line-or-edit
 bindkey -M vicmd ',psl' push-line
 
 # If you're like me and you sometimes forget to write words or arguments in the correct
-# order, this binding is for you - it transposes to words, delimited by blanks (and
+# order, this binding is for you - it transposes two words, delimited by blanks (and
 # only blanks!)
 # If you want to transpose words depending on your current cursor position, check out
 # number 4.7.7 http://zsh.sourceforge.net/Guide/zshguide04.html#l75
