@@ -464,24 +464,6 @@ setopt autopushd pushdminus pushdsilent pushdtohome
 setopt pushd_ignore_dups
 
 
-# Display all branches (except stash) in gitk but only 200 commits as this is
-# much faster. Also put in the background and disown. Thanks to sitaram in
-# #git on Freenode (2009-04-20 15:51).
-gitk() {
-    command gitk \
-        --max-count=200 \
-        $(git rev-parse --symbolic-full-name --remotes --branches) \
-        $@ &
-    disown %command
-}
-# Same for tig (except the disown part as it's no GUI program).
-tig() {
-    command tig \
-        --max-count=200 \
-        $(git rev-parse --symbolic-full-name --remotes --branches) \
-        $@
-}
-
 # RUN COMMANDS
 
 # If not already in screen reattach to a running session or create a new one.
