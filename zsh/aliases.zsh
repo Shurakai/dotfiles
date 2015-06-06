@@ -45,12 +45,3 @@ alias -g .....='../../../
 
 # Make sure aliases are expanded when using sudo.
 alias sudo='sudo '
-
-# If the window naming feature is used (see above) then use ".zsh" (leading
-# dot) as title name after running clear so it's clear to me that the window
-# is empty. I open so much windows that I don't know in which I have something
-# important. This helps me to remember which windows are empty (I run clear
-# after I finished my work in a window).
-if [[ -n $window_reset ]]; then
-    alias clear='clear; window_reset=yes; window_precmd reset'
-fi
