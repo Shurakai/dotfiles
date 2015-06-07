@@ -29,6 +29,7 @@ fi
 
 [[ -x $(which colordiff) ]] && alias diff="colordiff -u" || alias diff="diff -u"
 
+# TODO: Remove this alias; make it dynamic.
 alias lessc=/var/lib/gems/1.8/bin/lessc
 
 # Global aliases for often used commands in the command line.

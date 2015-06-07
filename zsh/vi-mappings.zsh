@@ -124,7 +124,7 @@ cmdT() {                                                                        
 zle -N cmdT
 bindkey "^T" cmdT
 
-# Make going up directories simple.
+# Make going up directories simple. rationalise-dot() {{{1
 # This code comes directly from man 1 zsh-lovers
 rationalise-dot() {
   if [[ $LBUFFER = *.. ]]; then
@@ -133,5 +133,6 @@ rationalise-dot() {
     LBUFFER+=.
   fi
 }
+# 1}}}
 zle -N rationalise-dot
 bindkey -M viins '\.' rationalise-dot
