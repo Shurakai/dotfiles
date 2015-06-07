@@ -22,6 +22,9 @@ SPROMPT="zsh: correct %R to %r? ([Y]es / [N]o / [A]bort / [E]dit)"
 
 setopt NO_CORRECT_ALL
 
+# Completion can be called in the middle of a word rather than only at the end
+setopt COMPLETE_IN_WORD
+
 # Enable zsh's extended glob abilities.
 setopt extendedglob
 
