@@ -422,7 +422,6 @@ zstyle ':completion:*:manuals' separate-sections true
 # (http://www.zsh.org/mla/users/2009/msg01038.html).
 zle -C complete-files complete-word _generic
 zstyle ':completion:complete-files:*' completer _files
-bindkey '^F' complete-files
 
 
 # CUSTOM ALIASES AND FUNCTIONS

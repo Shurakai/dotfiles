@@ -136,3 +136,5 @@ rationalise-dot() {
 # 1}}}
 zle -N rationalise-dot
 bindkey -M viins '\.' rationalise-dot
+
+bindkey '^F' complete-files
