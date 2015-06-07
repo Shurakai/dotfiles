@@ -15,15 +15,40 @@ setopt noclobber
 # cd to that directory.
 setopt AUTOCD
 
+# Options for completion {{{1
+# cf. Section 16.2.2 http://zsh.sourceforge.net/Doc/Release/Options.html#Options
+
+# Default by ZSH: AUTO_LIST
+# Show menu completion by default if choice is ambiguous
+setopt AUTO_LIST
+
+# Default by ZSH: NO_COMPLETE_ALIASES
+# If this option is enabled, aliases will not have the same completion as
+# the command they are referring to; hence, one can introduce one's own
+# completion.
+setopt NO_COMPLETE_ALIASES
+
+# Completion can be called in the middle of a word rather than only at the end
+setopt COMPLETE_IN_WORD
+
+# Always show completion menu if <tab> is hit twice
+setopt MENU_LIST
+
+# Make sure the list of possible completions is displayed after pressing <TAB>
+# the first time.
+setopt nolistambiguous
+
+# Forces Autocompletion to use columns of different width -> more compact
+setopt LIST_PACKED
+
+# }}}
+
 # When entering a nonexistent command name automatically try to find a similar
 # one.
 setopt CORRECT
 SPROMPT="zsh: correct %R to %r? ([Y]es / [N]o / [A]bort / [E]dit)"
 
 setopt NO_CORRECT_ALL
-
-# Completion can be called in the middle of a word rather than only at the end
-setopt COMPLETE_IN_WORD
 
 # Enable zsh's extended glob abilities.
 setopt extendedglob
