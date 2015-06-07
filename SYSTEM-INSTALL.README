@@ -3,7 +3,7 @@ If you just installed your new Ubuntu system, make sure to copy these files:
 * .evolution (outdated; you will NOT need this directory any more! (at least not from Ubuntu 12.04+ on)) , .gconf/apps/evolution (mail, calendar?) and .config/evolution (filters)
 
 !!!!IMPORTANT!!!!
-use "gconftool-2 --shutdown && evolution --force-shutdown" before copying!!! (otherwise your data might not appear in evolution!)
+use "gconftool-2 --shutdown && evolution --force-shutdown" before copying! (otherwise your data might not appear in evolution!)
 
 
 * .gnome2(3?)/keyrings
