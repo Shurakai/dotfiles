@@ -91,17 +91,18 @@ my-vi-history-beginning-search-backward() {
 
     # Start Vi-mode and stay at the same position (Vi-mode moves one left,
     # this counters it).
-    zle vi-cmd-mode
-    if [[ -n $not_at_beginning_of_line ]]; then
-        zle vi-forward-char
-    fi
+    # c.heinrich: TODO: Remove this code; this caused ZLE to delete the
+    # previous line.
+    #zle vi-cmd-mode
+    #if [[ -n $not_at_beginning_of_line ]]; then
+    #    zle vi-forward-char
+    #fi
 }
 bindkey '^P' my-vi-history-beginning-search-backward
 bindkey -a '^P' history-beginning-search-backward # binding for Vi-mode
 
-# Here only Vi-mode is necessary as ^P enters Vi-mode and ^N only makes sense
-# after calling ^P.
 bindkey -a '^N' history-beginning-search-forward
+bindkey -M 'viins' '^N' history-beginning-search-forward
 
 # Searches should be repeatable, even incremental searches
 # This doesn't really work right now, but it might be a good
