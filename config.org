@@ -1,0 +1,369 @@
+# -*- mode: org -*-
+#+TITLE:     Configuration files w/ literate programming
+#+AUTHOR:    Christian Heinrich
+#+EMAIL:     com-config@gladbachcity.de
+#+STARTUP: indent
+
+* ZSH
+** Options
+*** Changing Directories
+**** TODO =AUTO_CD= (-J)
+**** TODO =AUTO_PUSHD= (-N)
+**** TODO =CDABLE_VARS= (-T)
+**** TODO =CHASE_DOTS=
+**** TODO =CHASE_LINKS= (-w)
+**** TODO =POSIX_CD=
+**** TODO =PUSHD_IGNORE_DUPS=
+**** TODO =PUSHD_MINUS=
+**** TODO =PUSHD_SILENT= (-E)
+**** TODO =PUSHD_TO_HOME= (-D)
+*** Completion
+   cf. Section 16.2.2 http://zsh.sourceforge.net/Doc/Release/Options.html#Options
+**** TODO =ALWAYS_LAST_PROMPT= <Default>
+**** TODO =ALWAYS_TO_END=
+**** =AUTO_LIST= (-9) <Default>
+
+     Show menu completion by default if completion results are ambiguous;
+     this option does not select an entry on displaying the menu;
+     see option [[#OPTION_MENU_COMPLETE][MENU_COMPLETE]] for that.
+
+     #+BEGIN_SRC zsh :tangle zshrc
+      setopt AUTO_LIST
+     #+END_SRC
+
+**** TODO =AUTO_MENU= <D>
+**** TODO =AUTO_NAME_DIRS=
+**** TODO =AUTO_PARAM_KEYS= <D>
+**** TODO =AUTO_PARAM_SLASH= <D>
+**** TODO =AUTO_REMOVE_SLASH= <D>
+**** TODO =BASH_AUTO_LIST=
+**** =COMPLETE_ALIASES=
+
+     If this option is enabled, aliases will not have the same completion as
+     the command they are referring to as they are not internally substituted when
+     completion is attempted; hence, aliases look like distinct commands to
+     the completion.
+
+     #+BEGIN_SRC zsh :tangle zshrc
+       setopt NO_COMPLETE_ALIASES
+     #+END_SRC
+
+**** =COMPLETE_IN_WORD=
+     :PROPERTIES:
+        :CUSTOM_ID: COMPLETE_IN_WORD
+     :END:
+
+     If enabled, completion can be called from within a word; the completion will
+     then try and take both everything before and everything after the cursor
+     into account: The position of the cursor determines where the completion
+     is attempted.
+
+     #+BEGIN_EXAMPLE
+       % setopt NO_COMPLETE_IN_WORD # Disable this option first; default behavior
+       % ls te*
+       terr  test1
+       % vi te<CURSOR:TAB>1 # Offers terr and test1 as completion
+       % setopt COMPLETE_IN_WORD
+       % vi te<CURSOR:TAB>1 # Completes to test1, as terr has no "1" at the end
+     #+END_EXAMPLE
+
+     #+BEGIN_SRC zsh :tangle zshrc
+       setopt NO_COMPLETE_ALIASES
+     #+END_SRC
+
+**** =GLOB_COMPLETE=
+
+     If this option is set, expanding a (glob) pattern will not insert all
+     the matches but instead generates a list that can be cycled through like
+     [[#MENU_COMPLETE][MENU_COMPLETE]].
+
+     A =*= is added to the end of the word or at the position of the cursor,
+     if [[#COMPLETE_IN_WORD][COMPLETE_IN_WORD]] is set; furthermore, as pattern
+     matching is used, this option also affects any completion for options,
+     user names etc.
+
+     Note: If pattern matching is employed, you cannot use matching control
+     to include constraints such as case-insensitivity or anchored matching.
+     However, this limitation only applies when the current word contains
+     a pattern; simply turning on the =GLOB_COMPLETE= option does not have
+     this effect.
+
+     #+BEGIN_EXAMPLE
+       % setopt NO_GLOB_COMPLETE # Disable this option first; default behavior
+       % ls example*
+       example1 example2
+       % cat example<TAB>   # becomes cat example1 example2
+       % setopt GLOB_COMPLETE
+       % cat example<TAB>   # asks for completion: Only example1 or example2 is selected.
+     #+END_EXAMPLE
+
+     #+BEGIN_SRC zsh :tangle zshrc
+       setopt NO_GLOB_COMPLETE
+     #+END_SRC
+
+**** TODO =HASH_LIST_ALL= <D>
+**** TODO =LIST_AMBIGUOUS= <D>
+**** TODO =LIST_BEEP= <D>
+**** =LIST_PACKED=
+
+     If set, this option reduces the size of the completion menu by making its
+     columnwidth dynamic; that is, the width of columns will be determined by
+     the content of the columns and each two columns might have different widths.
+
+     #+BEGIN_SRC zsh :tangle zshrc
+       setopt LIST_PACKED
+     #+END_SRC
+
+**** TODO =LIST_ROWS_FIRST=
+**** TODO =LIST_TYPES= (-X) <D>
+**** =MENU_COMPLETE= (-Y)
+     :PROPERTIES:
+        :CUSTOM_ID: OPTION_MENU_COMPLETE
+     :END:
+
+     On an ambiguous completion, do not beep and show a menu with matches; the
+     first match is inserted immediately.  If completion is requested again,
+     cycle through matches, and remove any changes made by a prior match.  When
+     there are no more matches, go back to the first one.
+     =reverse-menu-complete= may be used to loop through the list in the other
+     direction. This option overrides AUTO_MENU.
+
+     #+BEGIN_EXAMPLE
+       % ls te*
+       terr  test1
+       % vi te<TAB> # selects 'terr' immediately
+     #+END_EXAMPLE
+
+     #+BEGIN_SRC zsh :tangle zshrc
+      setopt MENU_COMPLETE
+     #+END_SRC
+
+**** TODO =REC_EXACT= (-S)
+
+     Couldn't (yet) figure out what this does; thought that if given,
+
+*** Expansion and globbing
+**** TODO =BAD_PATTERN= (+2) <C> <Z>
+**** TODO =BARE_GLOB_QUAL= <Z>
+**** TODO =BRACE_CCL=
+**** TODO =CASE_GLOB= <D>
+**** TODO =CASE_MATCH= <D>
+**** TODO =CSH_NULL_GLOB= <C>
+**** TODO =EQUALS= <Z>
+**** TODO =EXTENDED_GLOB=
+**** TODO =FORCE_FLOAT=
+**** TODO =GLOB= (+F, ksh: +f) <D>
+**** TODO =GLOB_ASSIGN= <C>
+**** =GLOB_DOTS= (-4)
+
+     If activated, files with a leading '.' are also matched by globbing.
+     This also means that the '.' does not need to be explicitly specified to
+     enable completion.
+
+     #+BEGIN_EXAMPLE
+       % setopt NO_GLOB_DOTS # Disable this option first; default behavior
+       % touch .example
+       % ls *example
+       zsh: no matches found: *example
+       % vi example<TAB>   # Does not complete to .example
+       % setopt GLOB_DOTS
+       % ls *example
+       .example
+       % vi example<TAB>   # Completes to .example
+     #+END_EXAMPLE
+
+     #+BEGIN_SRC zsh :tangle zshrc
+       setopt GLOB_DOTS
+     #+END_SRC
+**** DONE GLOB_SUBST= <C> <K> <S>
+
+     If a parameter (variable) gets expanded, any character resulting from this operation
+     is being treated as eligible for file expansion and filename generation.
+
+     Note: Braces (and contained commas) do not become eligible for expansion.
+
+     #+BEGIN_EXAMPLE
+       % setopt NO_GLOB_SUBST
+       % export TEST="*"
+       % ls *
+       testfile1 testfile2
+       % ls $TEST<TAB> # Becomes ls \*
+       % setopt GLOB_SUBST
+       % ls $TEST<TAB> # Becomes ls testfile1 testfile2
+     #+END_EXAMPLE
+
+     #+BEGIN_SRC zsh :tangle zshrc
+      setopt NO_GLOB_SUBST
+     #+END_SRC
+
+**** TODO =HIST_SUBST_PATTERN=
+**** TODO =IGNORE_BRACES= (-I) <S>
+**** TODO =IGNORE_CLOSE_BRACES=
+**** TODO =KSH_GLOB= <K>
+**** TODO =MAGIC_EQUAL_SUBST=
+**** TODO =MARK_DIRS= (-8, ksh: -X)
+**** TODO =MULTIBYTE= <C> <K> <Z>
+**** TODO =NOMATCH= (+3) <C> <Z>
+**** TODO =NULL_GLOB= (-G)
+**** TODO =NUMERIC_GLOB_SORT=
+**** TODO =RC_EXPAND_PARAM= (-P)
+**** TODO =REMATCH_PCRE= <Z>
+**** TODO =SH_GLOB= <K> <S>
+**** TODO =UNSET= (+u, ksh: +u) <K> <S> <Z>
+**** TODO =WARN_CREATE_GLOBAL=
+*** History
+**** TODO =APPEND_HISTORY= <D>
+**** TODO =BANG_HIST= (+K) <C> <Z>
+**** TODO =EXTENDED_HISTORY= <C>
+**** TODO =HIST_ALLOW_CLOBBER=
+**** TODO =HIST_BEEP= <D>
+**** TODO =HIST_EXPIRE_DUPS_FIRST=
+**** TODO =HIST_FCNTL_LOCK=
+**** TODO =HIST_FIND_NO_DUPS=
+**** TODO =HIST_IGNORE_ALL_DUPS=
+**** TODO =HIST_IGNORE_DUPS= (-h)
+**** TODO =HIST_IGNORE_SPACE= (-g)
+**** TODO =HIST_LEX_WORDS=
+**** TODO =HIST_NO_FUNCTIONS=
+**** TODO =HIST_NO_STORE=
+**** TODO =HIST_REDUCE_BLANKS=
+**** TODO =HIST_SAVE_BY_COPY= <D>
+**** TODO =HIST_SAVE_NO_DUPS=
+**** TODO =HIST_VERIFY=
+**** TODO =INC_APPEND_HISTORY=
+**** TODO =INC_APPEND_HISTORY_TIME=
+**** TODO =SHARE_HISTORY= <K>
+
+*** Initialisation
+**** TODO =ALL_EXPORT= (-a, ksh: -a)
+**** TODO =GLOBAL_EXPORT= (<Z>)
+**** TODO =GLOBAL_RCS= (-d) <D>
+**** TODO =RCS= (+f) <D>
+
+*** Input/Output
+**** TODO =ALIASES= <D>
+**** TODO =CLOBBER= (+C, ksh: +C) <D>
+**** TODO =CORRECT= (-0)
+**** TODO =CORRECT_ALL= (-O)
+**** TODO =DVORAK=
+**** TODO =FLOW_CONTROL= <D>
+**** TODO =IGNORE_EOF= (-7)
+**** TODO =INTERACTIVE_COMMENTS= (-k) <K> <S>
+**** TODO =HASH_CMDS= <D>
+**** TODO =HASH_DIRS= <D>
+**** TODO =HASH_EXECUTABLES_ONLY=
+**** TODO =MAIL_WARNING= (-U)
+**** TODO =PATH_DIRS= (-Q)
+**** TODO =PATH_SCRIPT= <K> <S>
+**** TODO =PRINT_EIGHT_BIT=
+**** TODO =PRINT_EXIT_VALUE= (-1)
+**** TODO =RC_QUOTES=
+**** TODO =RM_STAR_SILENT= (-H) <K> <S>
+**** TODO =RM_STAR_WAIT=
+**** TODO =SHORT_LOOPS= <C> <Z>
+**** TODO =SUN_KEYBOARD_HACK= (-L)
+
+*** Job Control
+**** TODO =AUTO_CONTINUE=
+**** TODO =AUTO_RESUME= (-W)
+**** TODO =BG_NICE= (-6) <C> <Z>
+**** TODO =CHECK_JOBS= <Z>
+**** TODO =HUP= <Z>
+**** TODO =LONG_LIST_JOBS= (-R)
+**** TODO =MONITOR= (-m, ksh: -m)
+**** TODO =NOTIFY= (-5, ksh: -b) <Z>
+**** TODO =POSIX_JOBS= <K> <S>
+
+*** Prompting
+**** TODO =PROMPT_BANG= <K>
+**** TODO =PROMPT_CR= (+V) <D>
+**** TODO =PROMPT_SP= <D>
+**** TODO =PROMPT_PERCENT= <C> <Z>
+**** TODO =PROMPT_SUBST= <K> <S>
+**** TODO =TRANSIENT_RPROMPT=
+
+*** Scripts and functions
+**** TODO =C_BASES=
+**** TODO =C_PRECEDENCES=
+**** TODO =DEBUG_BEFORE_CMD=
+**** TODO =ERR_EXIT= (-e, ksh: -e)
+**** TODO =ERR_RETURN=
+**** TODO =EVAL_LINENO= <Z>
+**** TODO =EXEC= (+n, ksh: +n) <D>
+**** TODO =FUNCTION_ARGZERO= <C> <Z>
+**** TODO =LOCAL_LOOPS=
+**** TODO =LOCAL_OPTIONS= <K>
+**** TODO =LOCAL_PATTERNS=
+**** TODO =LOCAL_TRAPS= <K>
+**** TODO =MULTI_FUNC_DEF= <Z>
+**** TODO =MULTIOS= <Z>
+**** TODO =OCTAL_ZEROES= <S>
+**** TODO =PIPE_FAIL=
+**** TODO =SOURCE_TRACE=
+**** TODO =TYPESET_SILENT=
+**** TODO =VERBOSE= (-v, ksh: -v)
+**** TODO =XTRACE= (-x, ksh: -x)
+
+*** Shell emulation
+**** TODO =BASH_REMATCH=
+**** TODO =BSD_ECHO= <S>
+**** TODO =CONTINUE_ON_ERROR=
+**** TODO =CSH_JUNKIE_HISTORY= <C>
+**** TODO =CSH_JUNKIE_LOOPS= <C>
+**** TODO =CSH_JUNKIE_QUOTES= <C>
+**** TODO =CSH_NULLCMD= <C>
+**** TODO =KSH_ARRAYS= <K> <S>
+**** TODO =KSH_AUTOLOAD= <K> <S>
+**** TODO =KSH_OPTION_PRINT= <K>
+**** TODO =KSH_TYPESET= <K>
+**** TODO =KSH_ZERO_SUBSCRIPT=
+**** TODO =POSIX_ALIASES= <K> <S>
+**** TODO =POSIX_ARGZERO=
+**** TODO =POSIX_BUILTINS= <K> <S>
+**** TODO =POSIX_IDENTIFIERS= <K> <S>
+**** TODO =POSIX_STRINGS= <K> <S>
+**** TODO =POSIX_TRAPS= <K> <S>
+**** TODO =SH_FILE_EXPANSION= <K> <S>
+**** TODO =SH_NULLCMD= <K> <S>
+**** TODO =SH_OPTION_LETTERS= <K> <S>
+**** TODO =SH_WORD_SPLIT= (-y) <K> <S>
+**** TODO =TRAPS_ASYNC=
+
+*** Shell State
+**** TODO =INTERACTIVE= (-i, ksh: -i)
+**** TODO =LOGIN= (-l, ksh: -l)
+**** TODO =PRIVILEGED= (-p, ksh: -p)
+**** TODO =RESTRICTED= (-r)
+**** TODO =SHIN_STDIN= (-s, ksh: -s)
+**** TODO =SINGLE_COMMAND= (-t, ksh: -t)
+
+*** ZLE
+**** TODO =BEEP= (+B) <D>
+**** TODO =COMBINING_CHARS=
+**** TODO =EMACS=
+**** TODO =OVERSTRIKE=
+**** TODO =SINGLE_LINE_ZLE= (-M) <K>
+**** TODO =VI=
+**** TODO =ZLE= (-Z)
+
+
+** Option aliases
+   These are aliases for the options above, as seen in section 16.3 of the manual.
+**** TODO Migrate these aliases to the options above, use the :PROPERTIES: drawer and define a property such as "ALIAS".
+**** TODO =BRACE_EXPAND=
+**** TODO =DOT_GLOB=
+**** TODO =HASH_ALL=
+**** TODO =HIST_APPEND=
+**** TODO =HIST_EXPAND=
+**** TODO =LOG=
+**** TODO =MAIL_WARN=
+**** TODO =ONE_CMD=
+**** TODO =PHYSICAL=
+**** TODO =PROMPT_VARS=
+**** TODO =STDIN=
+**** TODO =TRACK_ALL=
+
+** Single letter options
+**** TODO Migrate these aliases to the options above, use the :PROPERTIES: drawer and define a property such as "SINGLE_LETTER".
+
+     The single letters are already present in the headlines above, such as (-4) etc.
