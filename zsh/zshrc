@@ -345,6 +345,9 @@ zstyle ':completion:*' cache-path ~/.zsh/cache
 zstyle ':completion:*' completer _complete _match _correct _approximate
 zstyle ':completion:*' completer _complete _match _approximate
 zstyle ':completion:*:match:*' original only
+# Allow only one error on 3 characters
+# This means also that you must have at least 3 characters typed before
+# ZSH corrects your first spelling mistake
 zstyle -e ':completion:*:approximate:*' max-errors 'reply=( $(( ($#PREFIX+$#SUFFIX)/3 )) numeric )'
 
 # cd directory stack menu
