@@ -31,8 +31,10 @@ setopt NO_COMPLETE_ALIASES
 # Completion can be called in the middle of a word rather than only at the end
 setopt COMPLETE_IN_WORD
 
+setopt MENU_COMPLETE
+
 # Always show completion menu if <tab> is hit twice
-setopt MENU_LIST
+setopt AUTO_LIST
 
 # Make sure the list of possible completions is displayed after pressing <TAB>
 # the first time.
@@ -40,6 +42,13 @@ setopt nolistambiguous
 
 # Forces Autocompletion to use columns of different width -> more compact
 setopt LIST_PACKED
+
+# }}}
+
+# Options for expansion / globbing {{{1
+# cf. Section 16.2.3 http://zsh.sourceforge.net/Doc/Release/Options.html#Options
+
+setopt GLOB_DOTS
 
 # }}}
 
@@ -378,9 +387,6 @@ zstyle -e ':completion:*:approximate:*' max-errors 'reply=( $(( ($#PREFIX+$#SUFF
 # cd directory stack menu
 zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
 
-# Make sure the list of possible completions is displayed after pressing <TAB>
-# the first time.
-setopt nolistambiguous
 # Allow completions in the middle of a text, i.e. "/usr/bin/<TAB>whatever"
 # completes like "/usr/bin/<TAB>". Useful when adding new options to commands.
 bindkey '^I' expand-or-complete-prefix
