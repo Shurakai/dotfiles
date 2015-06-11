@@ -240,8 +240,17 @@
 **** TODO =GLOBAL_RCS= (-d) <D>
 **** TODO =RCS= (+f) <D>
 
-*** Input/Output [0%]
-**** TODO =ALIASES= <D>
+*** Input/Output [14%]
+**** DONE =ALIASES= <D>
+
+     With this option you can disable aliases (as they are enabled by default);
+     see the corresponding manual page for details on what aliases are and what
+     they do.
+
+     #+BEGIN_SRC zsh :tangle zshrc
+        setopt ALIASES
+     #+END_SRC
+
 **** TODO =CLOBBER= (+C, ksh: +C) <D>
 **** TODO =CORRECT= (-0)
 **** TODO =CORRECT_ALL= (-O)
@@ -258,8 +267,55 @@
 **** TODO =PRINT_EIGHT_BIT=
 **** TODO =PRINT_EXIT_VALUE= (-1)
 **** TODO =RC_QUOTES=
-**** TODO =RM_STAR_SILENT= (-H) <K> <S>
-**** TODO =RM_STAR_WAIT=
+**** DONE =RM_STAR_SILENT= (-H) <K> <S>
+     :PROPERTIES:
+        :INTERNAL_ID: RM_STAR_SILENT
+        :SEE: RM_STAR_WAIT
+     :END:
+
+     ZSH tries to protect the user from accidentally deleting all files in a directory;
+     that is, ZSH complains when =rm= is used and a =*= occurs in your filematching
+     pattern; ZSH does not complain, however, if you deliberately expand this pattern
+     (as you will see exactly which files are selected).
+
+     #+BEGIN_EXAMPLE
+        % rm ./*
+        zsh: sure you want to delete all the files in /tmp/test/. [yn]?
+     #+END_EXAMPLE
+
+     This is helpful to prevent you from wiping your data accidentally;
+     in case you don't want to confirm that you're really sure, turn
+     this option on - ZSH will not ask again.
+
+     #+BEGIN_SRC zsh :tangle zshrc
+        setopt NO_RM_STAR_SILENT
+     #+END_SRC
+
+**** DONE =RM_STAR_WAIT=
+     :PROPERTIES:
+        :INTERNAL_ID: RM_STAR_WAIT
+     :END:
+
+     If [[#RM_STAR_SILENT]] is not set (that is, you need to confirm if you try
+     to issue ~rm *~ and friends), setting this option makes you wait for
+     ten seconds before you can even answer "yes" or "no".
+
+     The motivation for this option is to prevent the user from hitting "yes"
+     in a reflex.
+
+     Note: If you expand the =*=, you do not have to wait ten seconds to delete
+     the files you want. This is helpful if you /really/ want to use the =*=.
+
+     #+BEGIN_EXAMPLE
+        % rm ./*
+        zsh: sure you want to delete all the files in /tmp/test/.? (waiting ten seconds)
+        [yn] # This line only appears after ten seconds!
+     #+END_EXAMPLE
+
+     #+BEGIN_SRC zsh :tangle zshrc
+        setopt NO_RM_STAR_SILENT
+     #+END_SRC
+
 **** TODO =SHORT_LOOPS= <C> <Z>
 **** TODO =SUN_KEYBOARD_HACK= (-L)
 
@@ -325,7 +381,20 @@
 **** TODO =POSIX_TRAPS= <K> <S>
 **** TODO =SH_FILE_EXPANSION= <K> <S>
 **** TODO =SH_NULLCMD= <K> <S>
-**** TODO =SH_OPTION_LETTERS= <K> <S>
+**** STARTED =SH_OPTION_LETTERS= <K> <S>
+
+     Many options in ZSH also have one-letter shortcuts assigned to
+     them; however, there are in fact two different sets of one-letter
+     options. The first one is the "default" zsh set and used by default;
+     the second one is used to emulate sh/ksh options.
+
+     Take for example the /NOTE/ option: The default one-char option is =-5=,
+     but if SH_OPTION_LETTERS is set, the one-character option becomes =-b=.
+
+     #+BEGIN_SRC zsh :tangle zshrc
+       setopt NO_SH_OPTION_LETTERS
+     #+END_SRC
+
 **** TODO =SH_WORD_SPLIT= (-y) <K> <S>
 **** TODO =TRAPS_ASYNC=
 
