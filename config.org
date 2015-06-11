@@ -6,7 +6,7 @@
 
 * ZSH
 ** Options
-*** Changing Directories
+*** Changing Directories [0%]
 **** TODO =AUTO_CD= (-J)
 **** TODO =AUTO_PUSHD= (-N)
 **** TODO =CDABLE_VARS= (-T)
@@ -17,7 +17,7 @@
 **** TODO =PUSHD_MINUS=
 **** TODO =PUSHD_SILENT= (-E)
 **** TODO =PUSHD_TO_HOME= (-D)
-*** Completion
+*** Completion [26%]
    cf. Section 16.2.2 http://zsh.sourceforge.net/Doc/Release/Options.html#Options
 **** TODO =ALWAYS_LAST_PROMPT= <Default>
 **** TODO =ALWAYS_TO_END=
@@ -37,7 +37,7 @@
 **** TODO =AUTO_PARAM_SLASH= <D>
 **** TODO =AUTO_REMOVE_SLASH= <D>
 **** TODO =BASH_AUTO_LIST=
-**** =COMPLETE_ALIASES=
+**** DONE =COMPLETE_ALIASES=
 
      If this option is enabled, aliases will not have the same completion as
      the command they are referring to as they are not internally substituted when
@@ -48,7 +48,7 @@
        setopt NO_COMPLETE_ALIASES
      #+END_SRC
 
-**** =COMPLETE_IN_WORD=
+**** DONE =COMPLETE_IN_WORD=
      :PROPERTIES:
         :CUSTOM_ID: COMPLETE_IN_WORD
      :END:
@@ -71,7 +71,7 @@
        setopt NO_COMPLETE_ALIASES
      #+END_SRC
 
-**** =GLOB_COMPLETE=
+**** DONE =GLOB_COMPLETE=
 
      If this option is set, expanding a (glob) pattern will not insert all
      the matches but instead generates a list that can be cycled through like
@@ -104,7 +104,7 @@
 **** TODO =HASH_LIST_ALL= <D>
 **** TODO =LIST_AMBIGUOUS= <D>
 **** TODO =LIST_BEEP= <D>
-**** =LIST_PACKED=
+**** DONE =LIST_PACKED=
 
      If set, this option reduces the size of the completion menu by making its
      columnwidth dynamic; that is, the width of columns will be determined by
@@ -116,7 +116,7 @@
 
 **** TODO =LIST_ROWS_FIRST=
 **** TODO =LIST_TYPES= (-X) <D>
-**** =MENU_COMPLETE= (-Y)
+**** DONE =MENU_COMPLETE= (-Y)
      :PROPERTIES:
         :CUSTOM_ID: OPTION_MENU_COMPLETE
      :END:
@@ -142,7 +142,7 @@
 
      Couldn't (yet) figure out what this does; thought that if given,
 
-*** Expansion and globbing
+*** Expansion and globbing [7%]
 **** TODO =BAD_PATTERN= (+2) <C> <Z>
 **** TODO =BARE_GLOB_QUAL= <Z>
 **** TODO =BRACE_CCL=
@@ -154,7 +154,7 @@
 **** TODO =FORCE_FLOAT=
 **** TODO =GLOB= (+F, ksh: +f) <D>
 **** TODO =GLOB_ASSIGN= <C>
-**** =GLOB_DOTS= (-4)
+**** DONE =GLOB_DOTS= (-4)
 
      If activated, files with a leading '.' are also matched by globbing.
      This also means that the '.' does not need to be explicitly specified to
@@ -211,7 +211,7 @@
 **** TODO =SH_GLOB= <K> <S>
 **** TODO =UNSET= (+u, ksh: +u) <K> <S> <Z>
 **** TODO =WARN_CREATE_GLOBAL=
-*** History
+*** History [0%]
 **** TODO =APPEND_HISTORY= <D>
 **** TODO =BANG_HIST= (+K) <C> <Z>
 **** TODO =EXTENDED_HISTORY= <C>
@@ -234,13 +234,13 @@
 **** TODO =INC_APPEND_HISTORY_TIME=
 **** TODO =SHARE_HISTORY= <K>
 
-*** Initialisation
+*** Initialisation [0%]
 **** TODO =ALL_EXPORT= (-a, ksh: -a)
 **** TODO =GLOBAL_EXPORT= (<Z>)
 **** TODO =GLOBAL_RCS= (-d) <D>
 **** TODO =RCS= (+f) <D>
 
-*** Input/Output
+*** Input/Output [0%]
 **** TODO =ALIASES= <D>
 **** TODO =CLOBBER= (+C, ksh: +C) <D>
 **** TODO =CORRECT= (-0)
@@ -263,7 +263,7 @@
 **** TODO =SHORT_LOOPS= <C> <Z>
 **** TODO =SUN_KEYBOARD_HACK= (-L)
 
-*** Job Control
+*** Job Control [0%]
 **** TODO =AUTO_CONTINUE=
 **** TODO =AUTO_RESUME= (-W)
 **** TODO =BG_NICE= (-6) <C> <Z>
@@ -274,7 +274,7 @@
 **** TODO =NOTIFY= (-5, ksh: -b) <Z>
 **** TODO =POSIX_JOBS= <K> <S>
 
-*** Prompting
+*** Prompting [0%]
 **** TODO =PROMPT_BANG= <K>
 **** TODO =PROMPT_CR= (+V) <D>
 **** TODO =PROMPT_SP= <D>
@@ -282,7 +282,7 @@
 **** TODO =PROMPT_SUBST= <K> <S>
 **** TODO =TRANSIENT_RPROMPT=
 
-*** Scripts and functions
+*** Scripts and functions [0%]
 **** TODO =C_BASES=
 **** TODO =C_PRECEDENCES=
 **** TODO =DEBUG_BEFORE_CMD=
@@ -304,7 +304,7 @@
 **** TODO =VERBOSE= (-v, ksh: -v)
 **** TODO =XTRACE= (-x, ksh: -x)
 
-*** Shell emulation
+*** Shell emulation [0%]
 **** TODO =BASH_REMATCH=
 **** TODO =BSD_ECHO= <S>
 **** TODO =CONTINUE_ON_ERROR=
@@ -329,7 +329,7 @@
 **** TODO =SH_WORD_SPLIT= (-y) <K> <S>
 **** TODO =TRAPS_ASYNC=
 
-*** Shell State
+*** Shell State [0%]
 **** TODO =INTERACTIVE= (-i, ksh: -i)
 **** TODO =LOGIN= (-l, ksh: -l)
 **** TODO =PRIVILEGED= (-p, ksh: -p)
@@ -337,7 +337,7 @@
 **** TODO =SHIN_STDIN= (-s, ksh: -s)
 **** TODO =SINGLE_COMMAND= (-t, ksh: -t)
 
-*** ZLE
+*** ZLE [0%]
 **** TODO =BEEP= (+B) <D>
 **** TODO =COMBINING_CHARS=
 **** TODO =EMACS=
