@@ -5,6 +5,57 @@
 #+STARTUP: indent
 
 * ZSH
+** Parameters
+*** Parameters used by the shell [%]
+**** DONE DIRSTACKSIZE
+     :PROPERTIES:
+       :INTERNAL_ID: PARAM_SHELL_DIRSTACKSIZE
+       :SEE: OPTION_AUTO_PUSHD
+       :SEE: OPTION_PUSHD_MINUS
+       :SEE: OPTION_PUSHD_SILENT
+       :SEE: OPTION_PUSHD_TO_HOME
+       :SEE: OPTION_PUSHD_IGNORE_DUPS
+     :END:
+
+     The directory stack has normally unlimited size; if you want to restrict
+     its size, set this variable to the value you want; you may also want to
+     avoid duplicates in your stack, see [[#OPTION_PUSHD_IGNORE_DUPS][OPTION_PUSHD_IGNORE_DUPS]]
+     for details.
+
+     Here is an example of how ~DIRSTACKSIZE~ is used by ZSH:
+
+     #+BEGIN_EXAMPLE
+       % setopt AUTO_PUSHD   # We want directories to be pushed automatically onto the stack (in this example)
+       % dirs -v             # Displays contents of the directory stack; only the current direcory is in there right now.
+       0       ~
+       % for i in {1..2}; do # Let's change the directory a few times (for demonstration purposes)
+           cd /tmp
+           cd ~
+         done
+       % dirs -v
+         0       ~
+         1       /tmp
+         2       ~
+         3       /tmp
+         4       ~
+       % DIRSTACKSIZE=3
+       % dirs -v             # No effect yet; you must issue a CD command to update the stack
+         0       ~
+         1       /tmp
+         2       ~
+         3       /tmp
+         4       ~
+       % cd /tmp
+       % dirs -v             # Now it's in effect; the stacksize is 3, everything beyond got truncated
+         0       /tmp
+         1       ~
+         2       /tmp
+     #+END_EXAMPLE
+
+     #+BEGIN_SRC zsh :tangle zshrc
+        DIRSTACKSIZE=10
+     #+END_SRC
+
 ** Options
 *** Changing Directories [0%]
 **** TODO =AUTO_CD= (-J)
