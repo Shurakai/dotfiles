@@ -58,13 +58,111 @@
 
 ** Options
 *** Changing Directories [0%]
-**** TODO =AUTO_CD= (-J)
-**** TODO =AUTO_PUSHD= (-N)
+**** DONE =AUTO_CD= (-J)
+     :PROPERTIES:
+       :INTERNAL_ID: OPTION_AUTO_CD
+     :END:
+
+     If this option is enabled, =cd= can be omitted almost always changing
+     directories; the only case where it is still required is if the directory
+     name happens to be equal to a command name. This option is very
+     convenient to quickly change directories, for instance
+     going one directory up becomes just =..= instead of =cd ..=.
+
+     #+BEGIN_EXAMPLE
+        % mkdir directory
+        % directory
+        zsh: command not found: directory
+        % setopt AUTO_CD
+        % directory  # Now equivalent to 'cd directory'
+        % mkdir dir  # We create a directory that has the name of a command
+        % dir        # This is not equivalent to 'cd dir' because command 'dir' exists!
+        dir directory
+     #+END_EXAMPLE
+
+     #+BEGIN_SRC zsh :tangle zshrc
+       setopt AUTO_CD
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+       setopt NO_AUTO_CD
+     #+END_SRC
+**** DONE =AUTO_PUSHD= (-N)
+     :PROPERTIES:
+        :INTERNAL_ID: OPTION_AUTO_PUSHD
+        :SEE: OPTION_PUSHD_MINUS
+        :SEE: OPTION_PUSHD_SILENT
+        :SEE: OPTION_PUSHD_TO_HOME
+        :SEE: OPTION_PUSHD_IGNORE_DUPS
+     :END:
+
+     If enabled, any =cd= command pushes the new directory onto the
+     directory stack automatically; this comes in handy if you want
+     to navigate between several directories without having to hassle
+     with the stack by yourself.
+
+     The see the contents of the stack, use the =dirs -v= command.
+
+     The stack itself is by default unlimited in size; it can, however,
+     be restricted by the [[#PARAM_SHELL_DIRSTACK][DIRSTACK]] parameter. This
+     is often useful when =AUTO_PUSHD= is used. In case you don't want
+     duplicate directories, set the [[#OPTION_PUSHD_IGNORE_DUPS][PUSHD_IGNORE_DUPS]] option.
+
+     #+BEGIN_EXAMPLE
+       % dirs -v           # Displays contents of directory stack
+         0       ~
+       % cd /tmp
+       % dirs -v
+         0       /tmp
+       % setopt AUTO_PUSHD
+       % cd ~
+       % dirs -v
+         0       ~
+         1       /tmp
+     #+END_EXAMPLE
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+        setopt NO_AUTO_PUSHD
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc
+        setopt AUTO_PUSHD
+     #+END_SRC
+
 **** TODO =CDABLE_VARS= (-T)
 **** TODO =CHASE_DOTS=
 **** TODO =CHASE_LINKS= (-w)
 **** TODO =POSIX_CD=
-**** TODO =PUSHD_IGNORE_DUPS=
+**** DONE =PUSHD_IGNORE_DUPS=
+
+     If set, this option prevents any directory to be at two different
+     positions in the stack; that is, every entry is unique.
+     This option is especially useful if [[#OPTION_AUTO_PUSHD][AUTO_PUSHD]] is set.
+
+     The following example demonstrates that duplicates are prevented:
+
+     #+BEGIN_EXAMPLE
+        % dirs -v
+          0       ~
+        % setopt PUSHD_IGNORE_DUPS
+        % cd /tmp
+        % dirs -v
+          0       /tmp
+          1       ~
+        % cd ~
+        % dirs -v       # Here, the existing entry for ~ was removed and a new entry was pushed onto the stack
+          0       ~
+          1       /tmp
+     #+END_EXAMPLE
+
+     #+BEGIN_SRC zsh :tangle zshrc
+       setopt PUSHD_IGNORE_DUPS
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+       setopt NO_PUSHD_IGNORE_DUPS
+     #+END_SRC
+
 **** TODO =PUSHD_MINUS=
 **** TODO =PUSHD_SILENT= (-E)
 **** TODO =PUSHD_TO_HOME= (-D)
@@ -76,7 +174,7 @@
 
      Show menu completion by default if completion results are ambiguous;
      this option does not select an entry on displaying the menu;
-     see option [[#OPTION_MENU_COMPLETE][MENU_COMPLETE]] for that.
+     see option [[#OPTION_MENU_COMPLETE]] for that.
 
      #+BEGIN_SRC zsh :tangle zshrc
       setopt AUTO_LIST
