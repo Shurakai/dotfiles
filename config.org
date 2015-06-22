@@ -129,7 +129,39 @@
         setopt AUTO_PUSHD
      #+END_SRC
 
-**** TODO =CDABLE_VARS= (-T)
+**** DONE =CDABLE_VARS= (-T)
+     :PROPERTIES:
+        :INTERNAL_ID: OPTION_CDABLE_VARS
+     :END:
+
+     If set, any argument given to a =cd= command (or an implied =cd= if the
+     [[#AUTO_CD]] option is set) that is neither a directory nor starts with a
+     slash will be expanded as if it were preceded by a "=~=". That is, you
+     can assign directory names to a variable and then =cd= into that directory
+     by passing the variable name as the argument:
+
+     #+BEGIN_EXAMPLE
+       % dir=/tmp/      # Assign directory name to a variable
+       % cd dir         # Note: We really mean "dir" here, not $dir!
+       cd: no such file or directory: dir
+       % setopt CDABLE_VARS # Now activate this option
+       % cd dir         # Now it works - we will switch to /tmp now, displayed as ~dir.
+       ~dir
+       % pwd
+       /tmp
+     #+END_EXAMPLE
+
+     This feature is very helpful if there are directories that you need to
+     =cd= into frequently, such as folders containing projects you're working on.
+
+     #+BEGIN_SRC zsh :tangle zshrc
+      setopt CDABLE_VARS
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+      unsetopt CDABLE_VARS
+     #+END_SRC
+
 **** TODO =CHASE_DOTS=
 **** TODO =CHASE_LINKS= (-w)
 **** TODO =POSIX_CD=
