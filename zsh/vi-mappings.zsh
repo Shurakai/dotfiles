@@ -71,8 +71,6 @@ bindkey -M vicmd ',psl' push-line
 # number 4.7.7 http://zsh.sourceforge.net/Guide/zshguide04.html#l75
 bindkey -M vicmd ',tw' transpose-words
 
-bindkey -M vicmd ',dw' delete-word
-
 bindkey '^P' history-beginning-search-backward    # binding for vi insert mode
 bindkey -a '^P' history-beginning-search-backward # binding for vi cmd mode
 
