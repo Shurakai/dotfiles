@@ -73,33 +73,8 @@ bindkey -M vicmd ',tw' transpose-words
 
 bindkey -M vicmd ',dw' delete-word
 
-# Vim like completions of previously executed commands (also enter Vi-mode). If
-# called at the beginning it just recalls old commands (like cursor up), if
-# called after typing something, only lines starting with the typed are
-# returned. Very useful to get old commands quickly. Thanks to Mikachu in #zsh
-# on Freenode (2010-01-17 12:47) for the information how to a use function
-# with bindkey.
-zle -N my-vi-history-beginning-search-backward
-
-my-vi-history-beginning-search-backward() {
-    local not_at_beginning_of_line
-    if [[ $CURSOR -ne 0 ]]; then
-        not_at_beginning_of_line=yes
-    fi
-
-    zle history-beginning-search-backward
-
-    # Start Vi-mode and stay at the same position (Vi-mode moves one left,
-    # this counters it).
-    # c.heinrich: TODO: Remove this code; this caused ZLE to delete the
-    # previous line.
-    #zle vi-cmd-mode
-    #if [[ -n $not_at_beginning_of_line ]]; then
-    #    zle vi-forward-char
-    #fi
-}
-bindkey '^P' my-vi-history-beginning-search-backward
-bindkey -a '^P' history-beginning-search-backward # binding for Vi-mode
+bindkey '^P' history-beginning-search-backward    # binding for vi insert mode
+bindkey -a '^P' history-beginning-search-backward # binding for vi cmd mode
 
 bindkey -a '^N' history-beginning-search-forward
 bindkey -M 'viins' '^N' history-beginning-search-forward
