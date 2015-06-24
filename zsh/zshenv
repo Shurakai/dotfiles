@@ -1,0 +1,4 @@
+# Disable history file of less (saves last searches
+# and shell commands; see man less)
+export LESSHISTFILE=/dev/null
+
