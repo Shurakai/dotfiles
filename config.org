@@ -9,7 +9,7 @@
 *** Parameters used by the shell [%]
 **** DONE DIRSTACKSIZE
      :PROPERTIES:
-       :INTERNAL_ID: PARAM_SHELL_DIRSTACKSIZE
+       :CUSTOM_ID: PARAM_SHELL_DIRSTACKSIZE
        :SEE: OPTION_AUTO_PUSHD
        :SEE: OPTION_PUSHD_MINUS
        :SEE: OPTION_PUSHD_SILENT
@@ -60,7 +60,7 @@
 *** Changing Directories [0%]
 **** DONE =AUTO_CD= (-J)
      :PROPERTIES:
-       :INTERNAL_ID: OPTION_AUTO_CD
+       :CUSTOM_ID: OPTION_AUTO_CD
      :END:
 
      If this option is enabled, =cd= can be omitted almost always changing
@@ -89,7 +89,7 @@
      #+END_SRC
 **** DONE =AUTO_PUSHD= (-N)
      :PROPERTIES:
-        :INTERNAL_ID: OPTION_AUTO_PUSHD
+        :CUSTOM_ID: OPTION_AUTO_PUSHD
         :SEE: OPTION_PUSHD_MINUS
         :SEE: OPTION_PUSHD_SILENT
         :SEE: OPTION_PUSHD_TO_HOME
@@ -131,11 +131,11 @@
 
 **** DONE =CDABLE_VARS= (-T)
      :PROPERTIES:
-        :INTERNAL_ID: OPTION_CDABLE_VARS
+        :CUSTOM_ID: OPTION_CDABLE_VARS
      :END:
 
      If set, any argument given to a =cd= command (or an implied =cd= if the
-     [[#AUTO_CD]] option is set) that is neither a directory nor starts with a
+     [[#OPTION_AUTO_CD]] option is set) that is neither a directory nor starts with a
      slash will be expanded as if it were preceded by a "=~=". That is, you
      can assign directory names to a variable and then =cd= into that directory
      by passing the variable name as the argument:
@@ -164,6 +164,29 @@
 
 **** TODO =CHASE_DOTS=
 **** TODO =CHASE_LINKS= (-w)
+     :PROPERTIES:
+        :CUSTOM_ID: OPTION_CHASE_LINKS
+     :END:
+
+     If this option is set, if you pass a symlink to =cd= (or even a symlink as a part
+     of the path you pass), each symlink will be resolved to the actual folder.
+
+     #+BEGIN_EXAMPLE
+       % ls -ald *(@) # Show all symlinks in the current folder
+       lrwxrwxrwx 1 ch ch 24 Jun 22 19:56 homedir -> /home/ch
+       % cd homedir
+     #+END_EXAMPLE
+
+     Note: You can also achieve this behavior by passing the =-P= option to =cd=.
+
+     #+BEGIN_SRC zsh :tangle zshrc
+       unsetopt CHASE_LINKS
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+       unsetopt CDABLE_VARS
+     #+END_SRC
+
 **** TODO =POSIX_CD=
 **** DONE =PUSHD_IGNORE_DUPS=
 
@@ -202,13 +225,17 @@
    cf. Section 16.2.2 http://zsh.sourceforge.net/Doc/Release/Options.html#Options
 **** TODO =ALWAYS_LAST_PROMPT= <Default>
 **** TODO =ALWAYS_TO_END=
-**** =AUTO_LIST= (-9) <Default>
+**** DONE =AUTO_LIST= (-9) <Default>
 
      Show menu completion by default if completion results are ambiguous;
      this option does not select an entry on displaying the menu;
      see option [[#OPTION_MENU_COMPLETE]] for that.
 
      #+BEGIN_SRC zsh :tangle zshrc
+      setopt AUTO_LIST
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
       setopt AUTO_LIST
      #+END_SRC
 
@@ -450,7 +477,7 @@
 **** TODO =RC_QUOTES=
 **** DONE =RM_STAR_SILENT= (-H) <K> <S>
      :PROPERTIES:
-        :INTERNAL_ID: RM_STAR_SILENT
+        :CUSTOM_ID: RM_STAR_SILENT
         :SEE: RM_STAR_WAIT
      :END:
 
@@ -474,7 +501,7 @@
 
 **** DONE =RM_STAR_WAIT=
      :PROPERTIES:
-        :INTERNAL_ID: RM_STAR_WAIT
+        :CUSTOM_ID: RM_STAR_WAIT
      :END:
 
      If [[#RM_STAR_SILENT]] is not set (that is, you need to confirm if you try
