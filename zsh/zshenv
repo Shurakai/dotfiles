@@ -2,3 +2,8 @@
 # and shell commands; see man less)
 export LESSHISTFILE=/dev/null
 
+# If available, we will use "most" instead of "less"
+# as our default pager.
+if [[ -e `which most` ]]; then
+  export PAGER=`which most`
+fi

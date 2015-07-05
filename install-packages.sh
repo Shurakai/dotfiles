@@ -4,7 +4,7 @@ typeset -A packages
 # suckless-tools = dmenu
 # xloadimage = background-image and fill borders with background-color
 # xscreensaver = lock workspace
-packages=(xmonad 'xmonad xmobar suckless-tools trayer xloadimage xscreensaver' colordiff colordiff screen "screen" "rxvt-unicode-256color" "rxvt-unicode-256color" git "git" "evolution" "evolution" keepassx keepassx vim vim exuberant-ctags exuberant-ctags)
+packages=(xmonad 'xmonad xmobar suckless-tools trayer xloadimage xscreensaver' colordiff colordiff screen "screen" "rxvt-unicode-256color" "rxvt-unicode-256color" git "git" "gnupg2" "gnupg2" "evolution" "evolution" "most" "most" keepassx keepassx vim vim exuberant-ctags exuberant-ctags)
 
 for package in ${(k)packages}
 do
