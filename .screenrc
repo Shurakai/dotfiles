@@ -71,6 +71,20 @@ bind q  # xon
 bind ^G # visual bell
 bind D  # power detach
 
+# Bindings for fast switching to windows 10 to 19. Thanks to skizzhg in
+# #screen on Freenode (2010-10-31 21:49 CET) for the suggestion.
+bind ; command -c window
+bind -c window 0 select 10
+bind -c window 1 select 11
+bind -c window 2 select 12
+bind -c window 3 select 13
+bind -c window 4 select 14
+bind -c window 5 select 15
+bind -c window 6 select 16
+bind -c window 7 select 17
+bind -c window 8 select 18
+bind -c window 9 select 19
+
 # Run urlview on current screen content. Very useful to follow links. Make
 # sure hardcopy_append is off before using this command.
 bind ^B eval "hardcopy $HOME/.screen-urlview" "screen urlview $HOME/.screen-urlview"
