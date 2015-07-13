@@ -3,6 +3,13 @@ alias l='ls -Al'
 alias df='df -h'
 alias mkdir='mkdir -p -v'
 alias rm='rm -i'
+
+# Add the key to ssh-add if not already added; then just use the plain ssh
+# Make sure that $? is escaped as "\$?", because otherwise this will be executed
+# when this script is loaded, not when the alias is executed
+# $? -gt 0 means: If the grep before returned an error code (because it didn't
+# find our username), then add the key.
+alias ssh="ssh-add -L G $USERNAME >/dev/null; [[ \$? -gt 0 ]] && ssh-add; ssh"
 # Removed this alias, because "type -p" will have the following
 # output:
 #       % which vim
