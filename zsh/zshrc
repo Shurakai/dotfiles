@@ -568,4 +568,14 @@ setup_right_prompt() {
 }
 zle -N zle-keymap-select setup_right_prompt
 zle -N zle-line-init     setup_right_prompt
+
+
+
+# This was installed by the package command-not-found on Debian / Ubuntu
+# (installed by default). If a command was not found, it proposes the package
+# names that this command is contained in.
+if [[ -r /etc/zsh_command_not_found ]]; then
+source /etc/zsh_command_not_found
+fi
+
 # vim: ft=zsh
