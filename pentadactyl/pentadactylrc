@@ -1,0 +1,30 @@
+"hg6924
+
+loadplugins '\.(js|penta)$'
+group user
+set defsearch=ddg
+
+command! -nargs=1 fd open de.langenscheidt.com/franzoesisch-deutsch/<args>
+map <F2> fd
+
+map ga :b #
+
+" Homerow of my keyboard
+set hintkeys=asdfghjklö
+" Set font size for hints
+hi -a Hint font-size: 10pt !important;
+
+" Highlight matches when searching
+set hlfind
+set incfind
+" Ignore cases unless capital letters are given
+set findcase=smart
+
+
+" Faster scrolling!
+map -b j 8j
+map -b k 8k
+map -b h 8h
+map -b l 8l
+
+" vim: set ft=pentadactyl:
