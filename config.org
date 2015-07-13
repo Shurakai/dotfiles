@@ -6,7 +6,7 @@
 
 * ZSH
 ** Parameters
-*** Parameters used by the shell [%]
+*** Parameters used by the shell [100%]
 **** DONE DIRSTACKSIZE
      :PROPERTIES:
        :CUSTOM_ID: PARAM_SHELL_DIRSTACKSIZE
@@ -56,8 +56,11 @@
         DIRSTACKSIZE=10
      #+END_SRC
 
-** Options
-*** Changing Directories [0%]
+** Options [22/175]
+:PROPERTIES:
+:COOKIE_DATA: todo recursive
+:END:
+*** Changing Directories [70%]
 **** DONE =AUTO_CD= (-J)
      :PROPERTIES:
        :CUSTOM_ID: OPTION_AUTO_CD
@@ -121,12 +124,12 @@
          1       /tmp
      #+END_EXAMPLE
 
-     #+BEGIN_SRC zsh :tangle zshrc.default
-        setopt NO_AUTO_PUSHD
-     #+END_SRC
-
      #+BEGIN_SRC zsh :tangle zshrc
         setopt AUTO_PUSHD
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+        setopt NO_AUTO_PUSHD
      #+END_SRC
 
 **** DONE =CDABLE_VARS= (-T)
@@ -189,6 +192,9 @@
 
 **** TODO =POSIX_CD=
 **** DONE =PUSHD_IGNORE_DUPS=
+     :PROPERTIES:
+     :CUSTOM_ID: OPTION_PUSHD_IGNORE_DUPS
+     :END:
 
      If set, this option prevents any directory to be at two different
      positions in the stack; that is, every entry is unique.
@@ -218,10 +224,129 @@
        setopt NO_PUSHD_IGNORE_DUPS
      #+END_SRC
 
-**** TODO =PUSHD_MINUS=
-**** TODO =PUSHD_SILENT= (-E)
-**** TODO =PUSHD_TO_HOME= (-D)
-*** Completion [26%]
+**** DONE =PUSHD_MINUS=
+     :PROPERTIES:
+     :CUSTOM_ID: OPTION_PUSHD_MINUS
+     :END:
+
+     The =cd= and =popd= builtins can use the directory stack by the =+/-=
+     arguments. For instance, =cd +1= switches to the directory represented
+     by the second element on the directory stack (as counting starts from
+     0) and =cd -1= does the same but starts counting upwards from the bottom
+     of the stack. (So =cd -1= is the second last element.)
+
+     (Note: The content of the directory stack can be displayed with the =dirs=
+     builtin; use =dirs -v= if you want to see explicitly the position of
+     each element.)
+
+     The meaning of =+= and =-= in this context can be reversed by activating
+     this option:
+
+     #+BEGIN_EXAMPLE
+        % pushd /tmp
+        /tmp ~
+        % pushd /bin
+        /bin /tmp ~
+        % pushd /boot
+        /boot /bin /tmp ~
+        % setopt PUSHD_MINUS
+        % cd -1
+        /bin
+     #+END_EXAMPLE
+
+     #+BEGIN_SRC zsh :tangle zshrc
+        setopt PUSHD_MINUS
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+        setopt NO_PUSHD_MINUS
+     #+END_SRC
+
+
+**** DONE =PUSHD_SILENT= (-E)
+     :PROPERTIES:
+     :CUSTOM_ID: OPTION_PUSHD_SILENT
+     :END:
+
+     If unset (as is the default), ZSH will print the content of the
+     directory stack every time =pushd= or =popd= is used; with this option
+     enabled, any output will be suppressed.
+
+     #+BEGIN_EXAMPLE
+        % cd /bin
+        % pushd
+        ~ /bin
+        % setopt PUSHD_SILENT
+        % cd /tmp
+        % pushd                     # Doesn't output anything anymore
+        % dirs -v
+        0       /bin
+        1       /tmp
+     #+END_EXAMPLE
+
+     #+BEGIN_SRC zsh :tangle zshrc
+       setopt PUSHD_SILENT
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+       setopt NO_PUSHD_SILENT
+     #+END_SRC
+
+
+**** DONE =PUSHD_TO_HOME= (-D)
+     :PROPERTIES:
+     :CUSTOM_ID: OPTION_PUSHD_TO_HOME
+     :END:
+
+     If enabled, executing =pushd= without any parameters is the same as
+     executing =pushd $HOME=; this is also the case (even with this option
+     disabled) if the directory stack contains only one entry:
+
+     #+BEGIN_EXAMPLE
+        % cd /tmp
+        % dirs
+        /tmp
+        % setopt NO_PUSHD_TO_HOME
+        % pushd
+        ~ /tmp
+        % pwd
+        /home/ch
+     #+END_EXAMPLE
+
+     If there is more than one entry on the stack and this option is unset,
+     then calling =pushd= will simply swap the first two entries on the
+     stack:
+
+     #+BEGIN_EXAMPLE
+        % pushd /tmp
+        /tmp ~
+        % pushd /bin
+        /bin /tmp ~
+        % pwd
+        /bin
+        % pushd
+        /tmp /bin ~
+        % pwd
+        /tmp
+     #+END_EXAMPLE
+
+     This behavior changes when this option is enabled:
+
+     #+BEGIN_EXAMPLE
+        % setopt PUSHD_TO_HOME
+        % pushd /tmp
+        /tmp ~
+        % pushd /bin
+        /bin /tmp ~
+        % pushd
+        ~ /bin /tmp ~
+     #+END_EXAMPLE
+
+     Note: If you don't want the stack to contain duplicates as
+     in the example above, use the [[#OPTION_PUSHD_IGNORE_DUPS][PUSHD_IGNORE_DUPS option]].
+
+
+*** Completion [30%]
    cf. Section 16.2.2 http://zsh.sourceforge.net/Doc/Release/Options.html#Options
 **** TODO =ALWAYS_LAST_PROMPT= <Default>
 **** TODO =ALWAYS_TO_END=
@@ -350,7 +475,7 @@
 
      Couldn't (yet) figure out what this does; thought that if given,
 
-*** Expansion and globbing [7%]
+*** Expansion and globbing [17%]
 **** TODO =BAD_PATTERN= (+2) <C> <Z>
 **** TODO =BARE_GLOB_QUAL= <Z>
 **** TODO =BRACE_CCL=
@@ -360,9 +485,26 @@
 **** TODO =EQUALS= <Z>
 **** TODO =EXTENDED_GLOB=
 **** TODO =FORCE_FLOAT=
-**** TODO =GLOB= (+F, ksh: +f) <D>
+**** DONE =GLOB= (+F, ksh: +f) <D>
+     :PROPERTIES:
+     :CUSTOM_ID: OPTION_GLOB
+     :END:
+     If disabled, globbing (filename generation) will be completely disabled;
+     i.e., using ~print file*~ actually prints =file*= instead of all files
+     starting with the prefix =file=.
+
+     #+BEGIN_SRC zsh :tangle zshrc
+       setopt GLOB
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+       setopt GLOB
+     #+END_SRC
 **** TODO =GLOB_ASSIGN= <C>
 **** DONE =GLOB_DOTS= (-4)
+     :PROPERTIES:
+     :CUSTOM_ID: OPTION_GLOB_DOTS
+     :END:
 
      If activated, files with a leading '.' are also matched by globbing.
      This also means that the '.' does not need to be explicitly specified to
@@ -383,7 +525,14 @@
      #+BEGIN_SRC zsh :tangle zshrc
        setopt GLOB_DOTS
      #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+       setopt NO_GLOB_DOTS
+     #+END_SRC
 **** DONE GLOB_SUBST= <C> <K> <S>
+     :PROPERTIES:
+     :CUSTOM_ID: OPTION_GLOB_SUBST
+     :END:
 
      If a parameter (variable) gets expanded, any character resulting from this operation
      is being treated as eligible for file expansion and filename generation.
@@ -411,8 +560,64 @@
 **** TODO =MAGIC_EQUAL_SUBST=
 **** TODO =MARK_DIRS= (-8, ksh: -X)
 **** TODO =MULTIBYTE= <C> <K> <Z>
-**** TODO =NOMATCH= (+3) <C> <Z>
-**** TODO =NULL_GLOB= (-G)
+**** DONE =NOMATCH= (+3) <C> <Z>
+     :PROPERTIES:
+     :CUSTOM_ID: OPTION_NOMATCH
+     :END:
+
+     If enabled, this option prints an error message if a filename generation pattern does
+     not match anything. This also applies to file expansion of an initial
+     ='~'= or ='='=. However, if disabled, any pattern that does not
+     match will be left unchanged, i.e., it will be passed as an argument to
+     the command:
+
+     #+BEGIN_EXAMPLE
+        % setopt NOMATCH                  # Default in ZSH
+        % ls test*                        # Error: ls not executed
+        zsh: no matches found: test*
+        % print -- test*                  # Error: print not executed
+        zsh: no matches found: test*
+        % setopt NO_NOMATCH               # Disables this option
+        % ls test*                        # ls is now executed with test* a parameter
+        ls: cannot access test*: No such file or directory
+        % print -- test*                  # print is now executed
+        test*
+     #+END_EXAMPLE
+
+     #+BEGIN_SRC zsh :tangle zshrc
+       setopt NOMATCH
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+       setopt NOMATCH
+     #+END_SRC
+**** DONE =NULL_GLOB= (-G)
+     :PROPERTIES:
+     :CUSTOM_ID: OPTION_NULL_GLOB
+     :END:
+
+     #+BEGIN_EXAMPLE
+        % cd ~
+        % ls test*
+        zsh: no matches found: test*
+        % setopt NULL_GLOB           # Activate this option
+        % ls test*                   # Removes the pattern, hence issues 'ls' only
+        bin Documents Downloads Games Pictures Public
+     #+END_EXAMPLE
+
+     If activated, this option removes any filename generation pattern that
+     does not match anything; hence, no error will be reported as done by
+     the [[#OPTION_NOMATCH][NOMATCH option]], as this option is completely
+     overriden.
+
+     #+BEGIN_SRC zsh :tangle zshrc
+       setopt NO_NULL_GLOB
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+       setopt NO_NULL_GLOB
+     #+END_SRC
+
 **** TODO =NUMERIC_GLOB_SORT=
 **** TODO =RC_EXPAND_PARAM= (-P)
 **** TODO =REMATCH_PCRE= <Z>
@@ -536,6 +741,11 @@
 **** TODO =LONG_LIST_JOBS= (-R)
 **** TODO =MONITOR= (-m, ksh: -m)
 **** TODO =NOTIFY= (-5, ksh: -b) <Z>
+     :PROPERTIES:
+     :CUSTOM_ID: OPTION_NOTIFY
+     :END:
+
+
 **** TODO =POSIX_JOBS= <K> <S>
 
 *** Prompting [0%]
@@ -568,7 +778,7 @@
 **** TODO =VERBOSE= (-v, ksh: -v)
 **** TODO =XTRACE= (-x, ksh: -x)
 
-*** Shell emulation [0%]
+*** Shell emulation [4%]
 **** TODO =BASH_REMATCH=
 **** TODO =BSD_ECHO= <S>
 **** TODO =CONTINUE_ON_ERROR=
@@ -589,17 +799,30 @@
 **** TODO =POSIX_TRAPS= <K> <S>
 **** TODO =SH_FILE_EXPANSION= <K> <S>
 **** TODO =SH_NULLCMD= <K> <S>
-**** STARTED =SH_OPTION_LETTERS= <K> <S>
+**** DONE =SH_OPTION_LETTERS= <K> <S>
 
      Many options in ZSH also have one-letter shortcuts assigned to
-     them; however, there are in fact two different sets of one-letter
+     them, making it very quick to enable/disable specific options; in fact,
+     there are two different sets of one-letter
      options. The first one is the "default" zsh set and used by default;
      the second one is used to emulate sh/ksh options.
 
-     Take for example the /NOTE/ option: The default one-char option is =-5=,
-     but if SH_OPTION_LETTERS is set, the one-character option becomes =-b=.
+     Take for example the [[#OPTION_NOTIFY][NOTIFY option]]: The default one-char option is =-5=,
+     but if =SH_OPTION_LETTERS= is set, the one-character option becomes =-b=.
+
+     #+BEGIN_EXAMPLE
+        % setopt NO_SH_OPTION_LETTERS   # Default
+        % setopt -b                     # Try to set the NOTIFY option
+        setopt: bad option: -b
+        % setopt SH_OPTION_LETTERS
+        % setopt -b                     # This command was now successful
+     #+END_EXAMPLE
 
      #+BEGIN_SRC zsh :tangle zshrc
+       setopt NO_SH_OPTION_LETTERS
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
        setopt NO_SH_OPTION_LETTERS
      #+END_SRC
 
