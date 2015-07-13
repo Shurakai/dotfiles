@@ -26,10 +26,20 @@ bindkey -M vicmd v edit-command-line # type v to edit in an external editor.
 zle -N foreground-vi
 bindkey '^Z' foreground-vi
 
-# Remove all escapes from vi insert mode. Removes delay when pressing ESC
-# to go back to vi cmd mode. (Though you should use 'jj' anyways)
-# Source: The manual.
-bindkey -rpM viins '\e'
+# Remove all escapes from vi insert mode. Removes delay when pressing ESC to go
+# back to vi cmd mode. (Though you should use 'jj' anyways) Source: The manual
+# and the userguide: http://zsh.sourceforge.net/Guide/zshguide04.html#l75
+# Section 4.5.2
+#
+# If this is used, the arrow keys won't work (most likely) in menu completion,
+# so I don't use this any more. You can check if the keys will work or not by
+# either trying or pressing ^V and then an arrow key; the sequence will be
+# inserted, for me for instance ^[[D for the left-arrow key. Here, ^[ means
+# "escape" (so this is the same as \e) and [D is taken to be literal: If you
+# type ESCAPE [ D (without spaces) you will do the same as pressing the arrow
+# left key.
+#
+# bindkey -rpM viins '\e'
 
 # Magic-space executes history expansion and inserts a space
 # afterwards. For instance,
@@ -71,9 +81,24 @@ bindkey -M vicmd ',psl' push-line
 # number 4.7.7 http://zsh.sourceforge.net/Guide/zshguide04.html#l75
 bindkey -M vicmd ',tw' transpose-words
 
-bindkey '^P' history-beginning-search-backward    # binding for vi insert mode
-bindkey -a '^P' history-beginning-search-backward # binding for vi cmd mode
+function custom-history-beginning-search-backward {
+    zle history-beginning-search-backward
 
+    # This check is necessary, as on my system calling
+    # vi-cmd-mode when already in command-mode scrolls
+    # up one line in the prompt, that is:
+    #     % previous_line_of_code
+    #     % <call vi-cmd-mode>
+    # results in the removal of the first line.
+    if [[ ${KEYMAP} == "viins" ]]; then
+      zle vi-cmd-mode
+    fi
+}
+zle -N custom-history-beginning-search-backward
+bindkey -v '^P' custom-history-beginning-search-backward    # binding for vi insert mode
+bindkey -a '^P' custom-history-beginning-search-backward # binding for vi cmd mode
+
+bindkey '^N' history-beginning-search-forward
 bindkey -a '^N' history-beginning-search-forward
 bindkey -M 'viins' '^N' history-beginning-search-forward
 
