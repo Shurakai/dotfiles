@@ -122,7 +122,12 @@ prompt_git() {
           # branch is also available via git branch -r; because if there is no
           # remote tracking branch but a [TAG] was used in the commit message,
           # this would be mistaken and might cause an error.
-          if [[ $(git branch -r | grep "$upstream$" | wc -l) -eq 0 ]]; then
+          #
+          # Changeset 24.07.2015: I added the "^  " to the regex because when you
+          # use a tag like [Lua] and you have a remote branch (e.g., origin/lua), 
+          # then this regex would actually match (but it shouldn't, because the
+          # "origin/" part is missing).
+          if [[ $(git branch -r | grep "^  $upstream$" | wc -l) -eq 0 ]]; then
               upstream_status="gone"
           else
             if [[ $(echo $upstream_infos | grep ':' | wc -l) -eq 0 ]]; then
