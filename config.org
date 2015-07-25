@@ -354,7 +354,7 @@
 
      Show menu completion by default if completion results are ambiguous;
      this option does not select an entry on displaying the menu;
-     see option [[#OPTION_MENU_COMPLETE]] for that.
+     see option [[#OPTION_MENU_COMPLETE][MENU_COMPLETE]] for that.
 
      #+BEGIN_SRC zsh :tangle zshrc
       setopt AUTO_LIST
@@ -462,15 +462,19 @@
      direction. This option overrides AUTO_MENU.
 
      #+BEGIN_EXAMPLE
+       % setopt MENU_COMPLETE
        % ls te*
        terr  test1
        % vi te<TAB> # selects 'terr' immediately
      #+END_EXAMPLE
 
      #+BEGIN_SRC zsh :tangle zshrc
-      setopt MENU_COMPLETE
+      setopt NO_MENU_COMPLETE
      #+END_SRC
 
+     #+BEGIN_SRC zsh :tangle zshrc.default
+      setopt NO_MENU_COMPLETE
+     #+END_SRC
 **** TODO =REC_EXACT= (-S)
 
      Couldn't (yet) figure out what this does; thought that if given,
