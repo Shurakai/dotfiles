@@ -5,9 +5,9 @@ group user
 set defsearch=ddg
 
 command! -nargs=1 fd open de.langenscheidt.com/franzoesisch-deutsch/<args>
-map <F2> fd
+map <F2> :fd
 
-map ga :b #
+map ga :b #<CR>
 
 " Homerow of my keyboard
 set hintkeys=asdfghjklö
