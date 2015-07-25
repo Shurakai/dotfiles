@@ -11,7 +11,7 @@ if [ ! -d $HOME/bin ]
      mkdir $HOME/bin
 fi
 
-filenames=(.cgvgrc .cgvgrc gpg.conf ../.gnupg/gpg.conf "pentadactyl/pentadactylrc" .pentadactylrc "screen/screenrc" .screenrc "git/gitconfig" .gitconfig "most/.mostrc" ".mostrc" .Xresources .Xresources .Xmodmap .Xmodmap "xmonad/xsession" ".xsession" "xmonad/" ".xmonad" "xmonad/xmobarrc" ".xmobarrc" "zsh/zshrc" .zshrc "zsh/zshenv" .zshenv)
+filenames=("cgvg/cgvgrc" .cgvgrc gpg.conf ../.gnupg/gpg.conf "pentadactyl/pentadactylrc" .pentadactylrc "screen/screenrc" .screenrc "git/gitconfig" .gitconfig "most/.mostrc" ".mostrc" .Xresources .Xresources .Xmodmap .Xmodmap "xmonad/xsession" ".xsession" "xmonad/" ".xmonad" "xmonad/xmobarrc" ".xmobarrc" "zsh/zshrc" .zshrc "zsh/zshenv" .zshenv)
 for file in ${(k)filenames}
 do
     if [[ ! -e $HOME/$filenames[$file] ]]
