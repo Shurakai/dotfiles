@@ -741,14 +741,153 @@
 **** TODO =AUTO_RESUME= (-W)
 **** TODO =BG_NICE= (-6) <C> <Z>
 **** TODO =CHECK_JOBS= <Z>
-**** TODO =HUP= <Z>
-**** TODO =LONG_LIST_JOBS= (-R)
-**** TODO =MONITOR= (-m, ksh: -m)
-**** TODO =NOTIFY= (-5, ksh: -b) <Z>
+**** DONE =HUP= <Z>
+     :PROPERTIES:
+     :CUSTOM_ID: OPTION_HUP
+     :END:
+
+     This option is enabled by default in ZSH and will cause ZSH
+     to send the =HUP= (/hang up/) signal to be sent to any background
+     process if the shell is going to terminate (i.e., you used one of
+     ~exit~, ~logout~, ~bye~ etc. or a non-interactive shell started
+     background jobs).
+
+     That is, with this option unset, jobs will continue to run
+     normall when the shell exits.
+
+     #+BEGIN_EXAMPLE
+        # First shell
+        % setopt NO_HUP
+        % sleep 500 &
+        [1] 20931               
+        % exit
+        zsh: you have running jobs.
+        % exit                      # 2nd exit = exits. See also CHECK_JOBS option.
+
+        # Executed in a 2nd shell!
+        % ps auxw | grep "sleep"
+        ch 20988  0.0  0.0  13064   608 pts/8    SN   01:04   0:00 sleep 500
+
+
+        # Start a new shell...
+        % setopt HUP
+        % sleep 500 &
+        [1] 21168               
+        % exit
+        zsh: you have running jobs.
+        % exit                      # 2nd exit = exits. See also CHECK_JOBS option.
+
+        # Executed in a 2nd shell!
+        % ps auxw | grep "sleep"    # Returns nothing, as process was killed!
+                                    # (for you, it may return 20931 from above...)
+        %                           # Yup, nothing there...
+     #+END_EXAMPLE
+     
+     #+BEGIN_SRC zsh :tangle zshrc
+        setopt HUP
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+        setopt HUP
+     #+END_SRC
+
+**** DONE =LONG_LIST_JOBS= (-R)
+     :PROPERTIES:
+     :CUSTOM_ID: OPTION_LONG_LIST_JOBS
+     :END:
+
+     If activated, jobs will be listed using the long format; that is,
+     when the job terminates, ZSH will also tell you the process id
+     this job had. 
+
+     This option has no effect if the [[#OPTION_MONITOR][MONITOR option]] is turned off.
+
+     #+BEGIN_EXAMPLE
+        % setopt LONG_LIST_JOBS
+        % sleep 5 &
+        [1] 20241               
+        % 
+        [1]  + 20241 done       sleep 5     # Includes process id!
+        % setopt NO_LONG_LIST_JOBS
+        % sleep 5 &
+        [1] 20330               
+        % 
+        [1]  + done       sleep 5           # ... not anymore!
+     #+END_EXAMPLE
+     
+     #+BEGIN_SRC zsh :tangle zshrc
+        setopt LONG_LIST_JOBS
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+        setopt NO_LONG_LIST_JOBS
+     #+END_SRC
+
+**** DONE =MONITOR= (-m, ksh: -m)
+     :PROPERTIES:
+     :CUSTOM_ID: OPTION_MONITOR
+     :END:
+
+     In ZSH, this option is enabled by default for interactive shells (that
+     is, shells that accept commands from you instead of reading them from a
+     file). It's behavior is quite simply:
+
+     If activated, starting a job and putting it in the background right away
+     by using the =&= sign at the end of the command will notify you about 
+     the job number (a value local to this shell) and the process number 
+     this new process was given by the operating system. You will furthermore
+     be notified when this process ends (you can determine when you want to
+     be notified by (un-)setting the [[#OPTION_NOTIFY][NOTIFY option]]).
+
+     #+BEGIN_EXAMPLE
+        % setopt MONITOR
+        % sleep 3 &
+        [1] 20058               # This output line was caused by this option
+        % seto                  # We start typing... but we're interrupted
+        [1]  + done       sleep 3
+        % setopt NO_MONITOR     # ... but we can continue typing after "seto"!
+        % sleep 5 &
+        %                       # Nothing happens; we won't get notifications
+     #+END_EXAMPLE
+     
+     #+BEGIN_SRC zsh :tangle zshrc
+        setopt MONITOR
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+        setopt MONITOR
+     #+END_SRC
+
+**** DONE =NOTIFY= (-5, ksh: -b) <Z>
      :PROPERTIES:
      :CUSTOM_ID: OPTION_NOTIFY
      :END:
 
+     Reports the status of background jobs immediately (i.e., jobs you've
+     started from this shell by for instance adding the =&= character
+     at the end of your command). If disabled, you will only be notified
+     about the termination of your job when a new prompt is printed.
+
+     #+BEGIN_EXAMPLE
+        % setopt NOTIFY     # It's always enabled by default 
+        % sleep 3 &
+        [1] 19316
+        %                   # Don't do anything now, just wait 3seconds...
+        [1]  + done       sleep 3
+        %                   # We didn't do anything; but a new prompt was printed!
+        % setopt NO_NOTIFY  # Now disable it...
+        % sleep 3 &         
+        %                   # Nothing will appear now, until you hit return..
+        [1]  + done       sleep 3
+     #+END_EXAMPLE
+
+     #+BEGIN_SRC zsh :tangle zshrc
+        setopt NOTIFY
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+        setopt NOTIFY
+     #+END_SRC
 
 **** TODO =POSIX_JOBS= <K> <S>
 
