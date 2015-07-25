@@ -31,7 +31,7 @@ setopt NO_COMPLETE_ALIASES
 # Completion can be called in the middle of a word rather than only at the end
 setopt COMPLETE_IN_WORD
 
-setopt MENU_COMPLETE
+setopt NO_MENU_COMPLETE
 
 # Always show completion menu if <tab> is hit twice
 setopt AUTO_LIST
