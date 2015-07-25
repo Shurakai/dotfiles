@@ -10,13 +10,14 @@ alias rm='rm -i'
 # $? -gt 0 means: If the grep before returned an error code (because it didn't
 # find our username), then add the key.
 alias ssh="ssh-add -L G $USERNAME >/dev/null; [[ \$? -gt 0 ]] && ssh-add; ssh"
+
 # Removed this alias, because "type -p" will have the following
 # output:
 #       % which vim
 #       vim is /usr/local/bin/vim
 # This output is not suitable for further use.
 #alias which='type -p'
-alias du='du -h'
+alias du='du -h -d 1'
 alias dh='dirs -v' # Shows nice directory history. See autopushd!
 alias top='htop'
 alias grep='/bin/grep -i -n --color=always'
