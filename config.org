@@ -56,7 +56,7 @@
         DIRSTACKSIZE=10
      #+END_SRC
 
-** Options [22/175]
+** Options [26/175]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
 :END:
@@ -656,7 +656,6 @@
 **** TODO =GLOBAL_EXPORT= (<Z>)
 **** TODO =GLOBAL_RCS= (-d) <D>
 **** TODO =RCS= (+f) <D>
-
 *** Input/Output [14%]
 **** DONE =ALIASES= <D>
 
@@ -736,7 +735,7 @@
 **** TODO =SHORT_LOOPS= <C> <Z>
 **** TODO =SUN_KEYBOARD_HACK= (-L)
 
-*** Job Control [0%]
+*** Job Control [44%]
 **** TODO =AUTO_CONTINUE=
 **** TODO =AUTO_RESUME= (-W)
 **** TODO =BG_NICE= (-6) <C> <Z>
@@ -979,14 +978,72 @@
 **** TODO =RESTRICTED= (-r)
 **** TODO =SHIN_STDIN= (-s, ksh: -s)
 **** TODO =SINGLE_COMMAND= (-t, ksh: -t)
-
 *** ZLE [0%]
 **** TODO =BEEP= (+B) <D>
 **** TODO =COMBINING_CHARS=
 **** TODO =EMACS=
-**** TODO =OVERSTRIKE=
+**** STARTED =OVERSTRIKE=
+     :PROPERTIES:
+     :CUSTOM_ID: OPTION_OVERSTRIKE
+     :END:
+
+     This option starts ZSH in overstrike mode; to quote [[https://en.wikipedia.org/wiki/Overstrike][Wikipedia]]:
+
+     #+BEGIN_QUOTE
+      In typography, overstrike is a method of printing characters that are missing from the printer's character set.
+      The character was created by placing one character on another one — for example, overstriking "L" with "-" resulted in printing a "Ł" character.  
+     #+END_QUOTE
+
+     #+BEGIN_SRC zsh :tangle zshrc
+        setopt NO_OVERSTRIKE
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+        setopt NO_OVERSTRIKE
+     #+END_SRC
+
 **** TODO =SINGLE_LINE_ZLE= (-M) <K>
-**** TODO =VI=
+**** DONE =VI=
+     :PROPERTIES:
+     :CUSTOM_ID: OPTION_VI
+     :END:
+
+     This option changes the ZSH keybindings (for interactive shells) to
+     behave like VI; for emacs users, option [[#OPTION_EMACS][EMACS]] is
+
+     This option, if enabled, does the same as
+
+        : % bindkey -v          # Enables the vi-keymap
+        : % unsetopt EMACS      
+
+     Unsetting this option, on the other hand, has no effect.
+
+     Please note that just because this option is set, the vi-keybindings are
+     not guaranteed to be enabled (i.e., your scripts must not rely on this
+     option to determine whether the vi-keymap is activated or not):
+
+     #+BEGIN_EXAMPLE
+        % setopt VI
+        % bindkey -lL main 
+        bindkey -A viins main
+        % bindkey -e
+        % bindkey -lL main 
+        bindkey -A emacs main
+        % [[ -o VI ]] && print "VI still enabled!"
+        VI still enabled!
+     #+END_EXAMPLE
+
+     This option is just provided for compatibility reasons; you should
+     always prefer to use the =bindkey= builtin.
+
+     #+BEGIN_SRC zsh :tangle zshrc
+        setopt VI
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+        setopt NO_VI
+     #+END_SRC
+
 **** TODO =ZLE= (-Z)
 
 
