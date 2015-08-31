@@ -27,6 +27,8 @@ color overstrike brightred black
 % Keybindings
 
 unsetkey "^K"
+unsetkey "G"
+unsetkey "g"
 setkey up "^K"
 
 unsetkey ":"
@@ -38,6 +40,7 @@ setkey toggle_case ":c"
 setkey delete_file ":d"
 setkey exit ":q"
 
+setkey down "^e"
 setkey down "e"
 setkey down "E"
 setkey down "j"
@@ -53,7 +56,8 @@ setkey page_up "^B"
 setkey other_window "z"
 setkey other_window "w"
 setkey search_backward "?"
-setkey bob "p"
+setkey bob "gg"
+setkey eob "G"
 setkey goto_mark "'"
 setkey find_file "E"
 setkey edit "v"
