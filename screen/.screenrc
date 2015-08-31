@@ -53,6 +53,7 @@ unsetenv s
 
 screen 0
 screen 1
+screen -fn -t RSS 8 newsbeuter
 screen -fn -t irc 9 irssi
 
 # BINDINGS
