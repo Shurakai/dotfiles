@@ -2,4 +2,5 @@
 xmonad/.xmonad/xmonad-x86_64-linux
 xmonad/.xmonad/*.errors
 xmonad/.xmonad/*.hi
-newsbeuter/.newsbeuter/config
+newsbeuter/.newsbeuter/urls
+newsbeuter/.newsbeuter/*.*
