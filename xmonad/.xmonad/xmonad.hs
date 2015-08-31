@@ -84,6 +84,7 @@ myManageHook = composeAll [ isFullscreen --> doF W.focusDown <+> doFullFloat
                           , className =? "Vlc"             --> doShift "7:media"
                           , className =? "rhythmbox"       --> doShift "7:media"
                           , className =? "Evince"          --> doShift "5:pdf"
+                          , className =? "Zathura"         --> doShift "5:pdf"
                           , className =? "Skype"           --> doShift "6:skype"
                           , className =? "Chromium-browser" --> doShift "9:chrome"
                           , className =? "jmemorize-core-Main" --> doShift "4:vocabulary"
