@@ -59,6 +59,10 @@ bindkey -M viins "^A" beginning-of-line
 bindkey -M viins "^E" end-of-line
 bindkey -M viins "^?" backward-delete-char
 
+# This is what gives context sensitive help for writing
+# completions. Heavily used in section 6 of the user guide!
+bindkey -M viins "^Xh" _complete_help
+
 # Also use jj to insert vim mode and exit insert mode.
 bindkey 'jj' vi-cmd-mode
 bindkey 'jk' vi-cmd-mode
@@ -72,7 +76,6 @@ bindkey -M vicmd ',c ' vi-pound-insert
 # (get-line, push-line, push-line-or-edit)
 bindkey -M vicmd ',gl' get-line
 bindkey -M vicmd ',pl' push-line-or-edit
-bindkey -M vicmd ',psl' push-line
 
 # If you're like me and you sometimes forget to write words or arguments in the correct
 # order, this binding is for you - it transposes two words, delimited by blanks (and

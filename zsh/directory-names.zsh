@@ -1,3 +1,3 @@
-simgrid=~/workspace/inria/simgrid
-rlog=~/workspace/inria/research-collab
+hash -d simgrid=~/workspace/inria/simgrid
+hash -d rlog=~/workspace/inria/research-collab
 

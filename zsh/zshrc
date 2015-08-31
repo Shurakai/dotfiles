@@ -100,18 +100,22 @@ bindkey '^?' backward-delete-char
 
 # Make sure every entry in $fpath is unique.
 typeset -U fpath
-# ~/.zsh/functions/completion is a symbolic link to the Completion directory
-# of a Zsh CVS checkout. Use it to get the newest completions if available.
-if [[ -d ~/.zsh/functions/completion ]]; then
-    fpath=(~/.zsh/functions/completion/*/*(/) $fpath)
-fi
-# Set correct fpath to allow loading my functions (including completion
-# functions).
-fpath=(~/.zsh/functions $fpath)
+fpath+=(~/.dotfiles/zsh/completions)
 # Autoload my functions (except completion functions and hidden files). Thanks
 # to caphuso from the Zsh example files for this idea.
 if [[ -d ~/.zsh/functions ]]; then
-    autoload ${fpath[1]}/^_*(^/:t)
+  # Set correct fpath to allow loading my functions (including completion
+  # functions).
+  fpath=(~/.zsh/functions $fpath)
+
+  # ~/.zsh/functions/completion is a symbolic link to the Completion directory
+  # of a Zsh CVS checkout. Use it to get the newest completions if available.
+  if [[ -d ~/.zsh/functions/completion ]]; then
+      fpath=(~/.zsh/functions/completion/*/*(/) $fpath)
+  fi
+
+  autoload ${fpath[1]}/^_*(^/:t)
+
 fi
 
 # Simulate hooks using _functions arrays for Zsh versions older than 4.3.4. At
@@ -369,17 +373,27 @@ zmodload zsh/complist
 # #zsh on Freenode (2009-08-07 21:05) for reminding me of the $fpath problem.
 autoload -U compinit && compinit -d ~/.zsh/cache/zcompdump
 
+# If you want menu selection (see user guide, 6.2.3) only with
+# more than n available completions, change the select keyword
+# at the end to select=n (and replace n with your number)
 zstyle ':completion:*' menu select
+
+# See the userguide, section 6.5.3, "Job control"
+# Allows two background jobs "vim bla" "vim foo" to be completed + offers
+# menu selection. Otherwise, just %vim will be completed.
+zstyle ':completion:*:*' numbers 1
 
 # Use cache to speed up completions.
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path ~/.zsh/cache
 
 # Complete arguments and fix spelling mistakes when possible.
-zstyle ':completion:*' completer _complete _match _correct _approximate
-zstyle ':completion:*' completer _complete _match _approximate
+# See also userguide 6.5.1 for details
+zstyle ':completion:*' completer _complete _correct _approximate
+#zstyle ':completion:*' completer _complete _match _approximate
 zstyle ':completion:*:match:*' original only
-# Allow only one error on 3 characters
+
+# Allow only one error in 3 characters
 # This means also that you must have at least 3 characters typed before
 # ZSH corrects your first spelling mistake
 zstyle -e ':completion:*:approximate:*' max-errors 'reply=( $(( ($#PREFIX+$#SUFFIX)/3 )) numeric )'
@@ -390,6 +404,7 @@ zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
 # Allow completions in the middle of a text, i.e. "/usr/bin/<TAB>whatever"
 # completes like "/usr/bin/<TAB>". Useful when adding new options to commands.
 bindkey '^I' expand-or-complete-prefix
+
 # Try uppercase if the currently typed string doesn't match. This allows
 # typing in lowercase most of the time and completion fixes the case.
 zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}'
@@ -404,7 +419,9 @@ zstyle ':completion:*' list-prompt '%p'
 # Display group name (like 'external command', 'alias', etc.) when there are
 # multiple matches in bold.
 zstyle ':completion:*' format '    %B%d%b:'
-# Display different types of matches separately.
+# Display different types of matches separately; this makes the 'tags' of
+# matches also the 'group' they're displayed in, like "builtins", "commands"
+# etc. - check zshcompsys(1) (keyword: "group-name")
 zstyle ':completion:*' group-name ''
 
 # Ignore completion functions.
@@ -419,10 +436,14 @@ zstyle ':completion:*:(cd|mv|cp):*' ignore-parents parent pwd
 # makes it easy to complete multiple values because I can just press tab to
 # get all possible values. Otherwise I would have to skip the first value
 # again and again.
+#
+# NOTE: This may have unexpected side-effects! In fact, if you type
+# cd .vim<TAB> and the .vim directory exists, this will NOT accept
+# this exact match! (Instead, it may complete something like .gimp!)
+# So make sure this is disabled for commands where you definitely
+# don't want that, like cd, mv, cp...
 zstyle ':completion:*' ignore-line yes
-# Except for mv and cp, because I often want to use to similar names, so I
-# complete to the same and change it.
-zstyle ':completion:*:(mv|cp):*' ignore-line no
+zstyle ':completion:*:(cd|mv|cp):*' ignore-line no
 
 zstyle ':completion:*:processes' command ps --forest -A -o pid,cmd
 zstyle ':completion:*:processes' list-colors '=(#b)( #[0-9]#)[^[/0-9a-zA-Z]#(*)=34=37;1=30;1'

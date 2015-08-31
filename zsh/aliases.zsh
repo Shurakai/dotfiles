@@ -1,8 +1,9 @@
 alias ls='ls --color=auto -h'
-alias l='ls -Al'
+alias l='ls -AlF'
 alias df='df -h'
 alias mkdir='mkdir -p -v'
 alias rm='rm -i'
+alias evince='zathura'
 
 # Add the key to ssh-add if not already added; then just use the plain ssh
 # Make sure that $? is escaped as "\$?", because otherwise this will be executed
@@ -20,7 +21,7 @@ alias ssh="ssh-add -L G $USERNAME >/dev/null; [[ \$? -gt 0 ]] && ssh-add; ssh"
 alias du='du -h -d 1'
 alias dh='dirs -v' # Shows nice directory history. See autopushd!
 alias top='htop'
-alias grep='/bin/grep -i -n --color=always'
+alias grep='/bin/grep -i -n --color=auto'
 export EDITOR=`which vim`
 
 # apt-get shortcuts;
