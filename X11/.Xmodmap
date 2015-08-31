@@ -1,2 +1,47 @@
+! I added a third layer to the German QWERTZ keyboard layout, namely
+! the 3rd layer of the Neo Layout: http://neo-layout.org/neo_de.xmodmap
+! This third layer can be activated by pressing capslock (or hashtag on QWERTZ)
 clear Lock
-keycode 66 = BackSpace
+keycode 66 =  ISO_Group_Shift ISO_Group_Shift ISO_First_Group  NoSymbol
+keycode 51 =  ISO_Group_Shift ISO_Group_Shift ISO_First_Group  NoSymbol
+
+keycode 29 =  z       Z       exclam      
+
+! Upper row
+! keycode 24 (@) is not modified...
+keycode 25 =    w       W       underscore
+keycode 26 =    e       E       bracketleft
+keycode 27 =    r       R       bracketright
+keycode 28 =    t       T       asciicircum
+keycode 30 =    u       U       less
+keycode 31 =    i       I       greater 
+keycode 32 =    o       O       equal
+keycode 33 =    p       P       ampersand   
+
+! Middle row
+keycode 38 =  a       A       backslash
+keycode 39 =  s       S       slash
+keycode 40 =  d       D       braceleft
+keycode 41 =  f       F       braceright
+keycode 42 =  g       G       asterisk
+keycode 43 =  h       H       question
+keycode 44 =  j       J       parenleft
+keycode 45 =  k       K       parenright
+keycode 46 =  l       L       minus
+!             Umlaute
+keycode 47 =  odiaeresis       Odiaeresis       colon
+keycode 48 =  adiaeresis       Adiaeresis       at
+
+! Lower row
+
+keycode 52 = y      Y       numbersign
+keycode 53 = x      X       dollar
+keycode 54 = c      C       bar
+keycode 55 = v		V		asciitilde
+keycode 56 = b		B		grave
+keycode 57 = n		N		plus
+keycode 58 = m		M		percent
+keycode 59 = comma		semicolon		quotedbl
+keycode 60 = period     colon	apostrophe
+keycode 61 = minus		underscore		semicolon
+
