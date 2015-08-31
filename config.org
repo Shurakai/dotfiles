@@ -348,11 +348,18 @@
 
 *** Completion [30%]
    cf. Section 16.2.2 http://zsh.sourceforge.net/Doc/Release/Options.html#Options
-**** TODO =ALWAYS_LAST_PROMPT= <Default>
-**** TODO =ALWAYS_TO_END=
+**** STARTED =ALWAYS_LAST_PROMPT= <Default>
+
+     Check userguide 6.2.2
+
+**** STARTED =ALWAYS_TO_END=
+
+     Check 6.2.4 in the userguide.
+
 **** DONE =AUTO_LIST= (-9) <Default>
 
-     Show menu completion by default if completion results are ambiguous;
+     Show menu completion by default if completion results are ambiguous 
+     (otherwise you may have to press some keys, such as =^D=);
      this option does not select an entry on displaying the menu;
      see option [[#OPTION_MENU_COMPLETE][MENU_COMPLETE]] for that.
 
@@ -364,12 +371,28 @@
       setopt AUTO_LIST
      #+END_SRC
 
-**** TODO =AUTO_MENU= <D>
+**** STARTED =AUTO_MENU= <D>
+
+     Check userguide 6.2.1
+
 **** TODO =AUTO_NAME_DIRS=
-**** TODO =AUTO_PARAM_KEYS= <D>
-**** TODO =AUTO_PARAM_SLASH= <D>
-**** TODO =AUTO_REMOVE_SLASH= <D>
-**** TODO =BASH_AUTO_LIST=
+**** STARTED =AUTO_PARAM_KEYS= <D>
+
+     Check 6.2.4 of the user guide.
+
+**** STARTED =AUTO_PARAM_SLASH= <D>
+
+     Check 6.2.4 of the user guide.
+
+**** STARTED =AUTO_REMOVE_SLASH= <D>
+
+     Check 6.2.4 of the user guide.
+     This tells in the last sentence what it does NOT do.
+
+**** STARTED =BASH_AUTO_LIST=
+
+     Check userguide 6.2.1
+
 **** DONE =COMPLETE_ALIASES=
 
      If this option is enabled, aliases will not have the same completion as
@@ -401,7 +424,11 @@
      #+END_EXAMPLE
 
      #+BEGIN_SRC zsh :tangle zshrc
-       setopt NO_COMPLETE_ALIASES
+       setopt COMPLETE_IN_WORD
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+       setopt NO_COMPLETE_IN_WORD
      #+END_SRC
 
 **** DONE =GLOB_COMPLETE=
@@ -435,8 +462,14 @@
      #+END_SRC
 
 **** TODO =HASH_LIST_ALL= <D>
-**** TODO =LIST_AMBIGUOUS= <D>
-**** TODO =LIST_BEEP= <D>
+**** STARTED =LIST_AMBIGUOUS= <D>
+
+     Check userguide 6.2.1
+
+**** STARTED =LIST_BEEP= <D>
+
+     Check userguide 6.2.1
+
 **** DONE =LIST_PACKED=
 
      If set, this option reduces the size of the completion menu by making its
@@ -447,8 +480,18 @@
        setopt LIST_PACKED
      #+END_SRC
 
-**** TODO =LIST_ROWS_FIRST=
-**** TODO =LIST_TYPES= (-X) <D>
+     #+BEGIN_SRC zsh :tangle zshrc.default
+       setopt NO_LIST_PACKED
+     #+END_SRC
+
+**** STARTED =LIST_ROWS_FIRST=
+
+     Check userguide 6.2.5
+
+**** STARTED =LIST_TYPES= (-X) <D>
+
+     Check 5.9.6 of the user guide and 6.2.5.
+
 **** DONE =MENU_COMPLETE= (-Y)
      :PROPERTIES:
         :CUSTOM_ID: OPTION_MENU_COMPLETE
@@ -475,19 +518,26 @@
      #+BEGIN_SRC zsh :tangle zshrc.default
       setopt NO_MENU_COMPLETE
      #+END_SRC
-**** TODO =REC_EXACT= (-S)
+**** STARTED =REC_EXACT= (-S)
 
-     Couldn't (yet) figure out what this does; thought that if given,
+     Check userguide 6.2.1
 
 *** Expansion and globbing [17%]
 **** TODO =BAD_PATTERN= (+2) <C> <Z>
-**** TODO =BARE_GLOB_QUAL= <Z>
+**** STARTED =BARE_GLOB_QUAL= <Z>
+
+     Check 5.9.6 of the user guide.
+
 **** TODO =BRACE_CCL=
 **** TODO =CASE_GLOB= <D>
 **** TODO =CASE_MATCH= <D>
 **** TODO =CSH_NULL_GLOB= <C>
-**** TODO =EQUALS= <Z>
-**** TODO =EXTENDED_GLOB=
+**** STARTED =EQUALS= <Z>
+     
+          Check userguide 5.8; if set, "ls =ls" will be equivalent to "ls `which ls`"
+**** STARTED =EXTENDED_GLOB=
+
+     Check 5.9.4 in the user guide.
 **** TODO =FORCE_FLOAT=
 **** DONE =GLOB= (+F, ksh: +f) <D>
      :PROPERTIES:
@@ -510,7 +560,8 @@
      :CUSTOM_ID: OPTION_GLOB_DOTS
      :END:
 
-     If activated, files with a leading '.' are also matched by globbing.
+     If activated, files with a leading '.' are also matched by globbing,
+     except for =..= (parent directory) and =.= (current directory).
      This also means that the '.' does not need to be explicitly specified to
      enable completion.
 
@@ -561,7 +612,10 @@
 **** TODO =IGNORE_BRACES= (-I) <S>
 **** TODO =IGNORE_CLOSE_BRACES=
 **** TODO =KSH_GLOB= <K>
-**** TODO =MAGIC_EQUAL_SUBST=
+**** STARTED =MAGIC_EQUAL_SUBST=
+
+     Check userguide 5.8
+
 **** TODO =MARK_DIRS= (-8, ksh: -X)
 **** TODO =MULTIBYTE= <C> <K> <Z>
 **** DONE =NOMATCH= (+3) <C> <Z>
@@ -624,8 +678,12 @@
 
 **** TODO =NUMERIC_GLOB_SORT=
 **** TODO =RC_EXPAND_PARAM= (-P)
+
+     Check userguide 5.4.5
 **** TODO =REMATCH_PCRE= <Z>
-**** TODO =SH_GLOB= <K> <S>
+**** STARTED =SH_GLOB= <K> <S>
+
+     See 5.9.3 "Parentheses" in the user guide.
 **** TODO =UNSET= (+u, ksh: +u) <K> <S> <Z>
 **** TODO =WARN_CREATE_GLOBAL=
 *** History [0%]
@@ -969,6 +1027,9 @@
      #+END_SRC
 
 **** TODO =SH_WORD_SPLIT= (-y) <K> <S>
+
+     See userguide 5.4.4
+
 **** TODO =TRAPS_ASYNC=
 
 *** Shell State [0%]
