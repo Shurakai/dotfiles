@@ -1,0 +1,28 @@
+# navigation similar to vim
+
+bind-key j down
+bind-key k up
+bind-key h left
+bind-key l right
+bind-key m toggle-show-read-feeds
+
+# Reloading
+auto-reload yes
+refresh-on-startup yes
+reload-threads 4
+reload-time 300
+
+#keep-articles-days 21
+
+notify-always yes
+notify-format "newsbeuter: %n unread articles within %f unread feeds"
+notify-program notify-send
+notify-xterm yes
+notify-screen yes
+
+show-read-feeds no
+feed-sort-order title-dec
+
+# browser
+browser firefox
+text-width 80
