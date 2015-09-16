@@ -26,9 +26,17 @@ export EDITOR=`which vim`
 
 # apt-get shortcuts;
 # only for Ubuntu or Debian
-LSB_DISTRIBUTOR=`lsb_release -i -s`
+# ... lsb_release not installed by default on debian!
+#LSB_DISTRIBUTOR=`lsb_release -i -s`
+IS_DEBIAN=1 # Note: This is not boolean, but an exit code. 
+            # Any value larger 0 disables these features! 
+            
+if [[ -f /etc/os-release ]]; then
+  $(grep -i "ubuntu\|debian" /etc/os-release > /dev/null)
+  IS_DEBIAN=$?
+fi
 
-if [[ "$LSB_DISTRIBUTOR" == "Ubuntu" ]] || [[ "$LSB_DISTRIBUTOR" == "Debian" ]]
+if [[ IS_DEBIAN -eq 0 ]]
 then
   alias agi='sudo apt-get install'
   alias agu='sudo apt-get update && sudo apt-get upgrade'
