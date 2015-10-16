@@ -74,7 +74,7 @@ myWorkspaces = ["1:web", "2:term", "3:mail", "4:vocabulary", "5:pdf", "6:skype",
 
 -- These classNames can be retrieved by executing the command
 --      xprop | grep "WM_WINDOW_ROLE\|WM_CLASS"
--- in a terminal. (Click on the window to retrieve the information)
+-- in a terminal. (After that, click on the window to retrieve the information)
 myManageHook = composeAll [ isFullscreen --> doF W.focusDown <+> doFullFloat
                           , className =? "Evolution"       --> doShift "3:mail"
                           , className =? "Firefox"         --> doShift "1:web"
@@ -82,7 +82,7 @@ myManageHook = composeAll [ isFullscreen --> doF W.focusDown <+> doFullFloat
                           , className =? "Video"           --> doShift "7:media"
                           , className =? "banshee"         --> doShift "7:media"
                           , className =? "Vlc"             --> doShift "7:media"
-                          , className =? "rhythmbox"       --> doShift "7:media"
+                          , className =? "Rhythmbox"       --> doShift "7:media"
                           , className =? "Evince"          --> doShift "5:pdf"
                           , className =? "Zathura"         --> doShift "5:pdf"
                           , className =? "Skype"           --> doShift "6:skype"
