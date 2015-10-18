@@ -372,6 +372,10 @@ zmodload zsh/complist
 # cluttering of ~/. $fpath must be set before calling this. Thanks to Adlai in
 # #zsh on Freenode (2009-08-07 21:05) for reminding me of the $fpath problem.
 autoload -U compinit && compinit -d ~/.zsh/cache/zcompdump
+# Use cache to speed up completions.
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path ~/.zsh/cache
+
 
 # If you want menu selection (see user guide, 6.2.3) only with
 # more than n available completions, change the select keyword
@@ -379,19 +383,27 @@ autoload -U compinit && compinit -d ~/.zsh/cache/zcompdump
 zstyle ':completion:*' menu select
 
 # See the userguide, section 6.5.3, "Job control"
-# Allows two background jobs "vim bla" "vim foo" to be completed + offers
-# menu selection. Otherwise, just %vim will be completed.
+# Allows two background jobs "vim bla" "vim foo" to be completed, as they
+# are now identified by %1 and %2 instead of %vim ... . This also offers
+# menu selection. 
 zstyle ':completion:*:*' numbers 1
-
-# Use cache to speed up completions.
-zstyle ':completion:*' use-cache on
-zstyle ':completion:*' cache-path ~/.zsh/cache
 
 # Complete arguments and fix spelling mistakes when possible.
 # See also userguide 6.5.1 for details
 zstyle ':completion:*' completer _complete _correct _approximate
 #zstyle ':completion:*' completer _complete _match _approximate
-zstyle ':completion:*:match:*' original only
+# insert-unambigous?
+zstyle ':completion:*:*:*' original only
+
+# if files "foo" and "foobar" exist, should
+# vi foo<tab> immediately accept foo or should
+# foobar be offered as well? I think the latter is more suitable
+# to my workflow. This is the default value, but I want to set it explicitly.
+zstyle ':completion:*' accept-exact false
+
+# This separates the folders from the filenames when completing them;
+# folders are displayed at the top, files at the bottom
+zstyle ':completion:*' list-dirs-first true
 
 # Allow only one error in 3 characters
 # This means also that you must have at least 3 characters typed before
@@ -430,36 +442,44 @@ zstyle ':completion:*:functions' ignored-patterns '_*'
 # Ignore current directory when completing from parent directory
 # i.e., cd ../<tab> should not offer the current directory as an
 # option.
-zstyle ':completion:*:(cd|mv|cp):*' ignore-parents parent pwd
+zstyle ':completion:*:(cd|mv|cp|ln):*' ignore-parents parent pwd
 
 # Always complete one value (file name) only once in the current line. This
 # makes it easy to complete multiple values because I can just press tab to
 # get all possible values. Otherwise I would have to skip the first value
 # again and again.
 #
-# NOTE: This may have unexpected side-effects! In fact, if you type
-# cd .vim<TAB> and the .vim directory exists, this will NOT accept
-# this exact match! (Instead, it may complete something like .gimp!)
-# So make sure this is disabled for commands where you definitely
-# don't want that, like cd, mv, cp...
-zstyle ':completion:*' ignore-line yes
-zstyle ':completion:*:(cd|mv|cp):*' ignore-line no
+# The value "other" here is important. It means that the word the cursor
+# is currently on does not count as "already present on current line". This
+# is necessary, as otherwise exact matches could not be completed!!
+#
+# FIXME Quote from the manual (search for "ignore-line"): 
+#   Note that you almost certainly don't want to set this to `true' or `other' 
+#   for a general context such as `:completion:*'. This is because it would 
+#   disallow completion of, for example, options multiple times even if the 
+#   command in question accepts the option more than once.
+zstyle ':completion:*:(*files|*directories)' ignore-line other
 
+# FIXME: I'm not sure if I still need this?
 zstyle ':completion:*:processes' command ps --forest -A -o pid,cmd
-zstyle ':completion:*:processes' list-colors '=(#b)( #[0-9]#)[^[/0-9a-zA-Z]#(*)=34=37;1=30;1'
-#zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
-zstyle ':completion:*:(killall|pkill|kill):*' menu yes select
-zstyle ':completion:*:(killall|pkill|kill):*' force-list always
 
-# 'kill' should autocomplete only processes owned by the user
-zstyle ':completion::*:kill:*:*' command 'ps xf -U $USER -o pid,%cpu,cmd'
-# Make kill autocompletion look nice.
-zstyle ':completion::*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;32'
+# {{{2 kill | killall etc. 
+zstyle ':completion::*:(kill|wait):*:processes' format "%B PID | CPU | CMD %b"
+# -U $USER makes sure only processes by this user are displayed
+zstyle ':completion::*:(kill|wait):*:processes' command 'ps xf -U $USER -o pid,%cpu,cmd'
+# To change the color to a grey tone, use '=(#b)( #[0-9]#)[^[/0-9a-zA-Z]#(*)=0=01;32=30;1'
+zstyle ':completion::*:(kill|wait):*:processes' list-colors '=(#b) #([0-9]#)*=0=01;32'
+#Explicitly use the "verbose" style: This makes sure that not only PIDs are
+#displayed, but also commands incl. arguments.
+zstyle ':completion:*:(killall|pkill|kill|wait):*' verbose yes 
+zstyle ':completion:*:(killall|pkill|kill|wait):*' menu yes select
+zstyle ':completion:*:(killall|pkill|kill|wait):*' force-list always
+# }}}
 
 # Complete the hosts and - last but not least - the remote directories. Try it:
 # $ scp file username@<TAB><TAB>:/<TAB>
-zstyle ':completion:*:(ssh|scp|ftp):*' hosts $hosts
-zstyle ':completion:*:(ssh|scp|ftp):*' users $users
+#zstyle ':completion:*:(ssh|scp|ftp):*' hosts $hosts
+#zstyle ':completion:*:(ssh|scp|ftp):*' users $users
 
 #$ man write<TAB>
 # manual page, section 1:
@@ -481,6 +501,14 @@ zstyle ':completion:*:manuals' separate-sections true
 zle -C complete-files complete-word _generic
 zstyle ':completion:complete-files:*' completer _files
 
+
+# Ignore filetypes when completing using the vi or vim commands.
+# (Very helpful when you want to open a file XYZ.tex and all the other
+# files were already automatically generated, like XYZ.aux etc. -- these
+# files will not be offered by completion, just XYZ.tex!)
+zstyle ':completion:*:*:vi:*:*files' ignored-patterns '*?.aux' '*?.bbl' '*?.blg' '*?.dvi' '*?.out' '*?.idx' '*?.idl' '*?.toc' '*?.snm' '*?.nav' '*?.pdf' '*?.bak' '*\~'
+
+zstyle ':completion:*:*:vi:*:*files' _files -g "*.(#i)(pdf|ps|eps|djvu)(-.)"
 
 # CUSTOM ALIASES AND FUNCTIONS
 
@@ -556,12 +584,6 @@ source $config_dir/plugins/**/*.zsh
 # Load theme
 DEFAULT_USER="heinrich"
 source $config_dir/themes/agnoster-fcamblor.zsh
-
-# Ignore filetypes when completing using the vi or vim commands.
-# (Very helpful when you want to open a file XYZ.tex and all the other
-# files were already automatically generated, like XYZ.aux etc. -- these
-# files will not be offered by completion, just XYZ.tex!)
-zstyle ':completion:*:*:vi:*:*files' ignored-patterns '*?.aux' '*?.bbl' '*?.blg' '*?.out' '*?.idx' '*?.idl' '*?.log' '*?.toc' '*?.snm' '*?.nav' '*?.pdf' '*?.bak' '*\~'
 
 # Prompt gets updated before every command to make sure
 # we have an up-to-date prompt
