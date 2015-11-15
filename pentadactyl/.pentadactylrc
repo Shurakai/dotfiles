@@ -20,6 +20,8 @@ set incfind
 " Ignore cases unless capital letters are given
 set findcase=smart
 
+"Proxy switch. From http://blog.nikhilism.com/2012/01/toggling-proxy-settings-quickly-with.html
+command proxy -nargs=1 :set! network.proxy.type=<args>
 
 " Faster scrolling!
 map -b j 8j
