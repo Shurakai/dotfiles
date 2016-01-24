@@ -29,4 +29,9 @@ map -b k 8k
 map -b h 8h
 map -b l 8l
 
+" This is required for the "passff" plugin to work correctly, see
+" bug report. It will be hidden by a style (see same bug report):
+" https://github.com/jvenant/passff/issues/37#issuecomment-81294520
+set guioptions+=T
+
 " vim: set ft=pentadactyl:
