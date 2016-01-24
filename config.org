@@ -471,6 +471,9 @@
      Check userguide 6.2.1
 
 **** DONE =LIST_PACKED=
+     :PROPERTIES:
+        :CUSTOM_ID: OPTION_LIST_PACKED
+     :END:
 
      If set, this option reduces the size of the completion menu by making its
      columnwidth dynamic; that is, the width of columns will be determined by
@@ -521,6 +524,12 @@
 **** STARTED =REC_EXACT= (-S)
 
      Check userguide 6.2.1
+
+     This option does not seem to have any effect if
+
+        : zstyle ':completion:*' accept-exact false
+
+     was set explicitly before. 
 
 *** Expansion and globbing [17%]
 **** TODO =BAD_PATTERN= (+2) <C> <Z>
@@ -710,7 +719,41 @@
 **** TODO =SHARE_HISTORY= <K>
 
 *** Initialisation [0%]
-**** TODO =ALL_EXPORT= (-a, ksh: -a)
+**** DONE =ALL_EXPORT= (-a, ksh: -a)
+     :PROPERTIES:
+        :CUSTOM_ID: OPTION_ALL_EXPORT
+     :END:
+
+     If set, all parameters that are subsequently defined will be exported,
+     even if the ~export~ keyword is not explicitly given. This means that
+     the parameters will be accessible from any other command (they can find
+     the variable in their environment) started from
+     this =zsh= instance; they will not remain purely local.
+
+     This option might be useful for you if you start many subshells that
+     should have exactly the same environment as the starting shell.
+
+     #+BEGIN_EXAMPLE
+        % TEST=5
+        % zsh            # Start a 2nd shell
+        % echo $TEST     # Empty!
+
+        % exit           # Close the 2nd shell
+        % setopt ALL_EXPORT
+        % FOO=5
+        % zsh
+        % echo $FOO      # Found FOO!
+        5
+     #+END_EXAMPLE
+
+     #+BEGIN_SRC zsh :tangle zshrc
+        setopt NO_ALL_EXPORT
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+        setopt NO_ALL_EXPORT
+     #+END_SRC
+
 **** TODO =GLOBAL_EXPORT= (<Z>)
 **** TODO =GLOBAL_RCS= (-d) <D>
 **** TODO =RCS= (+f) <D>
@@ -795,8 +838,85 @@
 
 *** Job Control [44%]
 **** TODO =AUTO_CONTINUE=
-**** TODO =AUTO_RESUME= (-W)
-**** TODO =BG_NICE= (-6) <C> <Z>
+**** DONE =AUTO_RESUME= (-W)
+     :PROPERTIES:
+        :CUSTOM_ID: OPTION_AUTO_RESUME
+     :END:
+
+     Simple commands (i.e., just the command-name, nothing else) that do not
+     use redirection will be used to resume background jobs of that same
+     command. For instance, if you have an instance of =top= in the
+     background and re-execute the =top= command (without any arguments or
+     redirection), the sleeping process will be resumed; if this option
+     is not set, =top= would be executed a second time.
+
+     #+BEGIN_EXAMPLE
+       % setopt NO_AUTO_RESUME
+       % top  # Now CTRL-Z 
+       % top  # CTRL-Z again
+       % ps
+       PID TTY          TIME CMD
+       7191 pts/9    00:00:00 zsh
+       7192 pts/9    00:00:00 top
+       7193 pts/9    00:00:00 top
+       7194 pts/9    00:00:00 ps
+       % killall top
+       % setopt AUTO_RESUME 
+       % top  # CTRL-Z
+       % top  # CTRL-Z
+       % ps   # Only one (not two!) top instance running!
+       PID TTY          TIME CMD
+      7191 pts/9    00:00:00 zsh
+      7237 pts/9    00:00:00 top
+      7238 pts/9    00:00:00 ps
+     #+END_EXAMPLE
+
+     #+BEGIN_SRC zsh :tangle zshrc
+        setopt NO_AUTO_RESUME
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+        setopt NO_AUTO_RESUME
+     #+END_SRC
+
+**** DONE =BG_NICE= (-6) <C> <Z>
+     :PROPERTIES:
+        :CUSTOM_ID: OPTION_BG_NICE
+     :END:
+
+     If set, all jobs that will be started in the background will be nice
+     towards other jobs, that is, they will run at a lower priority. 
+     (See =man 1 nice= for details.)
+
+     This option, however, does not change the level of niceness for jobs
+     that were started and then moved to the background (for instance, by
+     pressing CTRL-Z). 
+
+     #+BEGIN_EXAMPLE
+        % setopt BG_NICE    # This is the default
+        % top               # Now press CTRL-Z; top will not be "nice"
+        % ps au 
+        USER PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+        ch  6257  0.2  0.0  25228  4224 pts/8    T    17:55   0:00 top
+        % kill top
+        % top &             # Start top in the background
+        % ps au             # This will output "N" in the "STAT" column
+        ch  6385  0.0  0.0  16320  3612 pts/8    TN   17:58   0:00 top
+        % kill top
+        % setopt NO_BG_NICE
+        % top &             # Start top in the background
+        % ps au             # top will not be nice any more!
+        ch  6463  0.3  0.0  25112  4224 pts/8    T    18:00   0:00 top
+     #+END_EXAMPLE
+
+     #+BEGIN_SRC zsh :tangle zshrc
+        setopt BG_NICE
+     #+END_SRC
+
+     #+BEGIN_SRC zsh :tangle zshrc.default
+        setopt BG_NICE
+     #+END_SRC
+
 **** TODO =CHECK_JOBS= <Z>
 **** DONE =HUP= <Z>
      :PROPERTIES:
