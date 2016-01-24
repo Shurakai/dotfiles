@@ -78,6 +78,7 @@ myWorkspaces = ["1:web", "2:term", "3:mail", "4:vocabulary", "5:pdf", "6:skype",
 myManageHook = composeAll [ isFullscreen --> doF W.focusDown <+> doFullFloat
                           , className =? "Evolution"       --> doShift "3:mail"
                           , className =? "Firefox"         --> doShift "1:web"
+                          , className =? "Iceweasel"       --> doShift "1:web"
                           , className =? "URxvt"           --> doShift "2:term"
                           , className =? "Video"           --> doShift "7:media"
                           , className =? "banshee"         --> doShift "7:media"
@@ -87,8 +88,9 @@ myManageHook = composeAll [ isFullscreen --> doF W.focusDown <+> doFullFloat
                           , className =? "Zathura"         --> doShift "5:pdf"
                           , className =? "Skype"           --> doShift "6:skype"
                           , className =? "Chromium-browser" --> doShift "9:chrome"
+                          , className =? "chromium-browser" --> doShift "9:chrome"
                           , className =? "jmemorize-core-Main" --> doShift "4:vocabulary"
-                          , className =? "VirtualBox" --> doShift "8:VirtualBox"
+                          , className =? "VirtualBox"      --> doShift "8:VirtualBox"
                           , className =? "Gimp"            --> doFloat
                           ]
 
@@ -99,14 +101,14 @@ myLogHook h = dynamicLogWithPP $ xmobarPP
                                  , ppSep = " <fc=#3d3d07>|</fc> "
                                  }
 
-myKeys = [ ((controlMask, xK_Print), spawn "sleep 0.2; scrot")
-         , ((controlMask .|. shiftMask, xK_Print), spawn "sleep 0.2; scrot -s")
-         , ((modm,               xK_Right), nextWS)
-         , ((modm,               xK_Left),  prevWS)
-         , ((modm .|. shiftMask, xK_Right), shiftToNext)
-         , ((modm .|. shiftMask, xK_Left),  shiftToPrev)
-         , ((modm,               xK_Up),    nextScreen)
-         , ((modm,               xK_Down),  prevScreen)
+myKeys = [ 
+-- Never used these bindings; I think I can remove them.
+--         ((modm,               xK_Right), nextWS)
+--       , ((modm,               xK_Left),  prevWS)
+--       , ((modm .|. shiftMask, xK_Right), shiftToNext)
+--       , ((modm .|. shiftMask, xK_Left),  shiftToPrev)
+--       , ((modm,               xK_Up),    nextScreen)
+--       , ((modm,               xK_Down),  prevScreen)
          , ((modm .|. shiftMask, xK_Up),    shiftNextScreen)
          , ((modm .|. shiftMask, xK_Down),  shiftPrevScreen)
          , ((modm,               xK_z),     toggleWS)
@@ -120,5 +122,9 @@ myKeys = [ ((controlMask, xK_Print), spawn "sleep 0.2; scrot")
          , ((0                     , 0x1008FF11), spawn "amixer set Master 2-")
          , ((0                     , 0x1008FF13), spawn "amixer set Master 2+")
          , ((0                     , 0x1008FF12), spawn "amixer set Master toggle")
+         -- Make a screenshot from the currently active screen
+         , ((controlMask, xK_Print), spawn "sleep 0.3; scrot -s")
+         -- Make a screenshot just of the current screen
+         , ((0, xK_Print), spawn "scrot")
          ]
 
