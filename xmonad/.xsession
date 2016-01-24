@@ -2,10 +2,11 @@
 # On login, we need to autostart some programs...
 
 # Load background image
-xloadimage -onroot -border black -fullscreen /home/heinrich/Pictures/wallpapers/phi.jpg
+#xloadimage -onroot -border black -fullscreen /home/heinrich/Pictures/wallpapers/phi.jpg
+xloadimage -onroot -border black -fullscreen /home/heinrich/Pictures/wallpapers/03974_morningstarpeak_3200x1800.jpg
 
 # Load evolution-notification program - will notify of appointments, events
-/usr/lib/evolution/3.2/evolution-alarm-notify &
+/usr/lib/evolution/evolution-alarm-notify &
 
 # Set up an icon tray
 
@@ -15,6 +16,9 @@ nm-applet --sm-disable &
 
 gnome-sound-applet &
 
-xscreensaver -no-splash &
+#xscreensaver -no-splash &
+gnome-screensaver &
+
+xmodmap ~/.Xmodmap
 
 exec xmonad
