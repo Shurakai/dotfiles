@@ -1,3 +1,12 @@
+!Xft.dpi: 244
+Xft.dpi: 109
+Xft.autohint: 0
+Xft.lcdfilter: lcddefault
+Xft.hintstyle: hintfull
+Xft.hinting: 1
+Xft.antialias: 1
+Xft.rgba: rgb
+
 URxvt*iconFile:            /usr/share/icons/gnome/32x32/apps/gnome-terminal.png
 URxvt.geometry: 170x60+25+50
 URxvt.saveLines: 10000
@@ -9,9 +18,9 @@ URxvt.perl-ext-common: default,matcher
 URxvt.urlLauncher: firefox
 URxvt.matcher.button: 1
 URxvt.matcher.pattern.1: \\bwww\\.[\\w-]\\.[\\w./?&@#-]*[\\w/-]
-!URxvt.font: xft:Bitstream Vera Sans Mono:pixelsize=12
+!URxvt.font: xft:Bitstream Vera Sans Mono:pixelsize=24
 !URxvt.font: xft:Source Code Pro for Powerline:pixelsize=15
-URxvt.font: xft:Meslo LG M DZ for Powerline:pixelsize=15
+URxvt.font: xft:Meslo LG M DZ for Powerline:pixelsize=18
 
 
 !fade text n% upon unfocus
