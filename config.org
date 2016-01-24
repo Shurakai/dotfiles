@@ -783,7 +783,10 @@
 **** TODO =PATH_SCRIPT= <K> <S>
 **** TODO =PRINT_EIGHT_BIT=
 **** TODO =PRINT_EXIT_VALUE= (-1)
-**** TODO =RC_QUOTES=
+**** STARTED =RC_QUOTES=
+
+     Within single-quoted strings, '' will mean the same as '.
+
 **** DONE =RM_STAR_SILENT= (-H) <K> <S>
      :PROPERTIES:
         :CUSTOM_ID: RM_STAR_SILENT
