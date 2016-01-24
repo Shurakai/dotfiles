@@ -399,6 +399,7 @@ zstyle ':completion:*:*:*' original only
 # vi foo<tab> immediately accept foo or should
 # foobar be offered as well? I think the latter is more suitable
 # to my workflow. This is the default value, but I want to set it explicitly.
+# Also see the REC_EXACT option
 zstyle ':completion:*' accept-exact false
 
 # This separates the folders from the filenames when completing them;
