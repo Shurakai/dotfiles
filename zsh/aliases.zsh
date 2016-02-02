@@ -20,9 +20,14 @@ alias ssh="ssh-add -L G $USERNAME >/dev/null; [[ \$? -gt 0 ]] && ssh-add; ssh"
 #alias which='type -p'
 alias du='du -h -d 1'
 alias dh='dirs -v' # Shows nice directory history. See autopushd!
-alias top='htop'
+
+$(which htop &> /dev/null)
+if [[ $? -eq 0 ]]; then
+  alias top='htop'
+fi
+
 alias grep='/bin/grep -i -n --color=auto'
-export EDITOR=`which vim`
+export EDITOR=$(which vim)
 
 # apt-get shortcuts;
 # only for Ubuntu or Debian
@@ -40,19 +45,22 @@ if [[ IS_DEBIAN -eq 0 ]]
 then
   alias agi='sudo apt-get install'
   alias agu='sudo apt-get update && sudo apt-get upgrade'
+  alias agdu='sudo apt-get update && sudo apt-get dist-upgrade'
   alias acse='apt-cache search'
   alias acsh='apt-cache show'
 fi
 
-[[ -x $(which colordiff) ]] && alias diff="colordiff -u" || alias diff="diff -u"
-
-# TODO: Remove this alias; make it dynamic.
-alias lessc=/var/lib/gems/1.8/bin/lessc
+$(which colordiff &> /dev/null)
+if [[ $? -eq 0 ]]; then
+  alias diff='colordiff -u'
+else
+  alias diff='diff -u'
+fi
 
 # Global aliases for often used commands in the command line.
 alias -g E='2>&1'
 alias -g L='E | less'
-alias -g D='E | colordiff L'
+alias -g D='E | diff L'
 alias -g G='| grep'
 alias -g S='| sort'
 alias -g U='| uniq'
