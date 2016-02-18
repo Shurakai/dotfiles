@@ -30,7 +30,6 @@ import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 
 
-
 modm = mod4Mask
 
 main = do
@@ -65,8 +64,10 @@ myLayoutHook = avoidStruts $ toggleLayouts Full $
     )
   where
     tiled   = Tall 1 delta ratio
-    ratio   = 0.5
-    delta   = 0.01
+    ratio   = toRational (2/(1+sqrt(5)::Double))  -- golden cut
+--    ratio   = 0.5
+--    delta   = 0.01
+    delta   = 0.03
 
 
 myWorkspaces = ["1:web", "2:term", "3:mail", "4:vocabulary", "5:pdf", "6:skype", "7:media", "8:VirtualBox", "9:chrome"]
@@ -105,8 +106,8 @@ myKeys = [
 -- Never used these bindings; I think I can remove them.
 --         ((modm,               xK_Right), nextWS)
 --       , ((modm,               xK_Left),  prevWS)
---       , ((modm .|. shiftMask, xK_Right), shiftToNext)
---       , ((modm .|. shiftMask, xK_Left),  shiftToPrev)
+         ((modm .|. shiftMask, xK_Right), shiftToNext)
+       , ((modm .|. shiftMask, xK_Left),  shiftToPrev)
 --       , ((modm,               xK_Up),    nextScreen)
 --       , ((modm,               xK_Down),  prevScreen)
          , ((modm .|. shiftMask, xK_Up),    shiftNextScreen)
@@ -116,12 +117,15 @@ myKeys = [
          , ((modm,               xK_f),     sendMessage ToggleLayout)
          --, ((modm,               xK_F1),    manPrompt defaultXPConfig)
          , ((modm,               xK_F2),    shellPrompt defaultXPConfig)
+         , ((modm,               xK_F12),   spawn "/home/heinrich/bin/change-keymap.sh")
          --, ((modm,               xK_F3),    sshPrompt defaultXPConfig)
          -- To figure out what your key name is, use the command `xev`.
          -- The 0 below means that you do not have to press MOD-Key
-         , ((0                     , 0x1008FF11), spawn "amixer set Master 2-")
-         , ((0                     , 0x1008FF13), spawn "amixer set Master 2+")
-         , ((0                     , 0x1008FF12), spawn "amixer set Master toggle")
+         -- , ((0                     , 0x1008FF11), spawn "amixer set Master 2-")
+         -- , ((0                     , 0x1008FF13), spawn "amixer set Master 2+")
+         -- , ((0                     , 0x1008FF12), spawn "amixer set Master toggle")
+         , ((modm                  , xK_Page_Down), spawn "amixer set Master 1000-")
+         , ((modm                  , xK_Page_Up), spawn "amixer set Master 1000+")
          -- Make a screenshot from the currently active screen
          , ((controlMask, xK_Print), spawn "sleep 0.3; scrot -s")
          -- Make a screenshot just of the current screen
