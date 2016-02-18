@@ -622,4 +622,8 @@ if [[ -r /etc/zsh_command_not_found ]]; then
 source /etc/zsh_command_not_found
 fi
 
+if [[ -r .zshrc.local ]]; then
+source .zshrc.local
+fi
+
 # vim: ft=zsh
