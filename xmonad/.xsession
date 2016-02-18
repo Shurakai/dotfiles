@@ -5,6 +5,8 @@
 #xloadimage -onroot -border black -fullscreen /home/heinrich/Pictures/wallpapers/phi.jpg
 xloadimage -onroot -border black -fullscreen /home/heinrich/Pictures/wallpapers/03974_morningstarpeak_3200x1800.jpg
 
+/usr/lib/notification-daemon/notification-daemon &
+
 # Load evolution-notification program - will notify of appointments, events
 /usr/lib/evolution/evolution-alarm-notify &
 
