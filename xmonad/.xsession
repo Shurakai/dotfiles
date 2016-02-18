@@ -12,11 +12,11 @@ xloadimage -onroot -border black -fullscreen /home/heinrich/Pictures/wallpapers/
 
 # Set up an icon tray
 
-trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --widthtype percent --width 8 --tint black --heighttype pixel --height 19 --transparent true --alpha 0 &
+#trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --widthtype percent --width 8 --tint black --heighttype pixel --height 19 --transparent true --alpha 0 &
 
-nm-applet --sm-disable &
+#nm-applet --sm-disable &
 
-gnome-sound-applet &
+#gnome-sound-applet &
 
 #xscreensaver -no-splash &
 gnome-screensaver &
