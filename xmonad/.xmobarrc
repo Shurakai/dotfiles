@@ -2,18 +2,22 @@
 -- Wetter für Champaign ist KCMI
 -- Wetter für Grenoble ist LFLS
 
-Config { font = "xft:Times New Roman-12"
+Config { font = "xft:Meslo LG M DZ for Powerline:size=10:antialias=true" -- You can add :bold or :italic if you want
        , bgColor = "black"
        , fgColor = "grey"
 -- This needs to be adjusted for the trayer
 --     , position = TopW L 85
-       , lowerOnStart = True
+       , hideOnStart  = False -- Start with window unmapped (hidden)?
+       , lowerOnStart = False -- Move xmobar to bottom of window stack on start
+       , allDesktops  = True -- Show on all desktops
+       , pickBroadest = False -- This will pick the screen with the highest resolution (with respect to the x-axis)
+       , persistent   = False -- When True the window status is fixed i.e. hiding or revealing is not possible. This option can be toggled at runtime.
        , commands = [
-              Run Network "wlp61s0" ["-t","wlan: <rx> / <tx>","-L"," 0","-H","32","--normal","green","--high","red"] 20
-            , Run Network "enp0s25"  ["-t","eth: <rx> / <tx>" ,"-L"," 0","-H","32","--normal","green","--high","red"] 20
+              Run Network "wlp61s0" ["-t","wlan: <rx> kb / <tx> kb","-L"," 0","-H","32","--normal","green","--high","red"] 20
+            , Run Network "enp0s25"  ["-t","eth: <rx> kb / <tx> kb" ,"-L"," 0","-H","32","--normal","green","--high","red"] 20
             , Run Cpu             ["-t","CPU: <total> %"     ,"-L","10","-H","50","--low","green","--normal","yellow","--high","red"] 20
 		    , Run Battery         ["-t","Akku: <left>%"     ,"-L","35","-H","80","--low","red","--normal","yellow","--high","green"] 20
-		    , Run Thermal "THM0"  ["-t","<temp>°C"         ,"-L","30","-H","45","--low","green","--normal","yellow","--high","red"] 20
+		    , Run Thermal "THM0"  ["-t","<temp> °C"         ,"-L","30","-H","45","--low","green","--normal","yellow","--high","red"] 20
             , Run Memory          ["-t","Mem: <usedratio>%"] 20
             , Run Date "%a, %d. %B %R" "date" 300
             , Run Weather "LFLS"  ["-t","<tempC>°C","-L","15","-H","27","--normal","yellow","--high","red","--low","lightblue"] 6000
@@ -22,5 +26,5 @@ Config { font = "xft:Times New Roman-12"
        , sepChar = "%"
        , alignSep = "}{"
 --       , template = "%StdinReader% }{ %cpu% @ %THM0% | %battery% | %memory% | %wlan0% | <fc=lightblue>%date%</fc> @ %LFLS% "
-       , template = "%StdinReader% }{ %cpu% | %memory% | %battery% | %wlan0% | %eth1% | <fc=lightblue>%date%</fc> @ %LFLS% "
+       , template = "%StdinReader% }{ %cpu% | %memory% | %battery% | %wlp61s0% | %enp0s25% | <fc=lightblue>%date%</fc> @ %LFLS% "
        }
