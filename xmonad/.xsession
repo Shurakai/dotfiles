@@ -21,6 +21,8 @@ xloadimage -onroot -border black -fullscreen /home/heinrich/Pictures/wallpapers/
 #xscreensaver -no-splash &
 gnome-screensaver &
 
+xset -dpms
+
 xmodmap ~/.Xmodmap
 
 exec xmonad
