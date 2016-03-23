@@ -48,6 +48,7 @@ then
   alias agdu='sudo apt-get update && sudo apt-get dist-upgrade'
   alias acse='apt-cache search'
   alias acsh='apt-cache show'
+  alias acp='apt-cache policy'
 fi
 
 $(which colordiff &> /dev/null)
