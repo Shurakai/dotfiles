@@ -20,6 +20,7 @@ import XMonad.Layout.ResizableTile
 import XMonad.Layout.Roledex
 import XMonad.Layout.Spiral
 import XMonad.Layout.StackTile
+import XMonad.Layout.ThreeColumns
 import XMonad.Layout.ToggleLayouts
 import XMonad.Prompt
 import XMonad.Prompt.Shell
@@ -52,6 +53,8 @@ myLayoutHook = avoidStruts $ toggleLayouts Full $
         onWorkspace "3:mail" (Grid) $
         smartBorders (
         named "Tall" tiled
+    ||| ThreeCol 1 (3/100) (1/2) -- See doc: http://xmonad.org/xmonad-docs/xmonad-contrib/XMonad-Layout-ThreeColumns.html. (3/100) = how much do we resize every time? (1/2) = master screen will occupy 1/2 of the screen. Make this negative to refer to slave screens.
+    ||| ThreeColMid 1 (3/100) (1/2) -- See above. But master screen is in the middle
     ||| named "Mirror Tall" (Mirror tiled)
     ||| Full
     ||| Grid
@@ -60,7 +63,7 @@ myLayoutHook = avoidStruts $ toggleLayouts Full $
     ||| StackTile 1 delta (1/2)
     ||| Roledex
     ||| mosaic 2 [3,2]
-    ||| spiral (6/7)
+    {-||| spiral (6/7)-}
     )
   where
     tiled   = Tall 1 delta ratio
