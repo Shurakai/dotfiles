@@ -2,7 +2,7 @@ alias ls='ls --color=auto -h'
 alias l='ls -AlF'
 alias df='df -h'
 alias mkdir='mkdir -p -v'
-alias rm='rm -i'
+alias rm='rm -i --preserve-root'
 alias evince='zathura'
 
 # Add the key to ssh-add if not already added; then just use the plain ssh
