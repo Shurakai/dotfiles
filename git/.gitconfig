@@ -19,6 +19,9 @@
   added = yellow
   changed = green
   untracked = cyan
+[log]
+  follow = true
+
 [alias]
   # Shortcuts for often used commands.
   # Thanks to Simon Ruderich, http://ruderich.org/simon/config/gitconfig
@@ -73,3 +76,5 @@
 # vim: ft=gitconfig
 [pager]
 	stash = false
+[commit]
+	gpgsign = true
