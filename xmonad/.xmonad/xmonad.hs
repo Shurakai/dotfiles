@@ -9,18 +9,18 @@ import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.EZConfig(additionalKeys)
 import XMonad.Actions.CycleWS
 -- import XMonad.Actions.DynamicWorkspaces
-import XMonad.Layout.NoBorders
-import XMonad.Layout.ResizableTile
-import XMonad.Layout.Spiral
-import XMonad.Layout.Circle
 import XMonad.Layout.CenteredMaster
-import XMonad.Layout.Mosaic
+import XMonad.Layout.Circle
 import XMonad.Layout.Grid
+import XMonad.Layout.Mosaic
 import XMonad.Layout.Named
-import XMonad.Layout.StackTile
-import XMonad.Layout.Roledex
-import XMonad.Layout.ToggleLayouts
+import XMonad.Layout.NoBorders
 import XMonad.Layout.PerWorkspace
+import XMonad.Layout.ResizableTile
+import XMonad.Layout.Roledex
+import XMonad.Layout.Spiral
+import XMonad.Layout.StackTile
+import XMonad.Layout.ToggleLayouts
 import XMonad.Prompt
 import XMonad.Prompt.Shell
 -- import XMonad.Prompt.Man

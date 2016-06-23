@@ -3,9 +3,11 @@
 -- Wetter für Grenoble ist LFLS
 
 Config { font = "xft:Meslo LG M DZ for Powerline:size=10:antialias=true" -- You can add :bold or :italic if you want
+       , border = BottomB
        , bgColor = "black"
        , fgColor = "grey"
--- This needs to be adjusted for the trayer
+-- This needs to be adjusted for the trayer. See the archlinux wiki for a description:
+-- https://wiki.archlinux.org/index.php/Xmobar
 --     , position = TopW L 85
        , hideOnStart  = False -- Start with window unmapped (hidden)?
        , lowerOnStart = False -- Move xmobar to bottom of window stack on start
