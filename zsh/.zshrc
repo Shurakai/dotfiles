@@ -578,10 +578,6 @@ for zsh_file ($config_dir/*.zsh) source $zsh_file
 # The following libraries are from oh-my-zsh
 source $config_dir/lib/git.zsh
 
-# Source other plugins, such as vim text objections ('ciw', change
-# inner word etc.)
-source $config_dir/plugins/**/*.zsh
-
 # Load theme
 DEFAULT_USER="heinrich"
 source $config_dir/themes/agnoster-fcamblor.zsh

@@ -140,3 +140,14 @@ zle -N rationalise-dot
 bindkey -M viins '\.' rationalise-dot
 
 bindkey '^F' complete-files
+
+# This comes from the comment at the top of the file
+# /usr/share/zsh/functions/Zle/select-quoted
+# To enable brackets and parentheses, see the select-bracketed file.
+autoload -U select-quoted
+zle -N select-quoted
+for m in visual viopp; do
+	for c in {a,i}{\',\",\`}; do
+	  bindkey -M $m $c select-quoted
+	done
+done
