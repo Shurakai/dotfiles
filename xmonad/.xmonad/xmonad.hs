@@ -57,13 +57,13 @@ myLayoutHook = avoidStruts $ toggleLayouts Full $
     ||| ThreeColMid 1 (3/100) (1/2) -- See above. But master screen is in the middle
     ||| named "Mirror Tall" (Mirror tiled)
     ||| Full
-    ||| Grid
-    ||| Circle
-    ||| named "Center" (centerMaster Grid)
-    ||| StackTile 1 delta (1/2)
+    ||| Grid -- Useful for >= 4 windows. Will arrange them all equally.
+    {-||| Circle-}
+    {-||| named "Center" (centerMaster Grid)-}
+    {-||| StackTile 1 delta (1/2)-}
     ||| Roledex
     ||| mosaic 2 [3,2]
-    {-||| spiral (6/7)-}
+    ||| spiral (6/7)
     )
   where
     tiled   = Tall 1 delta ratio
