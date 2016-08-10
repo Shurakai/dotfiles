@@ -1,9 +1,4 @@
 # Screen configuration file.
-#
-# Features which are only available in (very) recent screen releases or in
-# current Git are marked with "(GIT)" so they can be removed by the setup
-# script on machines with older versions.
-
 
 # Don't display startup message.
 startup_message off
@@ -19,7 +14,6 @@ ignorecase on
 
 # I prefer zsh as my shell.
 shell zsh
-
 
 # CAPTION AND HARDSTATUS
 
