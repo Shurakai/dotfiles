@@ -1,3 +1,4 @@
+import Data.Char (toLower)
 import System.IO
 import System.Exit
 import XMonad
@@ -5,6 +6,7 @@ import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.SetWMName
+import XMonad.Util.Scratchpad
 import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.EZConfig(additionalKeys)
 import XMonad.Actions.CycleWS
@@ -32,13 +34,14 @@ import qualified Data.Map        as M
 
 
 modm = mod4Mask
+myTerminal :: String
+myTerminal = "URxvt"
 
 main = do
     xmproc <- spawnPipe "xmobar"
     xmonad $ defaultConfig
-
         { manageHook  = myManageHook <+> manageDocks
-        , terminal    = "urxvt"
+        , terminal    = map toLower myTerminal
         , focusedBorderColor = "#5d0017"
         , normalBorderColor  = "#1e1c10"
         , workspaces  = myWorkspaces
@@ -49,7 +52,7 @@ main = do
         } `additionalKeys` myKeys
 
 
-myLayoutHook = avoidStruts $ toggleLayouts Full $
+myLayoutHook = avoidStruts $ toggleLayouts Full $ -- toggle to "Full" when meta-f was pressed
         onWorkspace "3:mail" (Grid) $
         smartBorders (
         named "Tall" tiled
@@ -79,24 +82,24 @@ myWorkspaces = ["1:web", "2:term", "3:mail", "4:vocabulary", "5:pdf", "6:skype",
 -- These classNames can be retrieved by executing the command
 --      xprop | grep "WM_WINDOW_ROLE\|WM_CLASS"
 -- in a terminal. (After that, click on the window to retrieve the information)
-myManageHook = composeAll [ isFullscreen --> doF W.focusDown <+> doFullFloat
-                          , className =? "Evolution"       --> doShift "3:mail"
+myManageHook = (composeAll [ isFullscreen --> doF W.focusDown <+> doFullFloat
                           , className =? "Firefox"         --> doShift "1:web"
                           , className =? "Iceweasel"       --> doShift "1:web"
-                          , className =? "URxvt"           --> doShift "2:term"
-                          , className =? "Video"           --> doShift "7:media"
-                          , className =? "banshee"         --> doShift "7:media"
-                          , className =? "Vlc"             --> doShift "7:media"
-                          , className =? "Rhythmbox"       --> doShift "7:media"
-                          , className =? "Evince"          --> doShift "5:pdf"
-                          , className =? "Zathura"         --> doShift "5:pdf"
+                          , className =? myTerminal        --> doShift "2:term"
+                          , className =? "Evolution"       --> doShift "3:mail"
                           , className =? "Skype"           --> doShift "6:skype"
-                          , className =? "Chromium-browser" --> doShift "9:chrome"
-                          , className =? "chromium-browser" --> doShift "9:chrome"
+                          , className =? "chromium"        --> doShift "9:chrome"
                           , className =? "jmemorize-core-Main" --> doShift "4:vocabulary"
                           , className =? "VirtualBox"      --> doShift "8:VirtualBox"
                           , className =? "Gimp"            --> doFloat
-                          ]
+                          ])
+                <+> (composeAll . concat $ [
+                      [ className =? x --> doShift "7:media" | x <- mediaApps ]
+                     ,[ className =? x --> doShift "5:pdf"   | x <- documentApps ]
+                    ])
+                    where 
+                      mediaApps    = [ "Video", "banshee", "vlc", "Rhythmbox" ]
+                      documentApps = [ "Zathura", "Evince" ]
 
 myLogHook h = dynamicLogWithPP $ xmobarPP
                                  { ppOutput = hPutStrLn h
@@ -115,7 +118,7 @@ myKeys = [
 --       , ((modm,               xK_Down),  prevScreen)
          , ((modm .|. shiftMask, xK_Up),    shiftNextScreen)
          , ((modm .|. shiftMask, xK_Down),  shiftPrevScreen)
-         , ((modm,               xK_z),     toggleWS)
+         , ((modm,               xK_z),     toggleWorkspace)
          , ((modm .|. shiftMask, xK_l),     spawn "gnome-screensaver-command -l")
          , ((modm,               xK_f),     sendMessage ToggleLayout)
          --, ((modm,               xK_F1),    manPrompt defaultXPConfig)
@@ -133,5 +136,12 @@ myKeys = [
          , ((controlMask, xK_Print), spawn "sleep 0.3; scrot -s")
          -- Make a screenshot just of the current screen
          , ((0, xK_Print), spawn "scrot")
+         -- Toggles workspace
+         , ((modm, xK_Tab), toggleWorkspace)
+         -- Shows/hides my terminal
+         , ((modm, xK_c), scratchpadSpawnAction defaultConfig )
          ]
+    where
+        toggleWorkspace = windows $ W.view =<< W.tag . head . filter 
+                 ((\x -> x /= "NSP" && x /= "SP") . W.tag) . W.hidden
 
