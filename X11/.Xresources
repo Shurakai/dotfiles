@@ -24,43 +24,43 @@ URxvt.font: xft:Meslo LG M DZ for Powerline:pixelsize=18
 
 
 !fade text n% upon unfocus
-urxvt*fading:             20
+URxvt*fading:             20
 !!darken=(0 to 100) lighten=(-1 to -100)
-urxvt*shading:            30
+URxvt*shading:            30
 !!set to 32-bit for real transparency (compositing required)
-urxvt*depth:     32
-urxvt*background: rgba:0000/0000/0000/dddd
+URxvt*depth:     32
+URxvt*background: rgba:0000/0000/0000/dddd
 
 !jump to bottom (prompt) on keypress
-urxvt*scrollTtyKeypress:  true
+URxvt*scrollTtyKeypress:  true
 !!jump to bottom (prompt) when tty gets new lines
-urxvt*scrollWithBuffer:   false
+URxvt*scrollWithBuffer:   false
 !!jump to bottom (prompt) on tty output
-urxvt*scrollTtyOutput:    false
+URxvt*scrollTtyOutput:    false
 
 ! black
 !*color0:  #2E3436
 !*color8:  #555753
 ! red
-urxvt*color1:  #a40000
-urxvt*color9:  #EF2929
+URxvt*color1:  #a40000
+URxvt*color9:  #EF2929
 ! green
-urxvt*color2:  #4E9A06
-urxvt*color10: #8AE234
+URxvt*color2:  #4E9A06
+URxvt*color10: #8AE234
 ! yellow
-urxvt*color3:  #C4A000
-urxvt*color11: #FCE94F
+URxvt*color3:  #C4A000
+URxvt*color11: #FCE94F
 ! blue
 !*color4:  #3465A4
 !*color12: #729FCF
-urxvt*color4: #003EFF
-urxvt*color12: RoyalBlue
+URxvt*color4: #003EFF
+URxvt*color12: RoyalBlue
 ! purple
-urxvt*color5:  #75507B
-urxvt*color13: #AD7FA8
+URxvt*color5:  #75507B
+URxvt*color13: #AD7FA8
 ! orange (replaces cyan)
-urxvt*color6:  #ce5c00
-urxvt*color14: #fcaf3e
+URxvt*color6:  #ce5c00
+URxvt*color14: #fcaf3e
 ! white
-urxvt*color7:  #babdb9
-urxvt*color15: #EEEEEC
+URxvt*color7:  #babdb9
+URxvt*color15: #EEEEEC
