@@ -139,7 +139,7 @@ myKeys = [
          -- Toggles workspace
          , ((modm, xK_Tab), toggleWorkspace)
          -- Shows/hides my terminal
-         , ((modm, xK_c), scratchpadSpawnAction defaultConfig )
+         , ((modm, xK_c), scratchpadSpawnAction defaultConfig {terminal = map toLower myTerminal } )
          ]
     where
         toggleWorkspace = windows $ W.view =<< W.tag . head . filter 
