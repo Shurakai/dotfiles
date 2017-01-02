@@ -1,7 +1,9 @@
 *.o
 *.gpg
 *.gpg~
+*.key
 gpg/.gnupg/random_seed
+gpg/.gnupg/cr*
 gpg/*/.*
 xmonad/.xmonad/xmonad-x86_64-linux
 xmonad/.xmonad/*.errors
