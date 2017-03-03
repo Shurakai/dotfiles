@@ -1,6 +1,7 @@
 [user]
     name = Christian Heinrich
-    email = christian.heinrich@livando.com
+    email = christian@gladbachcity.de
+	signingkey = christian@gladbachcity.de
 [color]
   branch = auto
   diff = auto
@@ -69,9 +70,6 @@
   lb=log --oneline --graph --decorate
   lbs=log --oneline --graph --decorate -20
   lbss=log --oneline --graph --decorate -8
-
-[merge]
-    tool = vimdiff
 
 # vim: ft=gitconfig
 [pager]
