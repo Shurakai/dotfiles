@@ -2,4 +2,4 @@
 SEARCH=(.*$)
 
 # Exclude files that I don't need.
-EXCLUDE=^(c)?tags$|.*\.out$|.*doc/.*\.html$|.*\.js
+EXCLUDE=^(c)?tags$|.*\.out$|.*doc/.*\.(tag|html)$|.*\.js|(build|depend)\.make|testlist|CMakeFiles/.*
