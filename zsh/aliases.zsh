@@ -3,7 +3,7 @@ alias l='ls -AlF'
 alias df='df -h'
 alias mkdir='mkdir -p -v'
 alias rm='rm -i --preserve-root'
-alias evince='zathura'
+#alias evince='zathura'
 
 # Add the key to ssh-add if not already added; then just use the plain ssh
 # Make sure that $? is escaped as "\$?", because otherwise this will be executed
