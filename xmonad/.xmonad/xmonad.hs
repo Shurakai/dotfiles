@@ -85,6 +85,7 @@ myWorkspaces = ["1:web", "2:term", "3:mail", "4:vocabulary", "5:pdf", "6:skype",
 myManageHook = (composeAll [ isFullscreen --> doF W.focusDown <+> doFullFloat
                           , className =? "Firefox"         --> doShift "1:web"
                           , className =? "Iceweasel"       --> doShift "1:web"
+                          , className =? "Firefox-esr"       --> doShift "1:web"
                           , className =? myTerminal        --> doShift "2:term"
                           , className =? "Evolution"       --> doShift "3:mail"
                           , className =? "Skype"           --> doShift "6:skype"
@@ -118,9 +119,9 @@ myKeys = [
 --       , ((modm,               xK_Down),  prevScreen)
          , ((modm .|. shiftMask, xK_Up),    shiftNextScreen)
          , ((modm .|. shiftMask, xK_Down),  shiftPrevScreen)
-         , ((modm,               xK_z),     toggleWorkspace)
          , ((modm .|. shiftMask, xK_l),     spawn "gnome-screensaver-command -l")
          , ((modm,               xK_f),     sendMessage ToggleLayout)
+         , ((modm,               xK_F4),    spawn "xcalib -invert -alter")
          --, ((modm,               xK_F1),    manPrompt defaultXPConfig)
          , ((modm,               xK_F2),    shellPrompt defaultXPConfig)
          , ((modm,               xK_F12),   spawn "/home/heinrich/bin/change-keymap.sh")
