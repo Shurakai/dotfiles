@@ -7,12 +7,14 @@ Xft.hinting: 1
 Xft.antialias: 1
 Xft.rgba: rgb
 
+URxvt.iso14755: false
+URxvt.iso14755_52: false
 URxvt*iconFile:            /usr/share/icons/gnome/32x32/apps/gnome-terminal.png
 URxvt.geometry: 170x60+25+50
 URxvt.saveLines: 10000
 URxvt.scrollBar: false
 URxvt.foreground: white
-!URxvt.background: black
+URxvt.background: black
 URxvt.secondaryScroll: true
 URxvt.perl-ext-common: default,matcher
 URxvt.urlLauncher: firefox
