@@ -122,6 +122,7 @@ myKeys = [
          , ((modm .|. shiftMask, xK_l),     spawn "gnome-screensaver-command -l")
          , ((modm,               xK_f),     sendMessage ToggleLayout)
          , ((modm,               xK_F4),    spawn "xcalib -invert -alter")
+         , ((modm,               xK_F5),    spawn "xrandr && xrandr --output DisplayPort-1 --off && xrandr --output DisplayPort-1 --mode 2560x1600 --left-of eDP --primary && xmodmap ~/.Xmodmap")
          --, ((modm,               xK_F1),    manPrompt defaultXPConfig)
          , ((modm,               xK_F2),    shellPrompt defaultXPConfig)
          , ((modm,               xK_F12),   spawn "/home/heinrich/bin/change-keymap.sh")
