@@ -437,7 +437,8 @@ Being asked to type in yes explicitly all the time gets very tedious. I understa
 
 #+RESULTS:...
 
-And here is mine (Christian's):
+And here is mine (Christian's). Please note that *the first asterisk is
+quoted*. If this is not done, this source block will *not* be tangled!
 
 #+begin_src emacs-lisp
 (setq org-capture-templates
@@ -450,9 +451,9 @@ And here is mine (Christian's):
 :PROPERTIES:
 :DRILL_CARD_TYPE: twosided
 :END:
-*** Deutsch
+\*** Deutsch
     %^{prompt}
-*** Französisch
+\*** Französisch
     %^{prompt}
 " ))))
 #+end_src
