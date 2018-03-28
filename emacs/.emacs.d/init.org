@@ -444,7 +444,7 @@ quoted*. If this is not done, this source block will *not* be tangled!
 (setq org-capture-templates
       (quote (("j" "Berufl. Journal" plain (file+function "~/workspace/inria/research-collab/journal.org" Shurakai/find-journal-tree)
                "*** %? %^g" )
-              ("p" "Priv. Journal" plain (file+function "~/journal_privat.org" Shurakai/find-journal-tree)
+              ("p" "Priv. Journal" plain (file+function "~/org/journal_privat.org" Shurakai/find-journal-tree)
                "*** %? %^g" )
               ("f" "Franz. Vokabel" plain (file "~/Documents/Notizen/Franzoesisch/Vokabeln.org")
                "** :KARTEIKARTE:FRANZ:
