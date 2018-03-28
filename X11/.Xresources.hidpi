@@ -1,0 +1,65 @@
+Xft.dpi: 244
+Xft.autohint: 0
+Xft.lcdfilter: lcddefault
+Xft.hintstyle: hintfull
+Xft.hinting: 1
+Xft.antialias: 1
+Xft.rgba: rgb
+
+URxvt*iconFile:            /usr/share/icons/gnome/32x32/apps/gnome-terminal.png
+URxvt.geometry: 170x60+25+50
+URxvt.saveLines: 10000
+URxvt.scrollBar: false
+URxvt.foreground: white
+!URxvt.background: black
+URxvt.secondaryScroll: true
+URxvt.perl-ext-common: default,matcher
+URxvt.urlLauncher: firefox
+URxvt.matcher.button: 1
+URxvt.matcher.pattern.1: \\bwww\\.[\\w-]\\.[\\w./?&@#-]*[\\w/-]
+!URxvt.font: xft:Bitstream Vera Sans Mono:pixelsize=24
+!URxvt.font: xft:Source Code Pro for Powerline:pixelsize=15
+URxvt.font: xft:Meslo LG M DZ for Powerline:pixelsize=26
+
+
+!fade text n% upon unfocus
+urxvt*fading:             20
+!!darken=(0 to 100) lighten=(-1 to -100)
+urxvt*shading:            30
+!!set to 32-bit for real transparency (compositing required)
+urxvt*depth:     32
+urxvt*background: rgba:0000/0000/0000/dddd
+
+!jump to bottom (prompt) on keypress
+urxvt*scrollTtyKeypress:  true
+!!jump to bottom (prompt) when tty gets new lines
+urxvt*scrollWithBuffer:   false
+!!jump to bottom (prompt) on tty output
+urxvt*scrollTtyOutput:    false
+
+! black
+!*color0:  #2E3436
+!*color8:  #555753
+! red
+urxvt*color1:  #a40000
+urxvt*color9:  #EF2929
+! green
+urxvt*color2:  #4E9A06
+urxvt*color10: #8AE234
+! yellow
+urxvt*color3:  #C4A000
+urxvt*color11: #FCE94F
+! blue
+!*color4:  #3465A4
+!*color12: #729FCF
+urxvt*color4: #003EFF
+urxvt*color12: RoyalBlue
+! purple
+urxvt*color5:  #75507B
+urxvt*color13: #AD7FA8
+! orange (replaces cyan)
+urxvt*color6:  #ce5c00
+urxvt*color14: #fcaf3e
+! white
+urxvt*color7:  #babdb9
+urxvt*color15: #EEEEEC
