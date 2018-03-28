@@ -2,3 +2,5 @@
 set history save on
 
 set history remove-duplicates 10
+
+set breakpoint pending on
