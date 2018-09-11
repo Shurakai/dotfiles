@@ -3,7 +3,7 @@
 
 # Load background image
 #xloadimage -onroot -border black -fullscreen /home/heinrich/Pictures/wallpapers/phi.jpg
-xloadimage -onroot -border black -fullscreen /home/heinrich/Pictures/wallpapers/03974_morningstarpeak_3200x1800.jpg
+xloadimage -onroot -border black -fullscreen /home/heinrich/Pictures/wallpapers/03976_theeleventhhour_3200x1800.jpg
 
 /usr/lib/notification-daemon/notification-daemon &
 
@@ -23,6 +23,9 @@ gnome-screensaver &
 
 xset -dpms
 
+redshift -l 55.7:12.6 -t 5700:3600 -g 0.8 -m randr -v &
+
 xmodmap ~/.Xmodmap
 
 exec xmonad
+
