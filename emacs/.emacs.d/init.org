@@ -809,10 +809,15 @@ tag will be updated with the current table of contents.
 (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
 #+end_src
 * Org-mode custom stuff                                            :noexport:
-** Epresent
-#+begin_src emacs-lisp
-;; (require 'epresent)
-#+end_src
+** org-bullets (cosmetics)
+
+Makes the bullets a bit nicer. Call =org-bullets-mode= to enable once.
+#+BEGIN_SRC emacs-lisp
+(if (require 'org-bullets)
+     (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+     (warn "org-bullets not found"))
+(org-bullets-mode 1)
+#+END_SRC
 * Org-mode website generation                                      :noexport:
 You may want to fully disable this section if you consider using my
 init.org as it is really full of custom hardcoded stuff not really
@@ -1101,7 +1106,7 @@ here.
  '(org-reverse-note-order t)
  '(package-selected-packages
    (quote
-    (magit helm dash-functional typopunct ob-lua lua-mode evil-org evil-easymotion ess epresent color-theme-sanityinc-tomorrow color-theme)))
+    (org-bullets magit helm dash-functional typopunct ob-lua lua-mode evil-org evil-easymotion ess epresent color-theme-sanityinc-tomorrow color-theme)))
  '(remember-annotation-functions (quote (org-remember-annotation)))
  '(remember-handler-functions (quote (org-remember-handler)))
  '(safe-local-variable-values
