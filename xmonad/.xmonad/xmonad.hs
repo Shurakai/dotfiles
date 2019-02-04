@@ -132,8 +132,8 @@ myKeys = [
          -- , ((0                     , 0x1008FF11), spawn "amixer set Master 2-")
          -- , ((0                     , 0x1008FF13), spawn "amixer set Master 2+")
          -- , ((0                     , 0x1008FF12), spawn "amixer set Master toggle")
-         , ((modm                  , xK_Page_Down), spawn "amixer set Master 1000-")
-         , ((modm                  , xK_Page_Up), spawn "amixer set Master 1000+")
+         , ((modm                  , xK_Page_Down), spawn "amixer set Master 1.65-")
+         , ((modm                  , xK_Page_Up), spawn "amixer set Master 1.65+")
          -- Make a screenshot from the currently active screen
          , ((controlMask, xK_Print), spawn "sleep 0.3; scrot -s")
          -- Make a screenshot just of the current screen
