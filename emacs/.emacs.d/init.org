@@ -125,7 +125,6 @@ an alternative: https://addons.mozilla.org/en-US/firefox/addon/org-capture/. Che
 (require 'paren)
 #+end_src
 
-
 * Keyboard ad mouse 
 ** Scroll one line at a time (when using the mouse wheel)
 
@@ -356,6 +355,11 @@ Being asked to type in yes explicitly all the time gets very tedious. I understa
 (defalias 'yes-or-no-p 'y-or-n-p)
 #+end_src
 * Org-mode related configuration
+** Write letters with KOMA letter                           :PLUGIN:ORGMODE:
+#+BEGIN_SRC emacs-lisp
+(eval-after-load 'ox '(require 'ox-koma-letter))
+#+END_SRC
+
 ** Org-drill                                                :PLUGIN:ORGMODE:
 
 #+BEGIN_SRC emacs-lisp
@@ -400,10 +404,15 @@ Being asked to type in yes explicitly all the time gets very tedious. I understa
   ;; # -*- buffer-auto-save-file-name: nil; -*-
 #+END_SRC
 ** org-download                                              :PLUGIN:ORGMODE:
-   #+BEGIN_SRC emacs-lisp
-   (require 'org-download)
-   (setq org-download-method 'attach)
-   #+END_SRC
+
+This plugin allows us to download images from websites via the
+~org-download-image~ command or to take a screenshot of the screen (one
+can select what to screenshot) via ~org-download-screenshot~.
+
+#+BEGIN_SRC emacs-lisp
+ (require 'org-download)
+ (setq org-download-method 'attach)
+#+END_SRC
 ** Load default file
 
 #+BEGIN_SRC emacs-lisp
@@ -425,7 +434,40 @@ Being asked to type in yes explicitly all the time gets very tedious. I understa
 (setq org-pretty-entities t)       ;; to have \alpha, \to and others display as utf8 http://orgmode.org/manual/Special-symbols.html
 #+end_src
 ** Agenda
-*** Add short cut keys for the org-agenda                            :ARNAUD:
+*** Agenda general configuration
+
+ #+begin_src emacs-lisp
+ (setq org-agenda-ndays 7)
+ (setq org-agenda-show-all-dates t)
+ (setq org-agenda-skip-deadline-if-done t)
+ (setq org-agenda-skip-scheduled-if-done t)
+ (setq org-agenda-start-on-weekday nil)
+ (setq org-agenda-start-with-follow-mode t) ;; When the curser is positioned on a line (or moved), show that entry in another window
+ #+end_src
+
+ #+RESULTS:
+ : t
+
+*** Agenda: Included files
+These are my personal files that I want to be displayed in the agenda:
+
+#+begin_src emacs-lisp
+ (setq org-agenda-files
+   (quote
+    ("~/Documents/Notizen/privat.org" "~/org/journal_privat.org" "~/workspace/inria/research-collab/journal.org")))
+#+end_src
+
+#+begin_src emacs-lisp
+(tags-todo "STEUERN" 
+  ((org-agenda-overriding-header "Phone Calls")
+  ( org-agenda-files
+   (quote
+    ("~/Documents/Notizen/privat.org" "~/org/journal_privat.org" "~/workspace/inria/research-collab/journal.org"))
+)))
+#+end_src
+
+*** Add short cut keys :ARNAUD:
+
 #+begin_src emacs-lisp
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-cc" 'org-capture)
@@ -437,7 +479,169 @@ Being asked to type in yes explicitly all the time gets very tedious. I understa
 
 #+RESULTS:...
 
-And here is mine (Christian's). Please note that *the first asterisk is
+*** Agenda include all todos and diary :ARNAUD:
+#+begin_src emacs-lisp
+(setq org-agenda-include-all-todo t)
+(setq org-agenda-include-diary t)
+#+end_src
+
+#+RESULTS:...
+
+*** Create blocks
+
+#+begin_src emacs-lisp
+(setq org-stuck-projects '("+LEVEL=3/-DONE-CANCELLED-DEFERRED" ("*") nil ""))
+(setq org-agenda-custom-commands
+      '(("a" "Agenda and Home-related tasks"
+         (
+          (stuck "" (
+            (org-agenda-overriding-header "Bescheuerte Projekte")))
+          (tags-todo "STEUERN")
+          (tags "garden")
+          (agenda "")
+))
+        ("o" "Agenda and Office-related tasks"
+         ((agenda "")
+          (tags-todo "work")
+          (tags "office")))))
+#+end_src
+
+#+RESULTS:
+| a | Agenda and Home-related tasks   | ((stuck  ((org-agenda-overriding-header Bescheuerte Projekte))) (tags-todo STEUERN) (tags garden) (agenda )) |
+| o | Agenda and Office-related tasks | ((agenda ) (tags-todo work) (tags office))                                                                   |
+
+*** Hide empty blocks
+
+The blocks (sections within the agenda view) that are empty may be
+annoying. They can be hidden with the following code:
+
+From this thread:
+https://lists.gnu.org/archive/html/emacs-orgmode/2015-06/msg00266.html
+
+#+begin_src elisp
+  (defun org-agenda-delete-empty-blocks ()
+    "Remove empty agenda blocks.
+  A block is identified as empty if there are fewer than 2
+  non-empty lines in the block (excluding the line with
+  `org-agenda-block-separator' characters)."
+    (when org-agenda-compact-blocks
+      (user-error "Cannot delete empty compact blocks"))
+    (setq buffer-read-only nil)
+    (save-excursion
+      (goto-char (point-min))
+      (let* ((blank-line-re "^\\s-*$")
+             (content-line-count (if (looking-at-p blank-line-re) 0 1))
+             (start-pos (point))
+             (block-re (format "%c\\{10,\\}" org-agenda-block-separator)))
+        (while (and (not (eobp)) (forward-line))
+          (cond
+           ((looking-at-p block-re)
+            (when (< content-line-count 2)
+              (delete-region start-pos (1+ (point-at-bol))))
+            (setq start-pos (point))
+            (forward-line)
+            (setq content-line-count (if (looking-at-p blank-line-re) 0 1)))
+           ((not (looking-at-p blank-line-re))
+            (setq content-line-count (1+ content-line-count)))))
+        (when (< content-line-count 2)
+          (delete-region start-pos (point-max)))
+        (goto-char (point-min))
+        ;; The above strategy can leave a separator line at the beginning
+        ;; of the buffer.
+        (when (looking-at-p block-re)
+          (delete-region (point) (1+ (point-at-eol))))))
+    (setq buffer-read-only t))
+
+  (add-hook 'org-agenda-finalize-hook #'org-agenda-delete-empty-blocks)
+#+end_src
+
+#+RESULTS:
+| org-agenda-delete-empty-blocks |
+
+*** Agenda ordering                                             :CHRISTIAN:
+
+Normally, items that have been rescheduled (because they weren't
+finished the date they were originally scheduled) appear on the top of
+the agenda. However, tasks that have a priority assigned should always
+be more important and be shown on the top of the agenda. For example,
+like this:
+
+Default (priority [#A] is ignored)
+#+begin_quote
+journal: Sched.5x:  TODO Do something really important
+journal: Sched.2x:  [#A] Sign up for something
+#+end_quote
+
+With this configuration: (priority is more important than date)
+#+begin_quote
+journal: Sched.2x:  [#A] Sign up for something
+journal: Sched.5x:  TODO Do something really important
+#+end_quote
+
+#+begin_src emacs-lisp
+(setq org-agenda-sorting-strategy 
+  (quote 
+    (time-up priority-down)))
+#+end_src
+
+#+RESULTS:
+| time-up | priority-down |
+
+*** Super Agenda Plugin                                  :CHRISTIAN:PLUGIN:
+
+This loads and enables the 
+#+begin_src emacs-lisp
+(require 'org-super-agenda)
+(org-super-agenda-mode 1)
+#+end_src 
+
+#+RESULTS:
+: t
+
+#+begin_src emacs-lisp
+
+(let ((org-super-agenda-groups
+       '((:name "Books to read"
+                :and (:todo "UNREAD" :tag ("BUCH" "book")))
+         (:discard (:anything t)))))
+  (org-todo-list))
+#+end_src 
+
+#+RESULTS:
+: t
+
+#+begin_src emacs-lisp
+(let ((org-super-agenda-groups
+       '((:log t)  ; Automatically named "Log"
+         (:name "Today"
+                :scheduled today)
+         ;(:habit t)
+         (:name "Due today"
+                :deadline today)
+         (:name "Overdue"
+                :deadline past)
+         (:name "Due soon"
+                :deadline future)
+         (:name "Unimportant"
+                :todo ("SOMEDAY" "MAYBE" "CHECK" "UNREAD" "UNWATCHED")
+                :order 100)
+         (:name "Waiting..."
+                :todo "WAITING"
+                :order 98)
+         (:name "Scheduled earlier"
+                :scheduled past)
+         (:name "Scheduled"
+                :time-grid t)
+)))
+  (org-todo-list))
+#+end_src
+
+#+RESULTS:
+: t
+
+*** Add capture templates so that we can quickly add entries    :CHRISTIAN:
+
+Please note that *the first asterisk is
 quoted*. If this is not done, this source block will *not* be tangled!
 
 #+begin_src emacs-lisp
@@ -458,170 +662,6 @@ quoted*. If this is not done, this source block will *not* be tangled!
 " ))))
 #+end_src
 
-
-
-*** Agenda config                                                    :ARNAUD:
-#+begin_src emacs-lisp
-(setq org-agenda-include-all-todo t)
-(setq org-agenda-include-diary t)
-#+end_src
-
-#+RESULTS:...
-
-** Org-id for storing objects ???                                    :ARNAUD:
-#+begin_src emacs-lisp
-(setq org-id-method (quote uuidgen))
-#+end_src
-
-#+RESULTS:...
-
-** Setting "Wrap at window edge" for .org mode:                        :WEB:
-#+begin_src emacs-lisp
-;; (global-visual-line-mode t)
-#+end_src
-
-#+RESULTS:...
-
-[16:32:35; 24.04.2013]
-
-** Heading is DONE when all checkboxes are checked:                     :WEB:
-Mark heading done when all checkboxes are checked.
-
-An item consists of a list with checkboxes. When all of the checkboxes are checked, the item should be considered complete and its TODO state should be automatically changed to DONE. The code below does that. This version is slightly enhanced over the one in the mailing list (see http://thread.gmane.org/gmane.emacs.orgmode/42715/focus=42721) to reset the state back to TODO if a checkbox is unchecked.
-
-Note that the code requires that a checkbox statistics cookie (the [/] or [%] thingie in the headline - see the Checkboxes section in the manual) be present in order for it to work. Note also that it is too dumb to figure out whether the item has a TODO state in the first place: if there is a statistics cookie, a TODO/DONE state will be added willy-nilly any time that the statistics cookie is changed.
-
-#+begin_src emacs-lisp
-;; see http://thread.gmane.org/gmane.emacs.orgmode/42715
-(eval-after-load 'org-list
-  '(add-hook 'org-checkbox-statistics-hook (function ndk/checkbox-list-complete)))
-
-(defun ndk/checkbox-list-complete ()
-  (save-excursion
-    (org-back-to-heading t)
-    (let ((beg (point)) end)
-      (end-of-line)
-      (setq end (point))
-      (goto-char beg)
-      (if (re-search-forward "\\[\\([0-9]*%\\)\\]\\|\\[\\([0-9]*\\)/\\([0-9]*\\)\\]" end t)
-            (if (match-end 1)
-                (if (equal (match-string 1) "100%")
-                    ;; all done - do the state change
-                    (org-todo 'done)
-                  (org-todo 'todo))
-              (if (and (> (match-end 2) (match-beginning 2))
-                       (equal (match-string 2) (match-string 3)))
-                  (org-todo 'done)
-                (org-todo 'todo)))))))
-#+end_src
-
-#+RESULTS:...
-
-[16:27:59; 24.04.2013]
-
-** Allow shift selection in org-mode                                  :LUKA:
-Luka suggested using this:
-https://www.emacswiki.org/emacs/org-cua-dwim.el I simply pasted it
-here and it seemed to work like a charm.
-
-#+begin_src emacs-lisp
-(defun org-cua-dwim-turn-on-org-cua-mode-partial-support ()
-  "This turns on org-mode cua-mode partial support; Assumes
-shift-selection-mode is available."
-  (interactive)
-  (set (make-local-variable 'org-support-shift-select) t)
-  (cua-mode 1)
-  (add-hook 'pre-command-hook 'cua--pre-command-handler nil t)
-  (add-hook 'post-command-hook 'cua--post-command-handler nil t)
-  (set (make-local-variable 'cua-mode) t)
-  (set (make-local-variable 'org-cua-dwim-was-move) nil)
-  (set (make-local-variable 'shift-select-mode) nil))
-
-;;;###autoload
-(add-hook 'org-mode-hook 'org-cua-dwim-turn-on-org-cua-mode-partial-support)
-
-(defvar org-cua-dwim-was-move nil)
-(defvar org-cua-dwim-debug nil)
-(defvar org-cua-dwim t)
-
-(defadvice handle-shift-selection (around org-cua-dwim)
-  (let ((is-org-mode (and (not (minibufferp))
-                          (eq major-mode 'org-mode)))
-        (do-it t))
-    ;(setq org-cua-dwim-shift-translated this-command-keys-shift-translated)
-    (when (and org-cua-dwim
-               is-org-mode this-command-keys-shift-translated
-               (not org-cua-dwim-was-move))
-      (when org-cua-dwim-debug
-        (message "Turn ON shift-select-mode & delete-selection-mode"))
-      (delete-selection-mode 1)
-      (set (make-local-variable 'org-cua-dwim-was-move) t)
-      ;(set (make-local-variable 'cua--last-region-shifted) t)
-      ;(set (make-local-variable 'cua--explicit-region-start) nil)
-      (set (make-local-variable 'shift-select-mode) t)
-      (set (make-local-variable 'cua-mode) nil))
-    (when (and org-cua-dwim
-               is-org-mode (not this-command-keys-shift-translated)
-               org-cua-dwim-was-move)
-      (when org-cua-dwim-debug
-        (message "Turn Off shift-select-mode & delete-selection-mode"))
-      (delete-selection-mode -1)
-      (set (make-local-variable 'shift-select-mode) nil)
-      (set (make-local-variable 'cua-mode) t)
-      (set (make-local-variable 'org-cua-dwim-was-move) nil))
-    (when do-it
-      ad-do-it)
-    (when (and org-cua-dwim
-               is-org-mode
-               mark-active)
-      (cua--select-keymaps))))
-
-(defmacro org-cua-dwim-fix-cua-command (cmd)
-  "Defines advice for a CUA-command that will turn on CUA mode
-before runnind ant hen run the `cua--precommand-handler'"
-  `(progn
-     (defadvice ,(intern cmd) (around org-cua-dwim)
-     "Try to fix the org copy and paste problem."
-     (when (and (not (minibufferp)) (not cua-mode)
-                (eq major-mode 'org-mode))
-       (when org-cua-dwim-debug
-         (message "Turn Off shift-select-mode & delete-selection-mode  (CUA command)"))
-       (delete-selection-mode -1)
-       (set (make-local-variable 'shift-select-mode) nil)
-       (set (make-local-variable 'cua-mode) t)
-       (set (make-local-variable 'org-cua-dwim-was-move) nil)
-       (cua--pre-command-handler))
-     ad-do-it)
-     (ad-activate ',(intern cmd))))
-
-;; Advise all CUA commands active when selection is active
-(org-cua-dwim-fix-cua-command "cua--prefix-override-handler")
-(org-cua-dwim-fix-cua-command "cua-repeat-replace-region")
-(org-cua-dwim-fix-cua-command "cua--shift-control-c-prefix")
-(org-cua-dwim-fix-cua-command "cua--shift-control-x-prefix")
-(org-cua-dwim-fix-cua-command "cua-toggle-rectangle-mark")
-(org-cua-dwim-fix-cua-command "cua-delete-region")
-(org-cua-dwim-fix-cua-command "cua-cut-region")
-(org-cua-dwim-fix-cua-command "cua-copy-region")
-(org-cua-dwim-fix-cua-command "cua-cancel")
-(org-cua-dwim-fix-cua-command "cua-toggle-global-mark")
-(org-cua-dwim-fix-cua-command "cua-paste")
-(org-cua-dwim-fix-cua-command "cua-exchange-point-and-mark")
-(org-cua-dwim-fix-cua-command "cua-scroll-down")
-(org-cua-dwim-fix-cua-command "cua-scroll-up")
-(org-cua-dwim-fix-cua-command "cua-set-mark")
-(org-cua-dwim-fix-cua-command "cua-paste-pop")
-
-
-
-(ad-activate 'handle-shift-selection)
-#+end_src
-
-** Org-protocole (capture in firefox)                             :noexport:
-https://addons.mozilla.org/fr/firefox/addon/org-mode-capture/
-#+begin_src emacs-lisp
-(require 'org-protocol)
-#+end_src
 * Org-mode shortcuts
 
 * Org-mode + babel:
@@ -660,75 +700,63 @@ https://addons.mozilla.org/fr/firefox/addon/org-mode-capture/
 #+RESULTS:
 
 ** Adding source code blocks:                                          :LUKA:
-*** With capital letters:
-   To use this type <S and then TAB
-#+begin_src emacs-lisp
-(add-to-list 'org-structure-template-alist
-        '("S" "#+begin_src ?\n\n#+end_src" "<src lang=\"?\">\n\n</src>"))
-#+end_src
-
-#+RESULTS:...
+To use this, type C-c C-,
+The old shortcuts (<m and then TAB) were outdated in org 9.2 - if you
+still want to use this, you need to add ~(require 'org-tempo)~.
 
 *** Emacs-elisp code:
-   To use this type <m and then TAB
 #+begin_src emacs-lisp
 (add-to-list 'org-structure-template-alist
-        '("m" "#+begin_src emacs-lisp\n\n#+end_src" "<src lang=\"emacs-lisp\">\n\n</src>"))
+        '("m" . "src emacs-lisp"))
 #+end_src
 
 #+RESULTS:...
 
 *** R code:
-To use this type <r and then TAB. This creates an R block for textual output.
 #+begin_src emacs-lisp
 (add-to-list 'org-structure-template-alist
-        '("r" "#+begin_src R :results output :session *R* :exports both\n\n#+end_src" "<src lang=\"R\">\n\n</src>"))
+        '("r" . "src R :results output :session *R* :exports both"))
 #+end_src
 
 #+RESULTS:...
 
-To use this type <R and then TAB. This creates an R block for graphics
-that are stored in the /tmp/.
+This creates an R block for graphics that are stored in the /tmp/.
 #+begin_src emacs-lisp
 (add-to-list 'org-structure-template-alist
-        '("R" "#+begin_src R :results output graphics :file (org-babel-temp-file \"figure\" \".png\") :exports both :width 600 :height 400 :session *R* \n\n#+end_src" "<src lang=\"R\">\n\n</src>"))
+        '("R" . "#+begin_src R :results output graphics :file (org-babel-temp-file \"figure\" \".png\") :exports both :width 600 :height 400 :session *R*"))
 #+end_src
 
 #+RESULTS:...
 
-To use this type <RR and then TAB. This creates an R block for
-graphics that are stored in the directory of the current file.
+This creates an R block for graphics that are stored in the directory of the current file.
 
 #+begin_src emacs-lisp
 (add-to-list 'org-structure-template-alist
-        '("RR" "#+begin_src R :results output graphics :file  (org-babel-temp-file (concat (file-name-directory (or load-file-name buffer-file-name)) \"figure-\") \".png\") :exports both :width 600 :height 400 :session *R* \n\n#+end_src" "<src lang=\"R\">\n\n</src>"))
+        '("RR" . "src R :results output graphics :file  (org-babel-temp-file (concat (file-name-directory (or load-file-name buffer-file-name)) \"figure-\") \".png\") :exports both :width 600 :height 400 :session *R*"))
 #+end_src
 
 *** Python code
-To use this type <p and then TAB
 #+begin_src emacs-lisp
 (add-to-list 'org-structure-template-alist
-        '("p" "#+begin_src python :results output :exports both\n\n#+end_src" "<src lang=\"python\">\n\n</src>"))
+        '("p" . "src python :results output :exports both"))
 #+end_src
 
 #+begin_src emacs-lisp
 (add-to-list 'org-structure-template-alist
-        '("P" "#+begin_src python :results output :session *python* :exports both\n\n#+end_src" "<src lang=\"python\">\n\n</src>"))
+        '("P" . "src python :results output :session *python* :exports both"))
 #+end_src
 *** Bash "sh" code:
-To use this type <b and then TAB
 #+begin_src emacs-lisp
 (add-to-list 'org-structure-template-alist
-        '("b" "#+begin_src sh :results output :exports both\n\n#+end_src" "<src lang=\"sh\">\n\n</src>"))
+        '("b" . "src sh :results output :exports both"))
 #+end_src
 
 #+RESULTS:...
 
-To use this type <B and then TAB. This comes with a session argument
-(e.g., in case you want to keep ssh connexions open).
+This comes with a session argument (e.g., in case you want to keep ssh connexions open).
 #+begin_src emacs-lisp
 (add-to-list 'org-structure-template-alist
-        '("B" "#+begin_src sh :session foo :results output :exports both \n\n#+end_src" "<src lang=\"sh\">\n\n</src>"))
+        '("B" . "src sh :session foo :results output :exports both"))
 #+end_src
 
 #+RESULTS:...
@@ -813,10 +841,22 @@ tag will be updated with the current table of contents.
 
 Makes the bullets a bit nicer. Call =org-bullets-mode= to enable once.
 #+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/elpa/org-bullets-20180208.2343/")
 (if (require 'org-bullets)
      (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
      (warn "org-bullets not found"))
-(org-bullets-mode 1)
+;;(org-bullets-mode 1) ; This causes issues if uncommented
+#+END_SRC
+
+** org-table-sticky-headers
+
+Sometimes tables are too large to look at all the data at once;
+scrolling is inevitable. To always know what each column means, this
+plugin uses the header sections and displays the names of the columns.
+
+#+BEGIN_SRC emacs-lisp
+; (add-to-list 'load-path "~/.emacs.d/elpa/org-table-sticky-header-20170409.114/")
+(add-hook 'org-mode-hook 'org-table-sticky-header-mode)
 #+END_SRC
 * Org-mode website generation                                      :noexport:
 You may want to fully disable this section if you consider using my
@@ -1081,14 +1121,6 @@ here.
  ;; If there is more than one, they won't work right.
  ;;'(custom-enabled-themes (quote (tango-dark)))
  '(line-number-mode nil)
- '(org-agenda-files
-   (quote
-    ("~/Documents/Notizen/privat.org" "~/org/journal_privat.org" "~/workspace/inria/research-collab/journal.org")))
- '(org-agenda-ndays 7)
- '(org-agenda-show-all-dates t)
- '(org-agenda-skip-deadline-if-done t)
- '(org-agenda-skip-scheduled-if-done t)
- '(org-agenda-start-on-weekday nil)
  '(org-babel-exp-inline-code-template "src_%lang[%switches%flags]{}")
  '(org-babel-shell-names
    (quote
@@ -1106,7 +1138,7 @@ here.
  '(org-reverse-note-order t)
  '(package-selected-packages
    (quote
-    (org-bullets magit helm dash-functional typopunct ob-lua lua-mode evil-org evil-easymotion ess epresent color-theme-sanityinc-tomorrow color-theme)))
+    (org-table-sticky-header org-super-agenda org-chef org-bullets magit helm dash-functional typopunct ob-lua lua-mode evil-org evil-easymotion ess epresent color-theme-sanityinc-tomorrow color-theme)))
  '(remember-annotation-functions (quote (org-remember-annotation)))
  '(remember-handler-functions (quote (org-remember-handler)))
  '(safe-local-variable-values
@@ -1159,15 +1191,37 @@ here.
 
 (with-eval-after-load 'ox-latex
    (add-to-list 'org-latex-classes
-        '("articleA"
-          "\\documentclass[12pt,a4paper,oneside,smallheadings,pointlessnumbers,BCOR12mm,DIVcalc]{scrreprt}%aus dem KOMA-Script-Paket"
-          ("\\chapter{%s}" . "\\chapter*{%s}")
-          ("\\section{%s}" . "\\section*{%s}")
-          ("\\subsection{%s}" . "\\subsection*{%s}")
+        '("thesis"
+          "\\documentclass[american,%
+    paper=A4,               % paper size --> A4 is default in Germany
+    twoside=true,           % onesite or twoside printing
+    openright,              % doublepage cleaning ends up right side
+    parskip=full,           % spacing value / method for paragraphs
+    chapterprefix=true,     % prefix for chapter marks
+    11pt,                   % font size
+    headings=normal,        % size of headings
+    bibliography=totoc,     % include bib in toc
+    listof=totoc,           % include listof entries in toc
+    titlepage=on,           % own page for each title page
+    captions=tableabove,    % display table captions above the float env
+    draft=false]{scrreprt}            % value for draft version
+"
+          ("\\chapter{%s}" . "\\chapter{%s}")
+          ("\\section{%s}" . "\\section{%s}")
+          ("\\subsection{%s}" . "\\subsection{%s}")
           ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-          ("\\paragraph{%s}" . "\\paragraph*{%s}")
+          ("\\paragraph{$blacktriangleright$ %s}" . "\\paragraph*{%s}")
           ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
         )))
+  ;;      '("articleA"
+  ;;      "\\documentclass[12pt,a4paper,oneside,smallheadings,pointlessnumbers,BCOR12mm,DIVcalc]{scrreprt}%aus dem KOMA-Script-Paket"
+  ;;        ("\\chapter{%s}" . "\\chapter*{%s}")
+  ;;        ("\\section{%s}" . "\\section*{%s}")
+  ;;      ("\\subsection{%s}" . "\\subsection*{%s}")
+  ;;      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+  ;;      ("\\paragraph{%s}" . "\\paragraph*{%s}")
+  ;;      ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
+  ;;  )))
 
 #+END_SRC
 
@@ -1175,6 +1229,20 @@ here.
 ;;        (org-babel-tangle-file "~/.emacs.d/init.org"
 ;;                               "~/.emacs.d/init.el"
 ;;                               "emacs-lisp")
+(require 'ox-extra)
+(ox-extras-activate '(ignore-headlines))
+(defun headline-numbering-filter (data backend info)
+  "No numbering in headlines that have a property :numbers: no"
+  (let* ((beg (next-property-change 0 data))
+         (headline (if beg (get-text-property beg :parent data))))
+    (if (and (eq backend 'latex)
+         (string= (org-element-property :NUMBERS headline) "no"))
+        (replace-regexp-in-string
+         "\\(part\\|chapter\\|\\(?:sub\\)*section\\|\\(?:sub\\)?paragraph\\)"
+         "\\1*" data nil nil 1)
+      data)))
+
+(setq org-export-filter-headline-functions '(headline-numbering-filter))
 (global-set-key (kbd "C-x x") 'execute-extended-command)
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
