@@ -39,7 +39,7 @@ myTerminal = "URxvt"
 
 main = do
     xmproc <- spawnPipe "xmobar"
-    xmonad $ defaultConfig
+    xmonad $ docks defaultConfig
         { manageHook  = myManageHook <+> manageDocks
         , terminal    = map toLower myTerminal
         , focusedBorderColor = "#5d0017"
@@ -125,7 +125,11 @@ myKeys = [
          , ((modm,               xK_F5),    spawn "xrandr && xrandr --output DisplayPort-1 --off && xrandr --output DisplayPort-1 --mode 2560x1600 --left-of eDP --primary && xmodmap ~/.Xmodmap")
          --, ((modm,               xK_F1),    manPrompt defaultXPConfig)
          , ((modm,               xK_F2),    shellPrompt defaultXPConfig)
-         , ((modm,               xK_F12),   spawn "/home/heinrich/bin/change-keymap.sh")
+         -- Increment the number of windows in the master area.
+         , ((modMask, xK_comma), sendMessage (IncMasterN 1))
+         -- Decrement the number of windows in the master area.
+         , ((modMask, xK_period), sendMessage (IncMasterN (-1)))
+         --, ((modm,               xK_F12),   spawn "/home/heinrich/bin/change-keymap.sh")
          --, ((modm,               xK_F3),    sshPrompt defaultXPConfig)
          -- To figure out what your key name is, use the command `xev`.
          -- The 0 below means that you do not have to press MOD-Key

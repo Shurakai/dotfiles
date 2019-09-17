@@ -12,6 +12,7 @@ Config { font = "xft:Meslo LG M DZ for Powerline:size=10:antialias=true" -- You 
        , hideOnStart  = False -- Start with window unmapped (hidden)?
        , lowerOnStart = False -- Move xmobar to bottom of window stack on start
        , allDesktops  = True -- Show on all desktops
+       , overrideRedirect = True
        , pickBroadest = False -- This will pick the screen with the highest resolution (with respect to the x-axis)
        , persistent   = False -- When True the window status is fixed i.e. hiding or revealing is not possible. This option can be toggled at runtime.
        , commands = [
