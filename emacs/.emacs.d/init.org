@@ -40,6 +40,7 @@ The load-paths for org-mode are added later.
 #+begin_src emacs-lisp
 (add-to-list 'load-path "~/.emacs.d/org-mode/lisp/")
 (add-to-list 'load-path "~/.emacs.d/org-mode/contrib/lisp/")
+(add-to-list 'load-path "~/.emacs.d/org-drill/")
 (require 'org-install)
 (require 'org)
 #+end_src
@@ -367,6 +368,8 @@ Being asked to type in yes explicitly all the time gets very tedious. I understa
 (setq org-drill-question-tag "KARTEIKARTE")
 (setq org-drill-add-random-noise-to-intervals-p t)
 (setq org-drill-save-buffers-after-drill-sessions-p nil)
+(setq org-drill-sm5-initial-interval 1.0)
+(setq org-drill-learn-fraction 0.2)
 #+END_SRC
 *** Set a custom tag for drills
 
@@ -447,6 +450,17 @@ can select what to screenshot) via ~org-download-screenshot~.
 
  #+RESULTS:
  : t
+
+*** Agenda: Enable habits
+
+This allows you to track single habits (like reading a journal/blog/... at
+least once a month but no more than every two weeks) and how you kept
+up with them.
+
+#+begin_src emacs-lisp
+(require 'org-habit)
+(add-to-list 'org-modules "org-habits")
+#+end_src
 
 *** Agenda: Included files
 These are my personal files that I want to be displayed in the agenda:
@@ -723,7 +737,7 @@ still want to use this, you need to add ~(require 'org-tempo)~.
 This creates an R block for graphics that are stored in the /tmp/.
 #+begin_src emacs-lisp
 (add-to-list 'org-structure-template-alist
-        '("R" . "#+begin_src R :results output graphics :file (org-babel-temp-file \"figure\" \".png\") :exports both :width 600 :height 400 :session *R*"))
+        '("R" . "#+begin_src R :results file graphics :file (org-babel-temp-file \"figure\" \".png\") :exports both :width 600 :height 400 :session *R*"))
 #+end_src
 
 #+RESULTS:...
@@ -732,7 +746,7 @@ This creates an R block for graphics that are stored in the directory of the cur
 
 #+begin_src emacs-lisp
 (add-to-list 'org-structure-template-alist
-        '("RR" . "src R :results output graphics :file  (org-babel-temp-file (concat (file-name-directory (or load-file-name buffer-file-name)) \"figure-\") \".png\") :exports both :width 600 :height 400 :session *R*"))
+        '("RR" . "src R :results file graphics :file  (org-babel-temp-file (concat (file-name-directory (or load-file-name buffer-file-name)) \"figure-\") \".png\") :exports both :width 600 :height 400 :session *R*"))
 #+end_src
 
 *** Python code

@@ -202,6 +202,8 @@
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
+(eval-after-load 'ox '(require 'ox-koma-letter))
+
 (require 'org-drill)
 (setq org-drill-question-tag "KARTEIKARTE")
 (setq org-drill-add-random-noise-to-intervals-p t)
@@ -234,8 +236,8 @@
   ;;
   ;; # -*- buffer-auto-save-file-name: nil; -*-
 
-   (require 'org-download)
-   (setq org-download-method 'attach)
+ (require 'org-download)
+ (setq org-download-method 'attach)
 
 (find-file "~/workspace/inria/research-collab/journal.org")
 
@@ -247,6 +249,14 @@
 (setq org-src-tab-acts-natively t) ;; you want this to have completion in blocks
 (setq org-hide-emphasis-markers t) ;; to hide the *,=, or / markers
 (setq org-pretty-entities t)       ;; to have \alpha, \to and others display as utf8 http://orgmode.org/manual/Special-symbols.html
+
+ (setq org-agenda-ndays 7)
+ (setq org-agenda-show-all-dates t)
+ (setq org-agenda-skip-deadline-if-done t)
+ (setq org-agenda-skip-scheduled-if-done t)
+ (setq org-agenda-start-on-weekday nil)
+ (setq org-agenda-start-with-follow-mode t) ;; When the curser is positioned on a line (or moved), show that entry in another window
+ (setq org-stuck-projects '("+LEVEL=3/-DONE-CANCELLED-DEFERRED-READ-TESTED-VISITED" ("*") nil "")) ;; This needs to be adapted
 
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-cc" 'org-capture)
@@ -270,128 +280,6 @@
 \*** Französisch
     %^{prompt}
 " ))))
-
-(setq org-agenda-include-all-todo t)
-(setq org-agenda-include-diary t)
-
-(setq org-id-method (quote uuidgen))
-
-;; (global-visual-line-mode t)
-
-;; see http://thread.gmane.org/gmane.emacs.orgmode/42715
-(eval-after-load 'org-list
-  '(add-hook 'org-checkbox-statistics-hook (function ndk/checkbox-list-complete)))
-
-(defun ndk/checkbox-list-complete ()
-  (save-excursion
-    (org-back-to-heading t)
-    (let ((beg (point)) end)
-      (end-of-line)
-      (setq end (point))
-      (goto-char beg)
-      (if (re-search-forward "\\[\\([0-9]*%\\)\\]\\|\\[\\([0-9]*\\)/\\([0-9]*\\)\\]" end t)
-            (if (match-end 1)
-                (if (equal (match-string 1) "100%")
-                    ;; all done - do the state change
-                    (org-todo 'done)
-                  (org-todo 'todo))
-              (if (and (> (match-end 2) (match-beginning 2))
-                       (equal (match-string 2) (match-string 3)))
-                  (org-todo 'done)
-                (org-todo 'todo)))))))
-
-(defun org-cua-dwim-turn-on-org-cua-mode-partial-support ()
-  "This turns on org-mode cua-mode partial support; Assumes
-shift-selection-mode is available."
-  (interactive)
-  (set (make-local-variable 'org-support-shift-select) t)
-  (cua-mode 1)
-  (add-hook 'pre-command-hook 'cua--pre-command-handler nil t)
-  (add-hook 'post-command-hook 'cua--post-command-handler nil t)
-  (set (make-local-variable 'cua-mode) t)
-  (set (make-local-variable 'org-cua-dwim-was-move) nil)
-  (set (make-local-variable 'shift-select-mode) nil))
-
-;;;###autoload
-(add-hook 'org-mode-hook 'org-cua-dwim-turn-on-org-cua-mode-partial-support)
-
-(defvar org-cua-dwim-was-move nil)
-(defvar org-cua-dwim-debug nil)
-(defvar org-cua-dwim t)
-
-(defadvice handle-shift-selection (around org-cua-dwim)
-  (let ((is-org-mode (and (not (minibufferp))
-                          (eq major-mode 'org-mode)))
-        (do-it t))
-    ;(setq org-cua-dwim-shift-translated this-command-keys-shift-translated)
-    (when (and org-cua-dwim
-               is-org-mode this-command-keys-shift-translated
-               (not org-cua-dwim-was-move))
-      (when org-cua-dwim-debug
-        (message "Turn ON shift-select-mode & delete-selection-mode"))
-      (delete-selection-mode 1)
-      (set (make-local-variable 'org-cua-dwim-was-move) t)
-      ;(set (make-local-variable 'cua--last-region-shifted) t)
-      ;(set (make-local-variable 'cua--explicit-region-start) nil)
-      (set (make-local-variable 'shift-select-mode) t)
-      (set (make-local-variable 'cua-mode) nil))
-    (when (and org-cua-dwim
-               is-org-mode (not this-command-keys-shift-translated)
-               org-cua-dwim-was-move)
-      (when org-cua-dwim-debug
-        (message "Turn Off shift-select-mode & delete-selection-mode"))
-      (delete-selection-mode -1)
-      (set (make-local-variable 'shift-select-mode) nil)
-      (set (make-local-variable 'cua-mode) t)
-      (set (make-local-variable 'org-cua-dwim-was-move) nil))
-    (when do-it
-      ad-do-it)
-    (when (and org-cua-dwim
-               is-org-mode
-               mark-active)
-      (cua--select-keymaps))))
-
-(defmacro org-cua-dwim-fix-cua-command (cmd)
-  "Defines advice for a CUA-command that will turn on CUA mode
-before runnind ant hen run the `cua--precommand-handler'"
-  `(progn
-     (defadvice ,(intern cmd) (around org-cua-dwim)
-     "Try to fix the org copy and paste problem."
-     (when (and (not (minibufferp)) (not cua-mode)
-                (eq major-mode 'org-mode))
-       (when org-cua-dwim-debug
-         (message "Turn Off shift-select-mode & delete-selection-mode  (CUA command)"))
-       (delete-selection-mode -1)
-       (set (make-local-variable 'shift-select-mode) nil)
-       (set (make-local-variable 'cua-mode) t)
-       (set (make-local-variable 'org-cua-dwim-was-move) nil)
-       (cua--pre-command-handler))
-     ad-do-it)
-     (ad-activate ',(intern cmd))))
-
-;; Advise all CUA commands active when selection is active
-(org-cua-dwim-fix-cua-command "cua--prefix-override-handler")
-(org-cua-dwim-fix-cua-command "cua-repeat-replace-region")
-(org-cua-dwim-fix-cua-command "cua--shift-control-c-prefix")
-(org-cua-dwim-fix-cua-command "cua--shift-control-x-prefix")
-(org-cua-dwim-fix-cua-command "cua-toggle-rectangle-mark")
-(org-cua-dwim-fix-cua-command "cua-delete-region")
-(org-cua-dwim-fix-cua-command "cua-cut-region")
-(org-cua-dwim-fix-cua-command "cua-copy-region")
-(org-cua-dwim-fix-cua-command "cua-cancel")
-(org-cua-dwim-fix-cua-command "cua-toggle-global-mark")
-(org-cua-dwim-fix-cua-command "cua-paste")
-(org-cua-dwim-fix-cua-command "cua-exchange-point-and-mark")
-(org-cua-dwim-fix-cua-command "cua-scroll-down")
-(org-cua-dwim-fix-cua-command "cua-scroll-up")
-(org-cua-dwim-fix-cua-command "cua-set-mark")
-(org-cua-dwim-fix-cua-command "cua-paste-pop")
-
-
-
-(ad-activate 'handle-shift-selection)
-
-(require 'org-protocol)
 
 (setq org-export-babel-evaluate nil) ;; This is for org-mode<9. 
 ;;  Otherwise, you need to set #+PROPERTY: header-args :eval never-export in the beginning or your document
@@ -421,31 +309,28 @@ before runnind ant hen run the `cua--precommand-handler'"
   (setq org-src-preserve-indentation t)
 
 (add-to-list 'org-structure-template-alist
-        '("S" "#+begin_src ?\n\n#+end_src" "<src lang=\"?\">\n\n</src>"))
+        '("m" . "src emacs-lisp"))
 
 (add-to-list 'org-structure-template-alist
-        '("m" "#+begin_src emacs-lisp\n\n#+end_src" "<src lang=\"emacs-lisp\">\n\n</src>"))
+        '("r" . "src R :results output :session *R* :exports both"))
 
 (add-to-list 'org-structure-template-alist
-        '("r" "#+begin_src R :results output :session *R* :exports both\n\n#+end_src" "<src lang=\"R\">\n\n</src>"))
+        '("R" . "#+begin_src R :results file graphics :file (org-babel-temp-file \"figure\" \".png\") :exports both :width 600 :height 400 :session *R*"))
 
 (add-to-list 'org-structure-template-alist
-        '("R" "#+begin_src R :results output graphics :file (org-babel-temp-file \"figure\" \".png\") :exports both :width 600 :height 400 :session *R* \n\n#+end_src" "<src lang=\"R\">\n\n</src>"))
+        '("RR" . "src R :results file graphics :file  (org-babel-temp-file (concat (file-name-directory (or load-file-name buffer-file-name)) \"figure-\") \".png\") :exports both :width 600 :height 400 :session *R*"))
 
 (add-to-list 'org-structure-template-alist
-        '("RR" "#+begin_src R :results output graphics :file  (org-babel-temp-file (concat (file-name-directory (or load-file-name buffer-file-name)) \"figure-\") \".png\") :exports both :width 600 :height 400 :session *R* \n\n#+end_src" "<src lang=\"R\">\n\n</src>"))
+        '("p" . "src python :results output :exports both"))
 
 (add-to-list 'org-structure-template-alist
-        '("p" "#+begin_src python :results output :exports both\n\n#+end_src" "<src lang=\"python\">\n\n</src>"))
+        '("P" . "src python :results output :session *python* :exports both"))
 
 (add-to-list 'org-structure-template-alist
-        '("P" "#+begin_src python :results output :session *python* :exports both\n\n#+end_src" "<src lang=\"python\">\n\n</src>"))
+        '("b" . "src sh :results output :exports both"))
 
 (add-to-list 'org-structure-template-alist
-        '("b" "#+begin_src sh :results output :exports both\n\n#+end_src" "<src lang=\"sh\">\n\n</src>"))
-
-(add-to-list 'org-structure-template-alist
-        '("B" "#+begin_src sh :session foo :results output :exports both \n\n#+end_src" "<src lang=\"sh\">\n\n</src>"))
+        '("B" . "src sh :session foo :results output :exports both"))
 
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images) 
 (add-hook 'org-mode-hook 'org-display-inline-images)
@@ -483,10 +368,14 @@ before runnind ant hen run the `cua--precommand-handler'"
 ;; Set to <your Dropbox root directory>/MobileOrg.
 (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
 
+(add-to-list 'load-path "~/.emacs.d/elpa/org-bullets-20180208.2343/")
 (if (require 'org-bullets)
      (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
      (warn "org-bullets not found"))
-(org-bullets-mode 1)
+;;(org-bullets-mode 1) ; This causes issues if uncommented
+
+; (add-to-list 'load-path "~/.emacs.d/elpa/org-table-sticky-header-20170409.114/")
+(add-hook 'org-mode-hook 'org-table-sticky-header-mode)
 
 (require 'htmlize)
 ;; (require 'org-publish) ;;; this is obsolete! do not call this or you will regret it at some point!
@@ -692,14 +581,6 @@ before runnind ant hen run the `cua--precommand-handler'"
  ;; If there is more than one, they won't work right.
  ;;'(custom-enabled-themes (quote (tango-dark)))
  '(line-number-mode nil)
- '(org-agenda-files
-   (quote
-    ("~/Documents/Notizen/privat.org" "~/org/journal_privat.org" "~/workspace/inria/research-collab/journal.org")))
- '(org-agenda-ndays 7)
- '(org-agenda-show-all-dates t)
- '(org-agenda-skip-deadline-if-done t)
- '(org-agenda-skip-scheduled-if-done t)
- '(org-agenda-start-on-weekday nil)
  '(org-babel-exp-inline-code-template "src_%lang[%switches%flags]{}")
  '(org-babel-shell-names
    (quote
@@ -717,7 +598,7 @@ before runnind ant hen run the `cua--precommand-handler'"
  '(org-reverse-note-order t)
  '(package-selected-packages
    (quote
-    (org-bullets magit helm dash-functional typopunct ob-lua lua-mode evil-org evil-easymotion ess epresent color-theme-sanityinc-tomorrow color-theme)))
+    (org-table-sticky-header org-super-agenda org-chef org-bullets magit helm dash-functional typopunct ob-lua lua-mode evil-org evil-easymotion ess epresent color-theme-sanityinc-tomorrow color-theme)))
  '(remember-annotation-functions (quote (org-remember-annotation)))
  '(remember-handler-functions (quote (org-remember-handler)))
  '(safe-local-variable-values
@@ -768,19 +649,55 @@ before runnind ant hen run the `cua--precommand-handler'"
 
 (with-eval-after-load 'ox-latex
    (add-to-list 'org-latex-classes
-        '("articleA"
-          "\\documentclass[12pt,a4paper,oneside,smallheadings,pointlessnumbers,BCOR12mm,DIVcalc]{scrreprt}%aus dem KOMA-Script-Paket"
-          ("\\chapter{%s}" . "\\chapter*{%s}")
-          ("\\section{%s}" . "\\section*{%s}")
-          ("\\subsection{%s}" . "\\subsection*{%s}")
+        '("thesis"
+          "\\documentclass[american,%
+    paper=A4,               % paper size --> A4 is default in Germany
+    twoside=true,           % onesite or twoside printing
+    openright,              % doublepage cleaning ends up right side
+    parskip=full,           % spacing value / method for paragraphs
+    chapterprefix=true,     % prefix for chapter marks
+    11pt,                   % font size
+    headings=normal,        % size of headings
+    bibliography=totoc,     % include bib in toc
+    listof=totoc,           % include listof entries in toc
+    titlepage=on,           % own page for each title page
+    captions=tableabove,    % display table captions above the float env
+    draft=false]{scrreprt}            % value for draft version
+"
+          ("\\chapter{%s}" . "\\chapter{%s}")
+          ("\\section{%s}" . "\\section{%s}")
+          ("\\subsection{%s}" . "\\subsection{%s}")
           ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-          ("\\paragraph{%s}" . "\\paragraph*{%s}")
+          ("\\paragraph{$blacktriangleright$ %s}" . "\\paragraph*{%s}")
           ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
         )))
+  ;;      '("articleA"
+  ;;      "\\documentclass[12pt,a4paper,oneside,smallheadings,pointlessnumbers,BCOR12mm,DIVcalc]{scrreprt}%aus dem KOMA-Script-Paket"
+  ;;        ("\\chapter{%s}" . "\\chapter*{%s}")
+  ;;        ("\\section{%s}" . "\\section*{%s}")
+  ;;      ("\\subsection{%s}" . "\\subsection*{%s}")
+  ;;      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+  ;;      ("\\paragraph{%s}" . "\\paragraph*{%s}")
+  ;;      ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
+  ;;  )))
 
 ;;        (org-babel-tangle-file "~/.emacs.d/init.org"
 ;;                               "~/.emacs.d/init.el"
 ;;                               "emacs-lisp")
+(require 'ox-extra)
+(ox-extras-activate '(ignore-headlines))
+(defun headline-numbering-filter (data backend info)
+  "No numbering in headlines that have a property :numbers: no"
+  (let* ((beg (next-property-change 0 data))
+         (headline (if beg (get-text-property beg :parent data))))
+    (if (and (eq backend 'latex)
+         (string= (org-element-property :NUMBERS headline) "no"))
+        (replace-regexp-in-string
+         "\\(part\\|chapter\\|\\(?:sub\\)*section\\|\\(?:sub\\)?paragraph\\)"
+         "\\1*" data nil nil 1)
+      data)))
+
+(setq org-export-filter-headline-functions '(headline-numbering-filter))
 (global-set-key (kbd "C-x x") 'execute-extended-command)
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
