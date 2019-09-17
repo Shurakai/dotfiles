@@ -51,9 +51,9 @@ urxvt*color3:  #C4A000
 urxvt*color11: #FCE94F
 ! blue
 !*color4:  #3465A4
-!*color12: #729FCF
+urxvt*color12: #729FCF
 urxvt*color4: #003EFF
-urxvt*color12: RoyalBlue
+!urxvt*color12: RoyalBlue
 ! purple
 urxvt*color5:  #75507B
 urxvt*color13: #AD7FA8

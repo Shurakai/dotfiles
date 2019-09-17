@@ -40,6 +40,7 @@ URxvt*scrollWithBuffer:   false
 !!jump to bottom (prompt) on tty output
 URxvt*scrollTtyOutput:    false
 
+! This is called the Tango Theme
 ! black
 !*color0:  #2E3436
 !*color8:  #555753
@@ -53,10 +54,10 @@ URxvt*color10: #8AE234
 URxvt*color3:  #C4A000
 URxvt*color11: #FCE94F
 ! blue
-!*color4:  #3465A4
-!*color12: #729FCF
+!URxvt*color4:  #3465A4
+URxvt*color12: #729FCF
 URxvt*color4: #003EFF
-URxvt*color12: RoyalBlue
+!URxvt*color12: RoyalBlue
 ! purple
 URxvt*color5:  #75507B
 URxvt*color13: #AD7FA8
