@@ -126,9 +126,9 @@ myKeys = [
          --, ((modm,               xK_F1),    manPrompt defaultXPConfig)
          , ((modm,               xK_F2),    shellPrompt defaultXPConfig)
          -- Increment the number of windows in the master area.
-         , ((modMask, xK_comma), sendMessage (IncMasterN 1))
+         , ((modm, xK_comma), sendMessage (IncMasterN 1))
          -- Decrement the number of windows in the master area.
-         , ((modMask, xK_period), sendMessage (IncMasterN (-1)))
+         , ((modm, xK_period), sendMessage (IncMasterN (-1)))
          --, ((modm,               xK_F12),   spawn "/home/heinrich/bin/change-keymap.sh")
          --, ((modm,               xK_F3),    sshPrompt defaultXPConfig)
          -- To figure out what your key name is, use the command `xev`.
