@@ -10,25 +10,21 @@ URxvt*iconFile:            /usr/share/icons/gnome/32x32/apps/gnome-terminal.png
 URxvt.geometry: 170x60+25+50
 URxvt.saveLines: 10000
 URxvt.scrollBar: false
-URxvt.foreground: white
-!URxvt.background: black
-URxvt.secondaryScroll: true
-URxvt.perl-ext-common: default,matcher
-URxvt.urlLauncher: firefox
-URxvt.matcher.button: 1
-URxvt.matcher.pattern.1: \\bwww\\.[\\w-]\\.[\\w./?&@#-]*[\\w/-]
-!URxvt.font: xft:Bitstream Vera Sans Mono:pixelsize=24
-!URxvt.font: xft:Source Code Pro for Powerline:pixelsize=15
-URxvt.font: xft:Meslo LG M DZ for Powerline:pixelsize=26
-
-
 !fade text n% upon unfocus
 urxvt*fading:             20
 !!darken=(0 to 100) lighten=(-1 to -100)
 urxvt*shading:            30
 !!set to 32-bit for real transparency (compositing required)
 urxvt*depth:     32
+URxvt.foreground: white
 urxvt*background: rgba:0000/0000/0000/dddd
+URxvt.secondaryScroll: true
+URxvt.font: xft:Meslo LG M DZ for Powerline:pixelsize=26
+
+URxvt.perl-ext-common: default,matcher
+URxvt.url-launcher: firefox
+URxvt.matcher.button: 1
+URxvt.matcher.pattern.1: \\bwww\\.[\\w-]\\.[\\w./?&@#-]*[\\w/-]
 
 !jump to bottom (prompt) on keypress
 urxvt*scrollTtyKeypress:  true
