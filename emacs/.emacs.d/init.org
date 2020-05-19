@@ -419,7 +419,7 @@ can select what to screenshot) via ~org-download-screenshot~.
 ** Load default file
 
 #+BEGIN_SRC emacs-lisp
-(find-file "~/workspace/inria/research-collab/journal.org")
+(find-file "~/org/journal_privat.org")
 #+END_SRC
 
 ** Set default directory
