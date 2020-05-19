@@ -40,6 +40,9 @@ urxvt*scrollTtyOutput:    false
 ! black
 !*color0:  #2E3436
 !*color8:  #555753
+! CH: This is a lighter grey. Some CLI programs are otherwise not easily readable (e.g., tibble output in R)
+! I also tried 7f7f7f, which was ok.
+urxvt*color8: #c6c6c6
 ! red
 urxvt*color1:  #a40000
 urxvt*color9:  #EF2929
