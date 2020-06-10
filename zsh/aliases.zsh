@@ -1,3 +1,4 @@
+alias cp='cp -a'
 alias ls='ls --color=auto -h'
 alias l='ls -AlF'
 alias df='df -h'
