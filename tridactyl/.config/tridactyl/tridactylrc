@@ -1,0 +1,224 @@
+alias tabsort jsb browser.tabs.query({}).then(tabs => tabs.sort((t1, t2) => t1.url.localeCompare(t2.url)).forEach((tab, index) => browser.tabs.move(tab.id, {index})))
+alias tabuniq jsb browser.tabs.query({}).then(tabs => browser.tabs.remove(tabs.filter((tab, index) => tabs.slice(index + 1).find(t => t.url == tab.url)).map(tab => tab.id)))
+
+bind gh followpage prev
+bind gl followpage next
+
+" German keyboard layout
+set hintchars asdfghjklö
+
+" Just create the containers, even when they don't exist. Allows us to specify any container we want...
+set auconcreatecontainer true
+
+js tri.config.set("autocontain", "github\.com", "microsoft")
+js tri.config.set("autocontain", "facebook\.com", "facebook")
+js tri.config.set("autocontain", "google\.(com|de|fr)", "google")
+js tri.config.set("autocontain", "youtu(\.be|be\.com)", "google")
+
+" I had issues on Tridactyl 3.19 with autocontainmode set to "strict": The site would be reloaded without the container
+" so container usage was essentially impossible
+set autocontainmode relaxed
+set allowautofocus false
+set visualenterauto false
+set wordpattern [^\s\/]+
+
+" Remove unnecessary hints on duckduckgo
+bindurl ^https://duckduckgo.com f hint -Jc .result__a,.module__more-at
+bindurl ^https://duckduckgo.com F hint -Jbc .result__a,.module__more-at
+bindurl youtu((\.be)|(be\.com)) f hint -J
+
+"
+" This adds some searchengines. Most of it is from https://github.com/glacambre/.dotfiles/blob/master/default/.config/tridactyl/tridactylrc
+"
+
+" Disable all searchurls
+jsb Object.keys(tri.config.get("searchurls")).reduce((prev, u) => prev.then(_ => tri.config.set("searchurls", u, null)), Promise.resolve())
+" Add our own
+set searchurls.amazon https://www.amazon.fr/s/ref=nb_sb_noss?field-keywords=%s
+set searchurls.bandcamp https://bandcamp.com/search?q=%s
+set searchurls.cnrtl http://www.cnrtl.fr/lexicographie/%s
+set searchurls.conj http://www.les-verbes.com/conjuguer.php?verbe=%s
+set searchurls.crates https://crates.io/search?q=%s
+set searchurls.ddg https://duckduckgo.com/html?q=%s
+set searchurls.deb https://packages.debian.org/search?keywords=%s&searchon=names&suite=all&section=all
+set searchurls.g https://www.google.com/search?q=%s
+set searchurls.gh https://github.com/search?utf8=%E2%9C%93&q=%s&ref=simplesearch
+set searchurls.gi https://www.google.com/search?q=%s&tbm=isch
+set searchurls.gmaps https://www.google.com/maps/search/%s
+set searchurls.gw https://wiki.gentoo.org/index.php?title=Special%3ASearch&profile=default&search=%s&fulltext=Search
+set searchurls.imdb https://www.imdb.com/find?q=%s
+set searchurls.lqwant https://lite.qwant.com/?q=%s
+set searchurls.osm https://www.openstreetmap.org/search?query=%s
+set searchurls.pydoc https://docs.python.org/3/search.html?q=%s
+set searchurls.qwant https://www.qwant.com/?q=%s
+set searchurls.w https://en.wikipedia.org/w/index.php?search=%s&title=Special%3ASearch
+set searchurls.wde https://de.wikipedia.org/w/index.php?search=%s&title=Spezial%3ASuche
+set searchurls.wfr https://fr.wikipedia.org/w/index.php?search=%s&title=Sp%E9cial%3ARecherche
+set searchurls.y https://www.youtube.com/results?search_query=%s
+
+" Make duckduckgo my default search engine
+set searchengine ddg
+
+" Native messenger stuff
+guiset_quiet hoverlink right
+guiset_quiet tabs count
+
+"
+" This sets browser preferences. Make sure you don't copy & paste it, as this will change
+" your preferences in prefs.js of your mozilla firefox profile.
+"
+" Also see http://kb.mozillazine.org/About:config_entries#Browser. for details
+" and http://preferential.mozdev.org/preferences.html (which seems even more complete, but is it official?)
+"
+
+setpref accessibility.typeaheadfind.autostart false
+" Disables flashing of the find search bar
+setpref accessibility.typeaheadfind.flashBar 0
+setpref app.normandy.api_url ""
+setpref app.normandy.enabled false
+setpref app.normandy.first_run false
+setpref app.shield.optoutstudies.enabled false
+setpref app.update.enabled false
+setpref beacon.enabled false
+setpref beacon.enabled false
+setpref browser.autofocus false
+setpref browser.aboutHomeSnippets.updateUrl "data:,"
+setpref browser.display.use_document_fonts 0
+setpref browser.download.dir "/tmp/"
+setpref browser.download.folderList 2
+setpref browser.download.manager.addToRecentDocs false
+setpref browser.download.useDownloadDir false
+setpref browser.eme.ui.enabled false
+setpref browser.formfill.enable false
+setpref browser.helperApps.deleteTempFileOnExit true
+setpref browser.library.activity-stream.enabled false
+setpref browser.messaging-system.whatsNewPanel.enabled false
+setpref browser.newtab.preload false
+setpref browser.newtab.url "about:blank"
+setpref browser.newtabpage.enabled false
+setpref browser.newtabtabpage.enabled false
+setpref browser.newtabtabpage.enhanced false
+setpref browser.onboarding.enabled false
+setpref browser.pagethumbnails.capturing_disabled true
+setpref browser.ping-centre.telemetry false
+setpref browser.pocket.api ""
+setpref browser.pocket.oAuthConsumerKey ""
+setpref browser.pocket.site ""
+setpref browser.safebrowsing.appRepURL ""
+setpref browser.safebrowsing.blockedURIs.enabled false
+setpref browser.safebrowsing.downloads.remote.enabled false
+setpref browser.safebrowsing.downloads.remote.url ""
+setpref browser.safebrowsing.gethashURL ""
+setpref browser.safebrowsing.malware.enabled false
+setpref browser.safebrowsing.malware.reportURL ""
+setpref browser.safebrowsing.phishing.enabled false
+setpref browser.safebrowsing.provider.google.gethashURL ""
+setpref browser.safebrowsing.provider.google.lists ""
+setpref browser.safebrowsing.provider.google.reportMalwareMistakeURL ""
+setpref browser.safebrowsing.provider.google.reportPhishMistakeURL ""
+setpref browser.safebrowsing.provider.google.reportURL ""
+setpref browser.safebrowsing.provider.google.updateURL ""
+setpref browser.safebrowsing.provider.google4.dataSharing.enabled false
+setpref browser.safebrowsing.provider.google4.dataSharingURL ""
+setpref browser.safebrowsing.provider.google4.reportMalwareMistakeURL ""
+setpref browser.safebrowsing.provider.google4.reportPhishMistakeURL ""
+setpref browser.safebrowsing.provider.google4.reportURL ""
+setpref browser.safebrowsing.provider.mozilla.gethashURL ""
+setpref browser.safebrowsing.provider.mozilla.updateURL ""
+setpref browser.safebrowsing.reportPhishURL ""
+setpref browser.safebrowsing.reportURL ""
+setpref browser.safebrowsing.updateURL ""
+setpref browser.search.region "US"
+setpref browser.search.suggest.enabled false
+setpref browser.send_pings false
+setpref browser.send_pings.require_same_host true
+
+" If you're a tab hoarder like me, you must keep this set to true; if not, all
+" tabs will open every time you restart firefox. 
+setpref browser.sessionstore.restore_on_demand true
+setpref browser.shell.checkDefaultBrowser false
+setpref browser.startup.homepage "about:blank"
+setpref browser.startup.homepage_override.mstone "ignore"
+setpref browser.startup.page 3
+setpref browser.tabs.closeWindowWithLastTab false
+setpref browser.tabs.remote.autostart.2 true
+setpref browser.uidensity 1
+setpref browser.urlbar.placeholderName ""
+setpref browser.urlbar.trimURLs false
+setpref datareporting.healthreport.uploadEnabled false
+setpref datareporting.policy.dataSubmissionEnabled false
+setpref devtools.gcli.hideIntro true
+setpref devtools.scratchpad.enabled true
+setpref devtools.scratchpad.wrapText true
+setpref devtools.webide.autoinstallADBHelper false
+setpref devtools.webide.enabled false
+setpref extensions.formautofill.addresses.enabled false
+setpref extensions.formautofill.available "off"
+setpref extensions.formautofill.creditCards.enabled false
+setpref extensions.formautofill.heuristics.enabled false
+setpref extensions.pocket.enabled false
+setpref extensions.screenshots.disabled true
+setpref extensions.screenshots.upload-disabled true
+setpref extensions.webcompat-reporter.enabled false
+setpref extensions.webextensions.restrictedDomains ""
+setpref font.blacklist.underline_offset ""
+setpref general.warnOnAboutConfig false
+setpref geo.enabled false
+setpref geo.wifi.uri ""
+setpref intl.accept_languages "en-US, en"
+setpref intl.locale.requested "en-US"
+setpref intl.regional_prefs.use_os_locales false
+setpref javascript.use_us_english_locale true
+setpref layout.css.font-loading-api.enabled false
+setpref media.autoplay.default 1
+setpref media.eme.enabled false
+setpref media.gmp-gmpopenh264.autoupdate false
+setpref media.gmp-gmpopenh264.enabled false
+setpref media.gmp-manager.updateEnabled false
+setpref media.gmp-manager.url "data:text/plain,"
+setpref media.gmp-manager.url.override "data:text/plain,"
+setpref media.gmp-provider.enabled false
+setpref media.gmp-widevinecdm.autoupdate false
+setpref media.gmp-widevinecdm.enabled false
+setpref media.gmp-widevinecdm.visible false
+setpref media.gmp.trial-create.enabled false
+" WebRTC. Might need to re-enable some day
+setpref media.peerconnection.enabled false
+setpref network.IDN_show_punycode true
+setpref network.allow-experiments false
+setpref network.http.referer.XOriginPolicy 1
+setpref network.http.referer.defaultPolicy 3
+setpref network.http.referer.defaultPolicy.pbmode 2
+setpref network.http.referer.spoofSource false
+setpref pdfjs.disabled true
+setpref permissions.default.geo 0
+setpref plugin.default.state 0
+setpref plugin.defaultXpi.state 0
+setpref plugin.sessionPermissionNow.intervalInMinutes 0
+setpref plugins.click_to_play true
+setpref privacy.firstparty.isolate true
+" Disabled until https://bugzilla.mozilla.org/show_bug.cgi?id=1450398 is fixed
+setpref privacy.resistFingerprinting false
+setpref privacy.resistFingerprinting.block_mozAddonManager true
+setpref privacy.userContext.enabled true
+setpref privacy.userContext.ui.enabled true
+setpref privacy.usercontext.about_newtab_segregation.enabled true
+setpref reader.parse-on-load.enabled false
+setpref security.dialog_enable_delay 500
+setpref security.insecure_field_warning.contextual.enabled true
+setpref signon.autofillForms false
+setpref signon.rememberSignons false
+setpref toolkit.cosmeticAnimations.enabled false
+setpref toolkit.telemetry.archive.enabled false
+setpref toolkit.telemetry.bhrPing.enabled false
+setpref toolkit.telemetry.cachedClientID ""
+setpref toolkit.telemetry.enabled false
+setpref toolkit.telemetry.firstShutdownPing.enabled false
+setpref toolkit.telemetry.hybridContent.enabled false
+setpref toolkit.telemetry.newProfilePing.enabled false
+setpref toolkit.telemetry.server "data:,"
+setpref toolkit.telemetry.shutdownPingSender.enabled false
+setpref toolkit.telemetry.unified false
+setpref toolkit.telemetry.updatePing.enabled false
+setpref ui.key.menuAccessKeyFocuses false
+setpref xpinstall.signatures.required true
