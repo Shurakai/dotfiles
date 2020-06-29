@@ -11,9 +11,7 @@ import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.SetWMName
-import XMonad.Util.Scratchpad
-import XMonad.Util.Run(spawnPipe)
-import XMonad.Util.EZConfig(additionalKeys)
+
 import XMonad.Actions.CycleWS
 import XMonad.Actions.GridSelect
 import XMonad.Actions.Search
@@ -43,17 +41,14 @@ import XMonad.Prompt.Man
 import XMonad.Prompt.Ssh
 import XMonad.Prompt.Pass
 
-import qualified XMonad.StackSet as W
-import qualified Data.Map        as M
-
-import XMonad.Actions.Search
-import XMonad.Actions.UpdatePointer
-import XMonad.Actions.WindowGo
-import qualified XMonad.Actions.Submap as SM
+import XMonad.Util.Dzen
+import XMonad.Util.EZConfig(additionalKeys)
+import XMonad.Util.Run(spawnPipe)
+import XMonad.Util.Scratchpad
 import XMonad.Util.XSelection
 
 -- set modm to windows key (mod4Mask)
-modm = mod4Mask 
+modm = mod4Mask
 
 -- Set my favorite terminal
 myTerminal :: String
@@ -68,7 +63,7 @@ main = do
         , normalBorderColor  = "#1e1c10"
         , workspaces  = myWorkspaces
         , layoutHook  = myLayoutHook
-        , logHook     = myLogHook xmproc
+        , logHook     = myLogHook xmproc -- Notify xmobar via the log hook
         , modMask     = modm
         , startupHook = setWMName "LG3D"
         } `additionalKeys` myKeys
@@ -144,9 +139,9 @@ myManageHook = (composeAll [ isFullscreen --> doF W.focusDown <+> doFullFloat
                       documentApps = [ "Zathura", "Evince" ]
 
 myLogHook h = dynamicLogWithPP $ xmobarPP
-                                 { ppOutput = hPutStrLn h
-                                 , ppTitle = xmobarColor "#cdcd57" "" . shorten 150
-                                 , ppCurrent = xmobarColor "#cdcd57" "" -- . wrap "[" "]"
+                                 { ppOutput = hPutStrLn h -- Write output to h
+                                 , ppTitle = xmobarColor "#cdcd57" "" . shorten 150 -- window title format
+                                 , ppCurrent = xmobarColor "#cdcd57" "" -- . wrap "[" "]" -- format currently focused window
                                  , ppSep = " <fc=#3d3d07>|</fc> "
                                  }
 
@@ -175,7 +170,6 @@ myKeys = [
          -- Decrement the number of windows in the master area.
          , ((modm, xK_period), sendMessage (IncMasterN (-1)))
          --, ((modm,               xK_F12),   spawn "/home/heinrich/bin/change-keymap.sh")
-         --, ((modm,               xK_F3),    sshPrompt defaultXPConfig)
          -- To figure out what your key name is, use the command `xev`.
          -- The 0 below means that you do not have to press MOD-Key
          -- , ((0                     , 0x1008FF11), spawn "amixer set Master 2-")
