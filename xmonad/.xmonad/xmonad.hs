@@ -1,8 +1,12 @@
 import Data.Char (toLower)
+import Data.Monoid (mappend)
+import qualified Data.Map        as M
 
 import System.IO
 import System.Exit
 import XMonad
+import qualified XMonad.StackSet as W
+
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
@@ -12,6 +16,11 @@ import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.EZConfig(additionalKeys)
 import XMonad.Actions.CycleWS
 import XMonad.Actions.GridSelect
+import XMonad.Actions.Search
+import qualified XMonad.Actions.Submap as SM
+import XMonad.Actions.UpdatePointer
+import XMonad.Actions.Volume
+import XMonad.Actions.WindowGo
 -- import XMonad.Actions.DynamicWorkspaces
 
 import XMonad.Layout.CenteredMaster
@@ -172,8 +181,10 @@ myKeys = [
          -- , ((0                     , 0x1008FF11), spawn "amixer set Master 2-")
          -- , ((0                     , 0x1008FF13), spawn "amixer set Master 2+")
          -- , ((0                     , 0x1008FF12), spawn "amixer set Master toggle")
-         , ((modm                  , xK_Page_Down), spawn "amixer set Master 1.65-")
-         , ((modm                  , xK_Page_Up), spawn "amixer set Master 1.65+")
+         -- , ((modm                  , xK_Page_Down), spawn "amixer set Master 600-")
+         -- , ((modm                  , xK_Page_Up), spawn "amixer set Master 600+") -- was until Debian 10 1.65+
+         , ((modm                  , xK_Page_Down), lowerVolume 4 >>= myVolumeAlert)
+         , ((modm                  , xK_Page_Up), raiseVolume 4 >>= myVolumeAlert) -- was until Debian 10 1.65+
          -- Make a screenshot from the currently active screen
          , ((controlMask, xK_Print), spawn "sleep 0.3; scrot -s")
          -- Make a screenshot just of the current screen
@@ -197,4 +208,11 @@ myKeys = [
     where
         toggleWorkspace = windows $ W.view =<< W.tag . head . filter 
                  ((\x -> x /= "NSP" && x /= "SP") . W.tag) . W.hidden
+
+myVolumeAlert = dzenConfig centeredWindow . show . round
+    where
+    centeredWindow = onCurr (center 550 366)
+      >=> XMonad.Util.Dzen.font "-*-helvetica-*-r-*-*-64-*-*-*-*-*-*-*"
+      >=> addArgs ["-fg", "#80c0ff"]
+      >=> addArgs ["-bg", "#000000"]
 
