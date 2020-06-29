@@ -216,3 +216,18 @@ myVolumeAlert = dzenConfig centeredWindow . show . round
       >=> addArgs ["-fg", "#80c0ff"]
       >=> addArgs ["-bg", "#000000"]
 
+-- Xmonad.Prompt config
+myXPConfig :: XPConfig
+myXPConfig = def
+ { XMonad.Prompt.font        = "xft:Meslo LG L DZ Regular for Powerline:size=12" -- one of my favorite fonts. add :style=bold for bold
+  , XMonad.Prompt.bgColor     = "black"
+  --, fgColor     = "white"
+  , fgHLight    = "white"
+  , bgHLight    = "black"
+  , borderColor = "#8B0000" -- some type of red.
+  , promptBorderWidth = 0   -- I don't want a border, so I disabled it
+  , position    = Bottom
+  , height      = 45
+  , historySize = 256
+  , alwaysHighlight = False
+  }
