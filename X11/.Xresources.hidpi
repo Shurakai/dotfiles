@@ -20,6 +20,7 @@ URxvt.foreground: white
 urxvt*background: rgba:0000/0000/0000/dddd
 URxvt.secondaryScroll: true
 URxvt.font: xft:Meslo LG M DZ for Powerline:pixelsize=26
+Xmessage*font: -adobe-helvetica-medium-r-normal--34-240-100-100-p-176-iso8859-1
 
 URxvt.perl-ext-common: default,matcher
 URxvt.url-launcher: firefox

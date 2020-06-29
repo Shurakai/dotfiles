@@ -23,6 +23,7 @@ URxvt.matcher.pattern.1: \\bwww\\.[\\w-]\\.[\\w./?&@#-]*[\\w/-]
 !URxvt.font: xft:Bitstream Vera Sans Mono:pixelsize=24
 !URxvt.font: xft:Source Code Pro for Powerline:pixelsize=15
 URxvt.font: xft:Meslo LG M DZ for Powerline:pixelsize=18
+Xmessage*font: -adobe-helvetica-medium-r-normal--34-240-100-100-p-176-iso8859-1
 
 
 !fade text n% upon unfocus
