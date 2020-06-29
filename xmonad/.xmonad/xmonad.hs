@@ -51,6 +51,25 @@ main = do
         , startupHook = setWMName "LG3D"
         } `additionalKeys` myKeys
 
+searchFunc :: String -> String
+searchFunc s = "https://de.pons.com/übersetzung/französisch-deutsch/" ++ (escape s)
+pons = searchEngineF "pons" searchFunc
+gesetze = searchEngine "gesetze" "https://dejure.org/cgi-bin/suche?Suchenach="
+
+-- This is the list of search engines that are available;
+-- see the keybinding for the search action below. Once pressed, one has to
+-- specialize the search engine by simply pressing another button (as defined here).
+-- The prompt only opens then.
+searchEngineMap method = M.fromList $
+    [ ((0, xK_g), method google)
+    , ((0, xK_d), method duckduckgo)
+    , ((0, xK_g), method gesetze)
+    , ((0, xK_i), method imdb)
+    , ((0, xK_o), method openstreetmap)
+    , ((0, xK_p), method pons)
+    , ((0, xK_w), method wikipedia)
+    , ((0, xK_y), method youtube)
+    ]
 
 myLayoutHook = avoidStruts $ toggleLayouts Full $ -- toggle to "Full" when meta-f was pressed
         onWorkspace "3:mail" (Grid) $
@@ -148,6 +167,17 @@ myKeys = [
          , ((0, xK_Print), spawn "scrot")
          -- Toggles workspace
          , ((modm, xK_Tab), toggleWorkspace)
+
+         --
+         -- Search related settings
+         --
+         -- search prompt
+         , ((modm,                 xK_s     ), SM.submap $ searchEngineMap $ promptSearch myXPConfig)
+         -- search clipboard with specified search engine
+         , ((modm .|. controlMask, xK_s   ), SM.submap $ searchEngineMap $ selectSearch)
+         -- open clipboard contents as URL
+         , ((modm .|. shiftMask,   xK_s     ), safePromptSelection "firefox")
+
          -- Shows/hides my terminal
          , ((modm, xK_c), scratchpadSpawnAction defaultConfig {terminal = map toLower myTerminal } )
          ]
