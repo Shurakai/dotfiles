@@ -1,4 +1,5 @@
 import Data.Char (toLower)
+
 import System.IO
 import System.Exit
 import XMonad
@@ -10,7 +11,9 @@ import XMonad.Util.Scratchpad
 import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.EZConfig(additionalKeys)
 import XMonad.Actions.CycleWS
+import XMonad.Actions.GridSelect
 -- import XMonad.Actions.DynamicWorkspaces
+
 import XMonad.Layout.CenteredMaster
 import XMonad.Layout.Circle
 import XMonad.Layout.Grid
@@ -24,16 +27,26 @@ import XMonad.Layout.Spiral
 import XMonad.Layout.StackTile
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.ToggleLayouts
+
 import XMonad.Prompt
 import XMonad.Prompt.Shell
--- import XMonad.Prompt.Man
--- import XMonad.Prompt.Ssh
+import XMonad.Prompt.Man
+import XMonad.Prompt.Ssh
+import XMonad.Prompt.Pass
 
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 
+import XMonad.Actions.Search
+import XMonad.Actions.UpdatePointer
+import XMonad.Actions.WindowGo
+import qualified XMonad.Actions.Submap as SM
+import XMonad.Util.XSelection
 
-modm = mod4Mask
+-- set modm to windows key (mod4Mask)
+modm = mod4Mask 
+
+-- Set my favorite terminal
 myTerminal :: String
 myTerminal = "URxvt"
 
