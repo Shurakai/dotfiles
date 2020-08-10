@@ -15,7 +15,7 @@ import XMonad.Hooks.SetWMName
 import XMonad.Actions.CycleWS
 import XMonad.Actions.GridSelect
 import XMonad.Actions.Search
-import qualified XMonad.Actions.Submap as SM
+import qualified XMonad.Actions.Submap as SM -- For layered keybindings
 import XMonad.Actions.UpdatePointer
 import XMonad.Actions.Volume
 import XMonad.Actions.WindowGo
@@ -29,8 +29,8 @@ import XMonad.Layout.Named
 import XMonad.Layout.NoBorders
 import XMonad.Layout.PerWorkspace
 import XMonad.Layout.ResizableTile
-import XMonad.Layout.Roledex
-import XMonad.Layout.Spiral
+-- import XMonad.Layout.Roledex -- From the documentation: "This is a completely pointless layout which acts like Microsoft's Flip 3D"
+-- import XMonad.Layout.Spiral  -- "Show your friends what XMonad can do."
 import XMonad.Layout.StackTile
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.ToggleLayouts
@@ -88,24 +88,24 @@ searchEngineMap method = M.fromList $
     , ((0, xK_y), method youtube)
     ]
 
+-- Check XMonad.Layout.SubLayouts if you want to nest layouts
 myLayoutHook = avoidStruts $ toggleLayouts Full $ -- toggle to "Full" when meta-f was pressed
         onWorkspace "3:mail" (Grid) $
         smartBorders (
         named "Tall" tiled
     ||| ThreeCol 1 (3/100) (1/2) -- See doc: http://xmonad.org/xmonad-docs/xmonad-contrib/XMonad-Layout-ThreeColumns.html. (3/100) = how much do we resize every time? (1/2) = master screen will occupy 1/2 of the screen. Make this negative to refer to slave screens.
     ||| ThreeColMid 1 (3/100) (1/2) -- See above. But master screen is in the middle
-    ||| named "Mirror Tall" (Mirror tiled)
+    ||| named "Mirror Tall" (Mirror tiled) -- Takes the tall layout and rotates it by 90°
     ||| Full
     ||| Grid -- Useful for >= 4 windows. Will arrange them all equally.
     {-||| Circle-}
     {-||| named "Center" (centerMaster Grid)-}
     {-||| StackTile 1 delta (1/2)-}
-    ||| Roledex
     ||| mosaic 2 [3,2]
-    ||| spiral (6/7)
+ --   ||| spiral (6/7)
     )
   where
-    tiled   = Tall 1 delta ratio
+    tiled   = Tall 1 delta ratio -- 1 means "1 window in master area"
     ratio   = toRational (2/(1+sqrt(5)::Double))  -- golden cut
 --    ratio   = 0.5
 --    delta   = 0.01
@@ -139,17 +139,18 @@ myManageHook = (composeAll [ isFullscreen --> doF W.focusDown <+> doFullFloat
                       documentApps = [ "Zathura", "Evince" ]
 
 myLogHook h = dynamicLogWithPP $ xmobarPP
+                                -- See https://hackage.haskell.org/package/xmonad-contrib-0.16/docs/XMonad-Hooks-DynamicLog.html#t:PP for config
                                  { ppOutput = hPutStrLn h -- Write output to h
                                  , ppTitle = xmobarColor "#cdcd57" "" . shorten 150 -- window title format
-                                 , ppCurrent = xmobarColor "#cdcd57" "" -- . wrap "[" "]" -- format currently focused window
-                                 , ppSep = " <fc=#3d3d07>|</fc> "
+                                 , ppCurrent = xmobarColor "#cdcd57" "" . wrap "[" "]" -- formats currently focused workspace
+                                 , ppSep = " <fc=#3d3d07>|</fc> " -- Separates the sections: workspaces | layoutname | title
                                  }
 
 myKeys = [ 
 -- Never used these bindings; I think I can remove them.
---         ((modm,               xK_Right), nextWS)
---       , ((modm,               xK_Left),  prevWS)
-         ((modm .|. shiftMask, xK_Right), shiftToNext)
+         ((modm,               xK_Right), nextWS)
+       , ((modm,               xK_Left),  prevWS)
+       , ((modm .|. shiftMask, xK_Right), shiftToNext)
        , ((modm .|. shiftMask, xK_Left),  shiftToPrev)
 --       , ((modm,               xK_Up),    nextScreen)
 --       , ((modm,               xK_Down),  prevScreen)
@@ -161,9 +162,11 @@ myKeys = [
 --  Used with a secondary screen
 --       , ((modm,               xK_F5),    spawn "xrandr && xrandr --output DisplayPort-1 --off && xrandr --output DisplayPort-1 --mode 2560x1600 --left-of eDP --primary && xmodmap ~/.Xmodmap")
          , ((modm,               xK_F1),    manPrompt myXPConfig)
-         -- The shell prompt can also be used as an application launcher
-         , ((modm,               xK_F2),    shellPrompt myXPConfig)
+         , ((modm,               xK_F2),    shellPrompt myXPConfig) -- I use the shell prompt also as an application launcher
          , ((modm,               xK_F3),    sshPrompt myXPConfig)
+         , ((modm,               xK_F9),    spawn "light -U 10" ) -- In percent
+         , ((modm,               xK_F10),   spawn "light -A 10" ) -- In percent
+         , ((modm,               xK_F11),   spawn "light -S 33" ) -- In percent
          , ((modm,               xK_p),    passPrompt myXPConfig)
          -- Increment the number of windows in the master area.
          , ((modm, xK_comma), sendMessage (IncMasterN 1))
@@ -179,7 +182,7 @@ myKeys = [
          -- , ((modm                  , xK_Page_Up), spawn "amixer set Master 600+") -- was until Debian 10 1.65+
          , ((modm                  , xK_Page_Down), lowerVolume 4 >>= myVolumeAlert)
          , ((modm                  , xK_Page_Up), raiseVolume 4 >>= myVolumeAlert) -- was until Debian 10 1.65+
-         -- Make a screenshot from the currently active screen
+         -- Make a screenshot by allowing the user to select what should be captured
          , ((controlMask, xK_Print), spawn "sleep 0.3; scrot -s")
          -- Make a screenshot just of the current screen
          , ((0, xK_Print), spawn "scrot")
@@ -207,8 +210,8 @@ myVolumeAlert = dzenConfig centeredWindow . show . round
     where
     centeredWindow = onCurr (center 550 366)
       >=> XMonad.Util.Dzen.font "-*-helvetica-*-r-*-*-64-*-*-*-*-*-*-*"
-      >=> addArgs ["-fg", "#80c0ff"]
-      >=> addArgs ["-bg", "#000000"]
+      >=> addArgs ["-fg", "#d8c3c3"]
+      >=> addArgs ["-bg", "#373737"]
 
 -- Xmonad.Prompt config
 myXPConfig :: XPConfig
