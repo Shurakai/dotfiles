@@ -1,8 +1,5 @@
--- Wetter für Köln: Code ist EDDK
--- Wetter für Champaign ist KCMI
--- Wetter für Grenoble ist LFLS
-
-Config { font = "xft:Meslo LG M DZ for Powerline:size=10:antialias=true" -- You can add :bold or :italic if you want
+Config { font = "xft:Meslo LG M DZ for Powerline:size=8:antialias=true,FontAwesome:size=8" -- You can add :bold or :italic if you want
+       , additionalFonts = [ "xft:FontAwesome:pixelsize=13" ]
        , border = BottomB
        , bgColor = "black"
        , fgColor = "grey"
@@ -16,18 +13,73 @@ Config { font = "xft:Meslo LG M DZ for Powerline:size=10:antialias=true" -- You 
        , pickBroadest = False -- This will pick the screen with the highest resolution (with respect to the x-axis)
        , persistent   = False -- When True the window status is fixed i.e. hiding or revealing is not possible. This option can be toggled at runtime.
        , commands = [
-              Run Network "wlp61s0" ["-t","wlan: <rx> kb / <tx> kb","-L"," 0","-H","32","--normal","green","--high","red"] 20
-            , Run Network "enp0s25"  ["-t","eth: <rx> kb / <tx> kb" ,"-L"," 0","-H","32","--normal","green","--high","red"] 20
-            , Run Cpu             ["-t","CPU: <total> %"     ,"-L","10","-H","50","--low","green","--normal","yellow","--high","red"] 20
-		    , Run Battery         ["-t","Akku: <left>%"     ,"-L","35","-H","80","--low","red","--normal","yellow","--high","green"] 20
-		    , Run Thermal "THM0"  ["-t","<temp> °C"         ,"-L","30","-H","45","--low","green","--normal","yellow","--high","red"] 20
-            , Run Memory          ["-t","Mem: <usedratio>%"] 20
-            , Run Date "%a, %d. %B %R" "date" 300
-            , Run Weather "LFLS"  ["-t","<tempC>°C","-L","15","-H","27","--normal","yellow","--high","red","--low","lightblue"] 6000
+              -- FontAwesome symbols: write \x + code from here: https://fontawesome.com/cheatsheet?from=io
+              -- example: \xf1eb
+
+              -- FontAwesome symbol for ethernet: \xf796
+              Run DynNetwork ["--template","\xf1eb: \xf0ab <rx> kb \xf0aa <tx> kb"
+                            , "-L"," 0"
+                            , " -H","32"
+                            , "--normal","green"
+                            , "--high","red"
+                            , "--","--devices", "wlp61s0,enp0s25"  -- The "--" part really needs to be here
+                            ] 20
+            , Run Network "enp0s25"  ["--template","eth: <rx> kb <tx> kb" ,"-L"," 0","-H","32","--normal","green","--high","red"] 20
+            , Run Cpu             ["--template","\xf108 <total>%"
+                                 , "--Low","10"
+                                 , "--High","50"
+                                 , "--low","green"
+                                 , "--normal","yellow"
+                                 , "--high","red"] 20
+
+		    , Run Battery        ["--template","\xf240: <left>%"
+                                 , "--Low","35"
+                                 , "--High","80"
+                                 , "--low","red"
+                                 , "--normal","yellow"
+                                 , "--high","green"
+                                 ] 20
+		    , Run Thermal "THM0" ["--template","<temp> °C"
+                                 , "--Low","30"
+                                 , "--High","45"
+                                 , "--low","green"
+                                 , "--normal","yellow"
+                                 , "--high","red"] 20
+
+            , Run Memory      ["--template","\xf233 <usedratio>%"
+                                 , "--Low", "20"
+                                 , "--High", "80"
+                                 , "--low"      , "green"
+                                 , "--normal"   , "orange"
+                                 , "--high"     , "red"
+            ] 20
+
+           , Run Date "\xf133 %a, %d. %B %R" "date" 300
+
+           -- Weather codes: 
+           -- Grenoble: LFLS 
+           -- Champaign, IL: KCMI
+           -- Cologne: EDDK
+           , Run WeatherX "LFLS" [ ("clear", "\xf185")
+                                 , ("sunny", "\xf185")
+                                 , ("mostly clear", "\xf185")
+                                 , ("mostly sunny", "\xf185")
+                                 , ("partly sunny", "⛅")
+                                 , ("fair", "🌑")
+                                 , ("cloudy","\xf0c2")
+                                 , ("overcast","\xf0c2")
+                                 , ("partly cloudy", "⛅")
+                                 , ("mostly cloudy", "\xf0c2")
+                                 , ("considerable cloudiness", "\xf0c2")]
+                                 ["--template","<tempC>°C <skyConditionS>"
+                                , "--Low","15"
+                                , "--High","27"
+                                , "--normal","yellow"
+                                , "--high","red"
+                                , "--low","lightblue"] 6000
             , Run StdinReader
        ]
        , sepChar = "%"
        , alignSep = "}{"
---       , template = "%StdinReader% }{ %cpu% @ %THM0% | %battery% | %memory% | %wlan0% | <fc=lightblue>%date%</fc> @ %LFLS% "
-       , template = "%StdinReader% }{ %cpu% | %memory% | %battery% | %wlp61s0% | %enp0s25% | <fc=lightblue>%date%</fc> @ %LFLS% "
+       , template = "%StdinReader% }{ <fc=#FFB86C>%cpu%</fc> | %memory% | <action=`gnome-power-statistics` button=12345>%battery%</action> | %dynnetwork% | <fc=lightblue>%date%</fc> @ %LFLS% "
        }
