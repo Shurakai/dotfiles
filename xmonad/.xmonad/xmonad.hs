@@ -47,6 +47,9 @@ import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.Scratchpad
 import XMonad.Util.XSelection
 
+import XMonad.Actions.DynamicWorkspaces
+import XMonad.Actions.CopyWindow(copy)
+
 -- set modm to windows key (mod4Mask)
 modm = mod4Mask
 
@@ -112,7 +115,7 @@ myLayoutHook = avoidStruts $ toggleLayouts Full $ -- toggle to "Full" when meta-
     delta   = 0.03
 
 
-myWorkspaces = ["1:web", "2:term", "3:mail", "4:vocabulary", "5:pdf", "6:skype", "7:media", "8:VirtualBox", "9:chrome"]
+myWorkspaces = ["1:web", "2:term", "3:mail", "4:vocabulary", "5:pdf", "6:diverse", "7:media", "8:VM", "9:chrome"]
 
 
 -- These classNames can be retrieved by executing the command
@@ -201,6 +204,9 @@ myKeys = [
 
          -- Shows/hides my terminal
          , ((modm, xK_c), scratchpadSpawnAction defaultConfig {terminal = map toLower myTerminal } )
+         , ((modm .|. shiftMask, xK_a      ), addWorkspacePrompt myXPConfig)
+         , ((modm .|. shiftMask, xK_r      ), removeEmptyWorkspace)
+         , ((modm .|. shiftMask, xK_v      ), selectWorkspace myXPConfig)
          ]
     where
         toggleWorkspace = windows $ W.view =<< W.tag . head . filter 
