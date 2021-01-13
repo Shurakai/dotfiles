@@ -435,7 +435,15 @@ can select what to screenshot) via ~org-download-screenshot~.
 (setq org-src-tab-acts-natively t) ;; you want this to have completion in blocks
 (setq org-hide-emphasis-markers t) ;; to hide the *,=, or / markers
 (setq org-pretty-entities t)       ;; to have \alpha, \to and others display as utf8 http://orgmode.org/manual/Special-symbols.html
+(setq org-cycle-separator-lines 0) ;; hides empty lines between headlines when looking at an outline
 #+end_src
+** org-mode configuration
+
+#+begin_src emacs-lisp
+(setq org-catch-invisible-edits show-and-error) ;; An invisible area is hidden as "...", but can still be edited. This setting
+                                                ;; throws an error and shows the hidden area.
+#+end_src
+
 ** Agenda
 *** Agenda general configuration
 
@@ -446,6 +454,7 @@ can select what to screenshot) via ~org-download-screenshot~.
  (setq org-agenda-skip-scheduled-if-done t)
  (setq org-agenda-start-on-weekday nil)
  (setq org-agenda-start-with-follow-mode t) ;; When the curser is positioned on a line (or moved), show that entry in another window
+ (setq org-stuck-projects '("+LEVEL=3/-DONE-CANCELLED-DEFERRED-READ-TESTED-VISITED" ("*") nil "")) ;; This needs to be adapted
  #+end_src
 
  #+RESULTS:
@@ -500,11 +509,9 @@ These are my personal files that I want to be displayed in the agenda:
 #+end_src
 
 #+RESULTS:...
-
-*** Create blocks
+*** Agenda: Setup blocks
 
 #+begin_src emacs-lisp
-(setq org-stuck-projects '("+LEVEL=3/-DONE-CANCELLED-DEFERRED" ("*") nil ""))
 (setq org-agenda-custom-commands
       '(("a" "Agenda and Home-related tasks"
          (
@@ -513,16 +520,12 @@ These are my personal files that I want to be displayed in the agenda:
           (tags-todo "STEUERN")
           (tags "garden")
           (agenda "")
-))
-        ("o" "Agenda and Office-related tasks"
+       ))
+       ("o" "Agenda and Office-related tasks"
          ((agenda "")
           (tags-todo "work")
           (tags "office")))))
 #+end_src
-
-#+RESULTS:
-| a | Agenda and Home-related tasks   | ((stuck  ((org-agenda-overriding-header Bescheuerte Projekte))) (tags-todo STEUERN) (tags garden) (agenda )) |
-| o | Agenda and Office-related tasks | ((agenda ) (tags-todo work) (tags office))                                                                   |
 
 *** Hide empty blocks
 
@@ -665,7 +668,7 @@ quoted*. If this is not done, this source block will *not* be tangled!
               ("p" "Priv. Journal" plain (file+function "~/org/journal_privat.org" Shurakai/find-journal-tree)
                "*** %? %^g" )
               ("f" "Franz. Vokabel" plain (file "~/Documents/Notizen/Franzoesisch/Vokabeln.org")
-               "** :KARTEIKARTE:FRANZ:
+               "** \\nbsp{} :KARTEIKARTE:FRANZ:
 :PROPERTIES:
 :DRILL_CARD_TYPE: twosided
 :END:
@@ -1226,16 +1229,20 @@ here.
           ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
           ("\\paragraph{$blacktriangleright$ %s}" . "\\paragraph*{%s}")
           ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
-        )))
-  ;;      '("articleA"
-  ;;      "\\documentclass[12pt,a4paper,oneside,smallheadings,pointlessnumbers,BCOR12mm,DIVcalc]{scrreprt}%aus dem KOMA-Script-Paket"
-  ;;        ("\\chapter{%s}" . "\\chapter*{%s}")
-  ;;        ("\\section{%s}" . "\\section*{%s}")
-  ;;      ("\\subsection{%s}" . "\\subsection*{%s}")
-  ;;      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-  ;;      ("\\paragraph{%s}" . "\\paragraph*{%s}")
-  ;;      ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
-  ;;  )))
+        )
+        '("jura-EA"
+        "\\documentclass[12pt,a4paper,oneside,smallheadings,pointlessnumbers,BCOR12mm,DIVcalc]{scrreprt}%aus dem KOMA-Script-Paket"
+        ;; These are the headline levels and their corresponding LaTeX commands. Make sure they exist!
+          ("\\chapter{%s}" . "\\chapter*{%s}") ;; Level 1
+          ("\\section{%s}" . "\\section*{%s}") ;; Level 2
+        ("\\subsection{%s}" . "\\subsection*{%s}") ;; Level 3
+        ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+        ("\\paragraph{%s}" . "\\paragraph*{%s}")
+        ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
+        ;; Non-standard definitions
+        ("\\abschnitt{%s}" . "\\abschnitt*{%s}")
+        ("\\uabschnitt{%s}" . "\\uabschnitt*{%s}")
+   )))
 
 #+END_SRC
 

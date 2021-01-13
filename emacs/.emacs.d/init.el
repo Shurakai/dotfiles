@@ -3,18 +3,42 @@
 (setq package-archives
 '(("ELPA" . "http://tromey.com/elpa/")
    ("gnu" . "http://elpa.gnu.org/packages/")
-   ("melpa" . "http://melpa.milkbox.net/packages/")
-   ("marmalade" . "http://marmalade-repo.org/packages/")))
+   ("melpa" . "http://melpa.org/packages/")))
+   ;("marmalade" . "http://marmalade-repo.org/packages/")))
 
-(add-to-list 'load-path "~/.emacs.d/elpa/evil-1.0.8")
+(add-to-list 'load-path "~/.emacs.d/elpa/evil-20200304.1421/")
 (add-to-list 'load-path "~/.emacs.d/elpa/ob-lua-20160411.2024")
 (add-to-list 'load-path "~/.emacs.d/elpa/typopunct-1.0")
 (add-to-list 'load-path "~/.emacs.d/elpa/evil-easymotion-20160617.1840")
+(add-to-list 'load-path "~/.emacs.d/elpa/evil-org-20200101.2017/")
+(add-to-list 'load-path "~/.emacs.d/elpa/org-pdftools-20200929.2241/")
+(add-to-list 'load-path "~/.emacs.d/elpa/org-noter-pdftools-20200929.2241/")
+;(add-to-list 'load-path "~/.emacs.d/elpa/org-noter-pdftools--christian/") ; delete this once org-mode has moved to 9.4
 
 (add-to-list 'load-path "~/.emacs.d/org-mode/lisp/")
 (add-to-list 'load-path "~/.emacs.d/org-mode/contrib/lisp/")
+(add-to-list 'load-path "~/.emacs.d/org-drill/")
 (require 'org-install)
 (require 'org)
+
+(require 'org-ref)
+(defun org-ref-cite-link-format (keyword desc format)
+   (cond
+    ((eq format 'html) (format "(<cite>%s</cite>)" path))
+    ((eq format 'latex)
+     (concat "\\footnote{Vgl. \\cite" 
+             (when desc 
+                (setq prepost (split-string desc "::"))
+                (if (elt prepost 1)
+                  (format "[%s][%s]" (elt prepost 0) (elt prepost 1))
+                  (format "[%s]" desc))) "{"
+             (mapconcat (lambda (key) key) (org-ref-split-and-strip-string keyword) ",")
+             "}}"))))
+
+(org-add-link-type
+ "cite"
+ 'org-ref-cite-onclick-minibuffer-menu ;; clicking function
+ 'org-ref-cite-link-format) ;; formatting function
 
 (setq auto-mode-alist
    (append (mapcar 'purecopy
@@ -208,6 +232,8 @@
 (setq org-drill-question-tag "KARTEIKARTE")
 (setq org-drill-add-random-noise-to-intervals-p t)
 (setq org-drill-save-buffers-after-drill-sessions-p nil)
+(setq org-drill-sm5-initial-interval 0.25)
+(setq org-drill-learn-fraction 0.2)
 
 (defun custom/org-drill-tag(tag)
   "Start org-drill with a user chosen question tag."
@@ -239,7 +265,7 @@
  (require 'org-download)
  (setq org-download-method 'attach)
 
-(find-file "~/workspace/inria/research-collab/journal.org")
+(find-file "~/org/journal_privat.org")
 
 (setq org-directory "~/Documents/Notizen/")
 
@@ -258,6 +284,20 @@
  (setq org-agenda-start-with-follow-mode t) ;; When the curser is positioned on a line (or moved), show that entry in another window
  (setq org-stuck-projects '("+LEVEL=3/-DONE-CANCELLED-DEFERRED-READ-TESTED-VISITED" ("*") nil "")) ;; This needs to be adapted
 
+(require 'org-habit)
+(add-to-list 'org-modules "org-habits")
+
+ (setq org-agenda-files
+   (quote
+    ("~/Documents/Notizen/privat.org" "~/org/journal_privat.org" "~/workspace/inria/research-collab/journal.org")))
+
+;(tags-todo "STEUERN" 
+  ;((org-agenda-overriding-header "Phone Calls")
+  ;( org-agenda-files
+   ;(quote
+    ;("~/Documents/Notizen/privat.org" "~/org/journal_privat.org" "~/workspace/inria/research-collab/journal.org"))
+;)))
+
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-cc" 'org-capture)
 (global-set-key (kbd "C-c a") 'org-agenda)
@@ -265,13 +305,67 @@
 (define-key global-map (kbd "C-c a") 'org-agenda)
 (global-set-key "\C-cb" 'org-iswitchb)
 
+(setq org-agenda-include-all-todo t)
+(setq org-agenda-include-diary t)
+
+(setq org-agenda-custom-commands
+      '(("a" "Agenda and Home-related tasks"
+         (
+          (stuck "" (
+            (org-agenda-overriding-header "Bescheuerte Projekte")))
+          ;(tags-todo "STEUERN")
+          (tags "garden")
+          (agenda "")
+       ))
+       ("o" "Agenda and Office-related tasks"
+         ((agenda "")
+          ;(tags-todo "work")
+          (tags "office")))))
+
+(setq org-agenda-sorting-strategy 
+  (quote 
+    (time-up priority-down)))
+
+(require 'org-super-agenda)
+(org-super-agenda-mode 1)
+
+(let ((org-super-agenda-groups
+       '((:name "Books to read"
+                :and (:todo "UNREAD" :tag ("BUCH" "book")))
+         (:discard (:anything t)))))
+  (org-todo-list))
+
+(let ((org-super-agenda-groups
+       '((:log t)  ; Automatically named "Log"
+         (:name "Today"
+                :scheduled today)
+         ;(:habit t)
+         (:name "Due today"
+                :deadline today)
+         (:name "Overdue"
+                :deadline past)
+         (:name "Due soon"
+                :deadline future)
+         (:name "Unimportant"
+                :todo ("SOMEDAY" "MAYBE" "CHECK" "UNREAD" "UNWATCHED")
+                :order 100)
+         (:name "Waiting..."
+                :todo "WAITING"
+                :order 98)
+         (:name "Scheduled earlier"
+                :scheduled past)
+         (:name "Scheduled"
+                :time-grid t)
+)))
+  (org-todo-list))
+
 (setq org-capture-templates
       (quote (("j" "Berufl. Journal" plain (file+function "~/workspace/inria/research-collab/journal.org" Shurakai/find-journal-tree)
                "*** %? %^g" )
               ("p" "Priv. Journal" plain (file+function "~/org/journal_privat.org" Shurakai/find-journal-tree)
                "*** %? %^g" )
               ("f" "Franz. Vokabel" plain (file "~/Documents/Notizen/Franzoesisch/Vokabeln.org")
-               "** :KARTEIKARTE:FRANZ:
+               "** \\nbsp{} :KARTEIKARTE:FRANZ:
 :PROPERTIES:
 :DRILL_CARD_TYPE: twosided
 :END:
@@ -281,9 +375,9 @@
     %^{prompt}
 " ))))
 
-(setq org-export-babel-evaluate nil) ;; This is for org-mode<9. 
-;;  Otherwise, you need to set #+PROPERTY: header-args :eval never-export in the beginning or your document
-(setq org-confirm-babel-evaluate nil)
+;(setq org-export-babel-evaluate nil) ;; This is for org-mode<9. 
+;;;  Otherwise, you need to set #+PROPERTY: header-args :eval never-export in the beginning or your document
+;(setq org-confirm-babel-evaluate nil)
 
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -357,7 +451,7 @@
 
  (setq org-latex-to-pdf-process '("pdflatex -interaction nonstopmode -output-directory %o %f ; bibtex `basename %f | sed 's/\.tex//'` ; pdflatex -interaction nonstopmode -output-directory  %o %f ; pdflatex -interaction nonstopmode -output-directory %o %f"))
 
-(add-to-list 'org-latex-classes '("article" "\\documentclass{article}\n \[NO-DEFAULT-PACKAGES]\n \[EXTRA]\n  \\usepackage{graphicx}\n  \\usepackage{hyperref}"  ("\\section{%s}" . "\\section*{%s}") ("\\subsection{%s}" . "\\subsection*{%s}")                       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")                       ("\\paragraph{%s}" . "\\paragraph*{%s}")                       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+(add-to-list 'org-latex-classes '("article" "\\documentclass{article}\n \[NO-DEFAULT-PACKAGES]\n \[EXTRA]\n  \\usepackage{graphicx}\n  \\usepackage{hyperref}" ("\\chapter{%s}" . "\\chapter*{%s}") ("\\section{%s}" . "\\section*{%s}") ("\\subsection{%s}" . "\\subsection*{%s}")                       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")                       ("\\paragraph{%s}" . "\\paragraph*{%s}")                       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
 ;;(if (require 'org-toc nil t)
 ;;    (add-hook 'org-mode-hook 'toc-org-enable)
@@ -579,9 +673,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- ;;'(custom-enabled-themes (quote (tango-dark)))
  '(line-number-mode nil)
- '(org-babel-exp-inline-code-template "src_%lang[%switches%flags]{}")
+ '(org-agenda-files
+   (quote
+    ("~/Documents/Uni-Hagen/55104_Staats_und_Verfassungsrecht/hausarbeit.org" "~/Documents/Notizen/privat.org" "~/org/journal_privat.org" "~/workspace/inria/research-collab/journal.org")))
+ '(org-babel-exp-inline-code-template "src_%lang[%switches%flags]{%body}")
  '(org-babel-shell-names
    (quote
     ("sh" "bash" "csh" "ash" "dash" "ksh" "mksh" "posh" "zsh")))
@@ -598,7 +694,7 @@
  '(org-reverse-note-order t)
  '(package-selected-packages
    (quote
-    (org-table-sticky-header org-super-agenda org-chef org-bullets magit helm dash-functional typopunct ob-lua lua-mode evil-org evil-easymotion ess epresent color-theme-sanityinc-tomorrow color-theme)))
+    (org-noter-pdftools use-package org-roam org-cliplink org-pdftools org-noter evil org-evil org-ref persist org-table-sticky-header org-super-agenda org-chef org-bullets magit helm dash-functional typopunct ob-lua lua-mode evil-org evil-easymotion ess epresent color-theme-sanityinc-tomorrow color-theme)))
  '(remember-annotation-functions (quote (org-remember-annotation)))
  '(remember-handler-functions (quote (org-remember-handler)))
  '(safe-local-variable-values
@@ -670,16 +766,21 @@
           ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
           ("\\paragraph{$blacktriangleright$ %s}" . "\\paragraph*{%s}")
           ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
-        )))
-  ;;      '("articleA"
-  ;;      "\\documentclass[12pt,a4paper,oneside,smallheadings,pointlessnumbers,BCOR12mm,DIVcalc]{scrreprt}%aus dem KOMA-Script-Paket"
-  ;;        ("\\chapter{%s}" . "\\chapter*{%s}")
-  ;;        ("\\section{%s}" . "\\section*{%s}")
-  ;;      ("\\subsection{%s}" . "\\subsection*{%s}")
-  ;;      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-  ;;      ("\\paragraph{%s}" . "\\paragraph*{%s}")
-  ;;      ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
-  ;;  )))
+        )
+   (add-to-list 'org-latex-classes
+        '("jura-ea"
+        "\\documentclass[12pt,a4paper,oneside,headings=small,numbers=noenddot,BCOR=12mm,DIV=calc]{scrbook}%aus dem KOMA-Script-Paket "
+        ;; These are the headline levels and their corresponding LaTeX commands. Make sure they exist!
+          ("\\chapter{%s}" . "\\chapter*{%s}")
+          ("\\section{%s}" . "\\section*{%s}")
+        ("\\subsection{%s}" . "\\subsection*{%s}")
+        ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+        ("\\paragraph{%s}" . "\\paragraph*{%s}")
+        ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
+        ;;
+        ("\\abschnitt{%s}" . "\\abschnitt*{%s}")
+        ("\\uabschnitt{%s}" . "\\uabschnitt*{%s}")
+    ))))
 
 ;;        (org-babel-tangle-file "~/.emacs.d/init.org"
 ;;                               "~/.emacs.d/init.el"
@@ -696,6 +797,11 @@
          "\\(part\\|chapter\\|\\(?:sub\\)*section\\|\\(?:sub\\)?paragraph\\)"
          "\\1*" data nil nil 1)
       data)))
+
+(pdf-tools-install)
+(require 'org-noter-pdftools)
+(with-eval-after-load 'pdf-annot
+   (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note))
 
 (setq org-export-filter-headline-functions '(headline-numbering-filter))
 (global-set-key (kbd "C-x x") 'execute-extended-command)
