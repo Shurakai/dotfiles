@@ -1,0 +1,12 @@
+[Install]
+Alias=redshift
+WantedBy=default.target
+
+[Unit]
+Description=Redshift
+After=display-manager.service
+
+[Service]
+Environment=DISPLAY=:0
+;ExecStartPre=/bin/sleep 5
+ExecStart=/usr/bin/redshift -l "55.7:12.6" -t "5700:3600" -m randr -v -r -b 1:0.6
