@@ -23,8 +23,8 @@ set visualenterauto false
 set wordpattern [^\s\/]+
 
 " Remove unnecessary hints on duckduckgo
-bindurl ^https://duckduckgo.com f hint -Jc .result__a,.module__more-at
-bindurl ^https://duckduckgo.com F hint -Jbc .result__a,.module__more-at
+bindurl ^https://duckduckgo.com f hint -Jc .result__a,.module__more-at,.module__more-at-bottom
+bindurl ^https://duckduckgo.com F hint -Jbc .result__a,.module__more-at,.module__more-at-bottom
 bindurl youtu((\.be)|(be\.com)) f hint -J
 
 "
@@ -39,7 +39,7 @@ set searchurls.bandcamp https://bandcamp.com/search?q=%s
 set searchurls.cnrtl http://www.cnrtl.fr/lexicographie/%s
 set searchurls.conj http://www.les-verbes.com/conjuguer.php?verbe=%s
 set searchurls.crates https://crates.io/search?q=%s
-set searchurls.ddg https://duckduckgo.com/html?q=%s
+set searchurls.ddg https://duckduckgo.com/?q=%s
 set searchurls.deb https://packages.debian.org/search?keywords=%s&searchon=names&suite=all&section=all
 set searchurls.g https://www.google.com/search?q=%s
 set searchurls.gh https://github.com/search?utf8=%E2%9C%93&q=%s&ref=simplesearch
