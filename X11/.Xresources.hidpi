@@ -20,9 +20,11 @@ URxvt.foreground: white
 urxvt*background: rgba:0000/0000/0000/dddd
 URxvt.secondaryScroll: true
 URxvt.font: xft:Meslo LG M DZ for Powerline:pixelsize=26
-Xmessage*font: -adobe-helvetica-medium-r-normal--34-240-100-100-p-176-iso8859-1
 
-URxvt.perl-ext-common: default,matcher
+! font-size allows us to resize the font using ctrl-+/-
+! this can also be made persistent, see the source code
+! https://github.com/majutsushi/urxvt-font-size
+URxvt.perl-ext-common: default,matcher,font-size
 URxvt.url-launcher: firefox
 URxvt.matcher.button: 1
 URxvt.matcher.pattern.1: \\bwww\\.[\\w-]\\.[\\w./?&@#-]*[\\w/-]
@@ -63,3 +65,17 @@ urxvt*color14: #fcaf3e
 ! white
 urxvt*color7:  #babdb9
 urxvt*color15: #EEEEEC
+
+! From https://github.com/zmyrgel/dotfiles/blob/f85f8011ef8fb080b23bef2f97b4ae041af8b505/.Xresources
+! This one was also good, but too small. See available fonts with =xfontsel= 
+! Xmessage*font:             -misc-spleen-medium-r-normal--16-160-72-72-c-80-iso10646-1
+Xmessage*font: -adobe-helvetica-medium-r-normal--34-240-100-100-p-176-iso8859-1
+Xmessage*background:            #242424
+Xmessage*foreground:            #CCCCCC
+Xmessage*form.*.shapeStyle:     rectangle
+Xmessage*Scrollbar.width:       15
+Xmessage*Scrollbar.borderWidth: 1
+!Xmessage.form.message.Scroll:  WhenNeeded
+Xmessage*Buttons:               Quit
+Xmessage*defaultButton:         Quit
+Xmessage*geometry:             +20+20
