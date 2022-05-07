@@ -164,6 +164,7 @@ myKeys = [
          , ((modm,               xK_F4),    spawn "xcalib -invert -alter")
 --  Used with a secondary screen
 --       , ((modm,               xK_F5),    spawn "xrandr && xrandr --output DisplayPort-1 --off && xrandr --output DisplayPort-1 --mode 2560x1600 --left-of eDP --primary && xmodmap ~/.Xmodmap")
+         , ((modm,               xK_F5),    spawn "xrandr && xrandr --output DisplayPort-1 --off && xrandr --output DisplayPort-1 --mode 3840x2160 --dpi 144 --left-of eDP --primary && xmodmap ~/.Xmodmap")
          , ((modm,               xK_F1),    manPrompt myXPConfig)
          , ((modm,               xK_F2),    shellPrompt myXPConfig) -- I use the shell prompt also as an application launcher
          , ((modm,               xK_F3),    sshPrompt myXPConfig)
