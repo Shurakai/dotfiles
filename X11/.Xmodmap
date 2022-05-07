@@ -44,6 +44,7 @@ keycode 30 =    u       U       less                NoSymbol   KP_7
 keycode 31 =    i       I       greater             NoSymbol   KP_8
 keycode 32 =    o       O       equal               NoSymbol   KP_9
 keycode 33 =    p       P       ampersand           NoSymbol   KP_Add
+keycode 34 =    udiaeresis    Udiaeresis
 
 ! Middle row
 keycode 38 =  a       A       backslash             NoSymbol   Home
