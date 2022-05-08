@@ -1,51 +1,39 @@
 (setq debug-on-error t
-        debug-on-signal nil
-          debug-on-quit nil)
+      debug-on-signal nil
+      debug-on-quit nil)
 
-(require 'package)
-(require 'use-package)
-(package-initialize)
-(setq package-archives
-'(("ELPA" . "http://tromey.com/elpa/")
-   ("gnu" . "http://elpa.gnu.org/packages/")
-   ("melpa" . "http://melpa.org/packages/")))
-  ; ("marmalade" . "http://marmalade-repo.org/packages/")))
+;;;
+;;; Straight.el packet manager
+;;;
+(defvar bootstrap-version)
+(let ((bootstrap-file
+        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+      (url-retrieve-synchronously
+        "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+        'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-;;(add-to-list 'load-path "~/.emacs.d/elpa/org-noter-pdftools--christian/") ; delete this once org-mode has moved to 9.4
-(add-to-list 'load-path "~/.emacs.d/evil/")
-(add-to-list 'load-path "~/.emacs.d/org-mode/lisp/")
-(add-to-list 'load-path "~/.emacs.d/org-mode/contrib/lisp/")
-(add-to-list 'load-path "~/.emacs.d/org-drill/")
+(straight-use-package 'use-package)
+
 (add-to-list 'load-path "~/.emacs.d/ox-extra/") ; provides support for :ignore: tags for latex export
 
-; Escape on jj
-(defun escape-if-next-char (c)
-  "Watches the next letter.  If c, then switch to Evil's normal mode; otherwise insert a k and forward unpressed key to unread-command events"
-  (self-insert-command 1)
-  (let ((next-key (read-event)))
-    (if (= c next-key)
-      (progn
-        (delete-backward-char 1)
-        (evil-esc 1))
-      (setq unread-command-events (list next-key)))))
-
-(defun escape-if-next-char-is-j (arg)
-  (interactive "p")
-  (if (= arg 1)
-    (escape-if-next-char ?j)
-    (self-insert-command arg)))
-
 (use-package evil
-  :ensure t ; Install if not available
+  :straight (evil)
   :config
     (evil-mode 1)
 
     (use-package evil-surround
+      :straight (evil-surround :type git :host github :repo "emacs-evil/evil-surround")
       :ensure t
       :config (global-evil-surround-mode))
 
     (use-package evil-org
-      :ensure t
+      :straight (evil-org-mode :fork (:type git :host github :repo "Somelauw/evil-org-mode"))
       :after org
       :hook (org-mode . (lambda () (evil-org-mode 1)))
       :config
@@ -53,6 +41,7 @@
     )
 
     (use-package evil-easymotion
+      :straight (evil-easymotion :type git :host github :repo "PythonNut/evil-easymotion")
       :config
       (evilem-default-keybindings ","))
     (define-key evil-insert-state-map (kbd "j") 'escape-if-next-char-is-j) ;; Ensure that jj leaves insert mode but don't lag after typing the first j
@@ -84,8 +73,43 @@
     (evil-want-C-i-jump nil) ; Without this, tab doesn't work ...
 )
 
-(use-package org
+;;______________________________________________________________________
+;;;;  Installing Org with straight.el
+;;; https://github.com/raxod502/straight.el/blob/develop/README.md#installing-org-with-straightel
+(require 'subr-x)
+(straight-use-package 'git)
 
+(defun org-git-version ()
+  "The Git version of 'org-mode'.
+Inserted by installing 'org-mode' or when a release is made."
+  (require 'git)
+  (let ((git-repo (expand-file-name
+                   "straight/repos/org/" user-emacs-directory)))
+    (string-trim
+     (git-run "describe"
+              "--match=release\*"
+              "--abbrev=6"
+              "HEAD"))))
+
+(defun org-release ()
+  "The release version of 'org-mode'.
+Inserted by installing 'org-mode' or when a release is made."
+  (require 'git)
+  (let ((git-repo (expand-file-name
+                   "straight/repos/org/" user-emacs-directory)))
+    (string-trim
+     (string-remove-prefix
+      "release_"
+      (git-run "describe"
+               "--match=release\*"
+               "--abbrev=0"
+               "HEAD")))))
+
+(provide 'org-version)
+
+;; (straight-use-package 'org) ; or org-plus-contrib if desired
+
+(use-package org
   :custom
   (org-directory "~/Documents/Notizen/")
 
@@ -111,14 +135,17 @@
 
   :config
   (use-package org-download
+    :straight (org-download)
     :config
     (setq org-download-method 'attach))
 
 
   (use-package org-bullets
+      :straight (org-bullets)
       :hook (org-mode . (lambda () (org-bullets-mode 1))))
 
   (use-package org-table-sticky-header
+      :straight (org-table-sticky-header :type git :host github :repo "cute-jumper/org-table-sticky-header" :depth 1)
       :hook (org-mode . (lambda () (org-table-sticky-header-mode 1))))
 
 
@@ -287,12 +314,14 @@
    ;;;
    ;;; Org Cliplink
    ;;;
-   (use-package org-cliplink)
+   (use-package org-cliplink
+     :straight (org-cliplink))
 
    ;;;
    ;;; Org Drill (Flashcards)
    ;;;
    (use-package org-drill
+     :straight (org-drill :type git :host gitlab :repo "phillord/org-drill")
      :config
        (defun custom/org-drill-tag(tag)
          "Start org-drill with a user chosen question tag."
@@ -312,13 +341,16 @@
    ;;;
    ;;; Org noter
    ;;;
-   (use-package org-noter
-     :config
-       (use-package pdf-tools
-         :hook (pdf-annot-activate-handler-functions . (lambda() (org-noter-pdftools-jump-to-note)))
-         :config 
-           (pdf-tools-install))
-       (use-package org-noter-pdftools))
+   ;(use-package org-noter
+     ;:straight (org-noter)
+     ;:config
+       ;(use-package pdf-tools
+         ;:straight (pdf-tools)
+         ;:hook (pdf-annot-activate-handler-functions . (lambda() (org-noter-pdftools-jump-to-note)))
+         ;:config 
+           ;(pdf-tools-install))
+       ;(use-package org-noter-pdftools
+         ;:straight (org-noter-pdftools)))
 
 
      ;;;
@@ -342,7 +374,10 @@
     (setq recentf-max-menu-items 25)
     (global-set-key "\C-x\ \C-r" 'recentf-open-files))
 
+
 (use-package typopunct
+  :straight (typopunct :type git :host github :repo "emacsmirror/typopunct" :depth 1)
+
   :hook (org-mode . (lambda() (typopunct-mode 1))))
 
 
@@ -371,3 +406,21 @@
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
+
+; Escape on jj
+(defun escape-if-next-char (c)
+  "Watches the next letter.  If c, then switch to Evil's normal mode; otherwise insert a k and forward unpressed key to unread-command events"
+  (self-insert-command 1)
+  (let ((next-key (read-event)))
+    (if (= c next-key)
+      (progn
+        (delete-backward-char 1)
+        (evil-esc 1))
+      (setq unread-command-events (list next-key)))))
+
+(defun escape-if-next-char-is-j (arg)
+  (interactive "p")
+  (if (= arg 1)
+    (escape-if-next-char ?j)
+    (self-insert-command arg)))
+
