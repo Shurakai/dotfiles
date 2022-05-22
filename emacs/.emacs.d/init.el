@@ -1,6 +1,8 @@
-(setq debug-on-error t
-      debug-on-signal nil
-      debug-on-quit nil)
+;(setq debug-on-error t
+      ;debug-on-signal nil
+      ;debug-on-quit nil)
+
+(defvar my/init-el-start-time (current-time) "For benchmarking my init.el: Time when init.el was started")
 
 ;;;
 ;;; Straight.el packet manager
@@ -19,6 +21,7 @@
   (load bootstrap-file nil 'nomessage))
 
 (straight-use-package 'use-package)
+(straight-use-package 'org)
 
 (add-to-list 'load-path "~/.emacs.d/ox-extra/") ; provides support for :ignore: tags for latex export
 
@@ -32,18 +35,23 @@
       :ensure t
       :config (global-evil-surround-mode))
 
-    (use-package evil-org
-      :straight (evil-org-mode :fork (:type git :host github :repo "Somelauw/evil-org-mode"))
-      :after org
-      :hook (org-mode . (lambda () (evil-org-mode 1)))
-      :config
-      (evil-org-set-key-theme '(textobjects insert navigation additional shift todo heading))
-    )
+	;; Org bindings for evil
+    ;; It's set up in "themes" that can be combined; see 
+    ;; https://github.com/Somelauw/evil-org-mode/blob/master/doc/keythemes.org for a list
+    ;; Nice features are M-gh to go to the top heading, M-h/j/k/l on a heading to demote/promote it (and move it up/down...)
+	(use-package evil-org
+	  :straight (evil-org-mode :fork (:type git :host github :repo "Somelauw/evil-org-mode"))
+	  :after org
+	  :hook (org-mode . (lambda () (evil-org-mode 1)))
+	  :config
+	  (evil-org-set-key-theme '(textobjects insert navigation additional shift todo heading))
+	)
 
     (use-package evil-easymotion
       :straight (evil-easymotion :type git :host github :repo "PythonNut/evil-easymotion")
       :config
       (evilem-default-keybindings ","))
+
     (define-key evil-insert-state-map (kbd "j") 'escape-if-next-char-is-j) ;; Ensure that jj leaves insert mode but don't lag after typing the first j
 
     ;(use-package evil-indent-textobject
@@ -111,13 +119,15 @@ Inserted by installing 'org-mode' or when a release is made."
 
 (use-package org
   :custom
+
   (org-directory "~/Documents/Notizen/")
 
   (org-alphabetical-lists t)
   ;;(setq org-confirm-babel-evaluate nil) ; Otherwise, you need to set #+PROPERTY: header-args :eval never-export in the beginning or your document
-  (org-babel-exp-inline-code-template "src_%lang[%switches%flags]{%body}")
+  ;(org-babel-exp-inline-code-template "src_%lang[%switches%flags]{%body}")
   (org-babel-shell-names '("sh" "bash" "csh" "ash" "dash" "ksh" "mksh" "posh" "zsh"))
-  (org-cycle-separator-lines 2) ;; hides empty lines between headlines when looking at an outline
+  (org-babel-python-command "python3")
+  (org-cycle-separator-lines 2) ;; >= n empty (!) lines are needed to show them after the end of a subtree; otherwise, < n empty lines are ignored; when 0, then empty lines are never shown
   (org-fold-catch-invisible-edits 'show-and-error) ;; An invisible area is hidden as "...", but can still be edited. This setting
                                                    ;; throws an error and shows the hidden area.
   (org-hide-emphasis-markers t) ;; to hide the *,=, or / markers
@@ -126,6 +136,30 @@ Inserted by installing 'org-mode' or when a release is made."
   (org-src-fontify-natively t)  ;; you want this to activate coloring in blocks
   (org-src-tab-acts-natively t) ;; you want this to have completion in blocks
   (org-use-sub-superscripts "{}")
+
+
+  (org-log-into-drawer t) ;; Log into a drawer called "LOGBOOK" (so that we can fold it away)
+  ;; This redefines the log messages; note that this does not /activate/ the messages by itself, that has to be done e.g. by setting
+  ; #+LOGGING: logreschedule lognoterepeat 
+  ; etc.
+  ; (One can also set org-log-reschule to either 'time or 'note)
+  (org-log-note-headings '((done        . "%t: DONE")
+                           (state       . "State %-12s from %-12S %t") ; Should not be changed as Agenda Log mode depends on this format
+                           (note        . "%t: Note taken")
+                           (reschedule  . "%t: Schedule changed (%S -> %s)")
+                           (delschedule . "%t: Schedule deleted (was %S)")
+                           (redeadline  . "%t: Deadline changed (%S -> %s)")
+                           (deldeadline . "%t: Deadline removed (was %S)")
+                           (refile      . "%t: Refiled")
+                           (clock-out   . "")))
+
+  ;; This portion is for ESS-Script (used by the org-babel R script)
+  (inferior-R-args "--no-save --no-restore") ; When quitting a session manually, don't ask if this should be saved
+  (ess-toggle-underscore nil) ; Do not substitute _ with <- when typing on the prompt manually
+  (ess-startup-directory nil) ; Use current buffers default directory and don't ask for "R startup directory" when executing with org-babel-R
+  (ess-ask-for-ess-directory nil) ;
+
+
 
   :hook (org-babel-after-execute . (lambda() (org-display-inline-images))) ; Show generated figures inline
   :hook (org-mode . (lambda () (org-display-inline-images 1)))
@@ -186,13 +220,39 @@ Inserted by installing 'org-mode' or when a release is made."
    ;;      '(
    ;;        (shell . t)
    ;;          <more languages here>))
-   (defadvice org-babel-execute-src-block (around load-language nil activate)
-      "Load language only when needed"
-      (let ((language (org-element-property :language (org-element-at-point))))
-        (unless (cdr (assoc (intern language) org-babel-load-languages))
-          (add-to-list 'org-babel-load-languages (cons (intern language) t))
-          (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages))
-        ad-do-it))
+   ;; 
+   ;; Unfortunately, this only works as expected for #+begin_src and not inline source code blocks:
+   ;; the :language property does not exist for inline source blocks; the org-element-inline-src-block-parser function shows
+   ;; how to parse inline source blocks but I didn't get that to work...
+   ;(defadvice org-babel-execute-src-block (around load-language nil activate)
+      ;"Load language only when needed"
+      ;(let ((language (org-element-property :language (org-element-at-point))))
+        ;(unless (cdr (assoc (intern language) org-babel-load-languages)) ;; Does this language already exist in org-babel-load-languages? If not, insert new entry
+          ;;(message "%s %s %s" load-language around activate)
+          ;(add-to-list 'org-babel-load-languages '(R . t))
+          ;(org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
+        ;ad-do-it)))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '(
+     (shell . t)
+     (python . t)
+     (R . t)
+     (C . t)
+     (ruby . t)
+     ;(ocaml . t)
+     ;(ditaa . t)
+     ;(dot . t)
+     (haskell . t)
+     ;(octave . t)
+     (sqlite . t)
+     (perl . t)
+     (screen . t)
+     ;(plantuml . t)
+     ;(lilypond . t)
+     (org . t)
+     (makefile . t)
+     ))
 
    (setq org-src-preserve-indentation t) ;; When tangled, the source code will retain its indentation; may be important for white-space sensitive code
 
@@ -203,8 +263,13 @@ Inserted by installing 'org-mode' or when a release is made."
          (quote (
                  ;("j" "Berufl. Journal" plain (file+function "~/workspace/inria/research-collab/journal.org" Shurakai/find-journal-tree)
                  ; "*** %? %^g" )
-                 ("p" "Priv. Journal" plain (file+function "~/org/journal_privat.org" Shurakai/find-journal-tree)
+                 ("p" "Priv. Journal - normaler Eintrag" plain (file+function "~/org/journal_privat.org" Shurakai/find-journal-tree)
                   "*** %? %^g" )
+                 ("s" "Priv. Journal - Eintrag mit Datum" plain (file+function "~/org/journal_privat.org" Shurakai/find-journal-tree)
+                  "*** TODO %? %^g
+SCHEDULED: %^t" )
+                 ("k" "Priv. Journal - Kochrezept" plain (file+function "~/org/journal_privat.org" Shurakai/find-journal-tree)
+                  (file "~/dotfiles/emacs/org-capture-templates/kochrezept" ))
                  ("f" "Franz. Vokabel" plain (file "~/Documents/Notizen/Franzoesisch/Vokabeln.org")
                   "** \\nbsp{} :KARTEIKARTE:FRANZ:
    :PROPERTIES:
@@ -359,8 +424,12 @@ Inserted by installing 'org-mode' or when a release is made."
      :bind ( ("\C-cl" . 'org-store-link)
              ("\C-cc" . 'org-capture)
              ("\C-ca" . 'org-agenda)
-             ("\C-cb" . 'org-iswitchb))
+             ("\C-cb" . 'org-iswitchb)
+	  )
 )
+
+(use-package ess
+    :straight (ess))
 
 (use-package paren
     :config
@@ -424,3 +493,114 @@ Inserted by installing 'org-mode' or when a release is made."
     (escape-if-next-char ?j)
     (self-insert-command arg)))
 
+
+;;
+;; Christian: I took the following two functions from Karl Voit's public config
+;; https://github.com/novoid/dot-emacs/blob/master/config.org (22.05.22)
+;; There is also a blog post on an older version of this: https://karl-voit.at/2019/11/16/UOMF-Linking-Headings/
+;;
+
+(require 'ffap)
+(defun my/generate-sanitized-alnum-dash-string(str)
+"Returns a string which contains only a-zA-Z0-9 with single dashes
+ replacing all other characters in-between them.
+
+ Some parts were copied and adapted from org-hugo-slug
+ from https://github.com/kaushalmodi/ox-hugo (GPLv3)."
+(let* (;; Remove "<FOO>..</FOO>" HTML tags if present.
+       (str (replace-regexp-in-string "<\\(?1:[a-z]+\\)[^>]*>.*</\\1>" "" str))
+       ;; Remove URLs if present in the string.  The ")" in the
+       ;; below regexp is the closing parenthesis of a Markdown
+       ;; link: [Desc](Link).
+       (str (replace-regexp-in-string (concat "\\](" ffap-url-regexp "[^)]+)") "]" str))
+       ;; Replace "&" with " and ", "." with " dot ", "+" with
+       ;; " plus ".
+       (str (replace-regexp-in-string
+             "&" " and "
+             (replace-regexp-in-string
+              "\\." " dot "
+              (replace-regexp-in-string
+               "\\+" " plus " str))))
+       ;; Replace German Umlauts with 7-bit ASCII.
+       (str (replace-regexp-in-string "ä" "ae" str nil))
+       (str (replace-regexp-in-string "ü" "ue" str nil))
+       (str (replace-regexp-in-string "ö" "oe" str nil))
+       (str (replace-regexp-in-string "ß" "ss" str nil))
+       ;; Replace all characters except alphabets, numbers and
+       ;; parentheses with spaces.
+       (str (replace-regexp-in-string "[^[:alnum:]()]" " " str))
+       ;; On emacs 24.5, multibyte punctuation characters like "："
+       ;; are considered as alphanumeric characters! Below evals to
+       ;; non-nil on emacs 24.5:
+       ;;   (string-match-p "[[:alnum:]]+" "：")
+       ;; So replace them with space manually..
+       (str (if (version< emacs-version "25.0")
+                (let ((multibyte-punctuations-str "：")) ;String of multibyte punctuation chars
+                  (replace-regexp-in-string (format "[%s]" multibyte-punctuations-str) " " str))
+              str))
+       ;; Remove leading and trailing whitespace.
+       (str (replace-regexp-in-string "\\(^[[:space:]]*\\|[[:space:]]*$\\)" "" str))
+       ;; Replace 2 or more spaces with a single space.
+       (str (replace-regexp-in-string "[[:space:]]\\{2,\\}" " " str))
+       ;; Replace parentheses with double-hyphens.
+       (str (replace-regexp-in-string "\\s-*([[:space:]]*\\([^)]+?\\)[[:space:]]*)\\s-*" " -\\1- " str))
+       ;; Remove any remaining parentheses character.
+       (str (replace-regexp-in-string "[()]" "" str))
+       ;; Replace spaces with hyphens.
+       (str (replace-regexp-in-string " " "-" str))
+       ;; Remove leading and trailing hyphens.
+       (str (replace-regexp-in-string "\\(^[-]*\\|[-]*$\\)" "" str)))
+  str)
+)
+
+(defun my/id-get-or-generate()
+"Returns the ID property if set or generates and returns a new one if not set.
+ The generated ID is stripped off potential progress indicator cookies and
+ sanitized to get a slug. Furthermore, it is prepended with an ISO date-stamp
+ if none was found before."
+    (interactive)
+        (when (not (org-id-get))
+            (progn
+               (let* (
+                      (my-heading-text (nth 4 (org-heading-components)));; retrieve heading string
+                      (my-heading-text (replace-regexp-in-string "\\(\\[[0-9]+%\\]\\)" "" my-heading-text));; remove progress indicators like "[25%]"
+                      (my-heading-text (replace-regexp-in-string "\\(\\[[0-9]+/[0-9]+\\]\\)" "" my-heading-text));; remove progress indicators like "[2/7]"
+                      (my-heading-text (replace-regexp-in-string "\\(\\[#[ABC]\\]\\)" "" my-heading-text));; remove priority indicators like "[#A]"
+                      (my-heading-text (replace-regexp-in-string "\\[\\[\\(.+?\\)\\]\\[" "" my-heading-text t));; removes links, keeps their description and ending brackets
+;;                      (my-heading-text (replace-regexp-in-string "[<\\[][12][0-9]\\{3\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\( .*?\\)[>\\]]" "" my-heading-text t));; removes day of week and time from date- and time-stamps (doesn't work somehow)
+                      (my-heading-text (replace-regexp-in-string "<[12][0-9]\\{3\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\( .*?\\)>" "" my-heading-text t));; removes day of week and time from active date- and time-stamps
+                      (my-heading-text (replace-regexp-in-string "\\[[12][0-9]\\{3\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\( .*?\\)\\]" "" my-heading-text t));; removes day of week and time from inactive date- and time-stamps
+                      (new-id (my/generate-sanitized-alnum-dash-string my-heading-text));; get slug from heading text
+                      (my-created-property (assoc "CREATED" (org-entry-properties))) ;; nil or content of CREATED time-stamp
+                     )
+                   (when (not (string-match "[12][0-9][0-9][0-9]-[01][0-9]-[0123][0-9]-.+" new-id))
+                           ;; only if no ISO date-stamp is found at the beginning of the new id:
+                           (if my-created-property (progn
+                               ;; prefer date-stamp of CREATED property (if found):
+                               (setq my-created-datestamp (substring (org-entry-get nil "CREATED" nil) 1 11)) ;; returns "2021-12-16" or nil (if no CREATED property)
+                               (setq new-id (concat my-created-datestamp "-" new-id))
+                           )
+                           ;; use today's date-stamp if no CREATED property is found:
+                           (setq new-id (concat (format-time-string "%Y-%m-%d--") new-id))))
+                   (org-set-property "ID" new-id)
+                   )
+                 )
+        )
+        (kill-new (concat "id:" (org-id-get)));; put ID in kill-ring
+        (org-id-get);; retrieve the current ID in any case as return value
+)
+
+(use-package bind-key
+  :straight (bind-key)
+  :bind (:prefix-map my-map
+         :prefix-docstring "My own keyboard map"
+         :prefix "\C-ck" ;; I wanted to use \C-c \C-k (k as in "keymap") but that didn't overwrite the mapping (already set to org-kill-note-or-show-branches -- see https://github.com/jwiegley/use-package/issues/811#issuecomment-573314421, but that doesn't work
+         ("-" . text-scale-decrease)
+         ("+" . text-scale-increase))
+  :after org)
+
+(bind-keys
+  :map my-map
+  ("g i" . my/id-get-or-generate))
+
+(message "BENCHMARK: Init.el loaded in in %.2fs " (float-time (time-subtract (current-time) my/init-el-start-time)))
