@@ -1,0 +1,16 @@
+*** TODO %? :KOCHREZEPT:%^g
+%^{RATING}p
+%^{CUISINE}p
+%^{VEGETARIAN|yes}p
+%^{PREP_TIME}p
+%^{PORTIONS}p
+
+**** Zutaten
+
+    | Menge | Zutate | Kommentar |
+    |-------+--------+-----------|
+    | %?
+
+**** Zubereitung
+
+    1.
