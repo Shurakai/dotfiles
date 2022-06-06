@@ -20,8 +20,8 @@ I'm a VIM guy; I hence use evil-mode.
 (setq package-archives
 '(("ELPA" . "http://tromey.com/elpa/")
    ("gnu" . "http://elpa.gnu.org/packages/")
-   ("melpa" . "http://melpa.milkbox.net/packages/")
-   ("marmalade" . "http://marmalade-repo.org/packages/")))
+   ("melpa" . "http://melpa.org/packages/")))
+  ; ("marmalade" . "http://marmalade-repo.org/packages/")))
 #+end_src
 
 To install new packages, use =M-x package-install=.
@@ -30,10 +30,15 @@ To install new packages, use =M-x package-install=.
 The load-paths for org-mode are added later.
 
 #+begin_src emacs-lisp
-(add-to-list 'load-path "~/.emacs.d/elpa/evil-1.0.8")
+(add-to-list 'load-path "~/.emacs.d/elpa/evil-20200304.1421/")
 (add-to-list 'load-path "~/.emacs.d/elpa/ob-lua-20160411.2024")
 (add-to-list 'load-path "~/.emacs.d/elpa/typopunct-1.0")
 (add-to-list 'load-path "~/.emacs.d/elpa/evil-easymotion-20160617.1840")
+(add-to-list 'load-path "~/.emacs.d/elpa/evil-org-20200101.2017/")
+(add-to-list 'load-path "~/.emacs.d/elpa/org-pdftools-20200929.2241/")
+(add-to-list 'load-path "~/.emacs.d/elpa/org-noter-pdftools-20200929.2241/")
+;(add-to-list 'load-path "~/.emacs.d/elpa/org-noter-pdftools--christian/") ; delete this once org-mode has moved to 9.4
+
 #+end_src
 
 ** Load org-mode                                                   :ORGMODE:
@@ -41,18 +46,42 @@ The load-paths for org-mode are added later.
 (add-to-list 'load-path "~/.emacs.d/org-mode/lisp/")
 (add-to-list 'load-path "~/.emacs.d/org-mode/contrib/lisp/")
 (add-to-list 'load-path "~/.emacs.d/org-drill/")
+(add-to-list 'load-path "~/.emacs.d/ox-extra/") ; provides support for :ignore: tags for latex export
 (require 'org-install)
 (require 'org)
 #+end_src
+
+** org-ref
+
+#+begin_export emacs-lisp
+(require 'org-ref)
+(defun org-ref-cite-link-format (keyword desc format)
+   (cond
+    ((eq format 'html) (format "(<cite>%s</cite>)" path))
+    ((eq format 'latex)
+     (concat "\\footnote{Vgl. \\cite" 
+             (when desc 
+                (setq prepost (split-string desc "::"))
+                (if (elt prepost 1)
+                  (format "[%s][%s]" (elt prepost 0) (elt prepost 1))
+                  (format "[%s]" desc))) "{"
+             (mapconcat (lambda (key) key) (org-ref-split-and-strip-string keyword) ",")
+             "}}"))))
+
+(org-add-link-type
+ "cite"
+ 'org-ref-cite-onclick-minibuffer-menu ;; clicking function
+ 'org-ref-cite-link-format) ;; formatting function
+#+end_export
 
 ** Load org-protocol for capturing websites easily
 
 Note: This won't work anymore with Firefox 57+, according to https://addons.mozilla.org/en-US/firefox/addon/org-mode-capture/ but it seems that there is now
 an alternative: https://addons.mozilla.org/en-US/firefox/addon/org-capture/. Check the GitHub page for setup.
 
-#+BEGIN_SRC 
-(server-start)
-(require 'org-protocol)
+#+BEGIN_SRC emacs-lisp
+; (server-start)
+; (require 'org-protocol)
 #+END_SRC
 
 ** Filetypes / emacs modes
@@ -368,7 +397,7 @@ Being asked to type in yes explicitly all the time gets very tedious. I understa
 (setq org-drill-question-tag "KARTEIKARTE")
 (setq org-drill-add-random-noise-to-intervals-p t)
 (setq org-drill-save-buffers-after-drill-sessions-p nil)
-(setq org-drill-sm5-initial-interval 1.0)
+(setq org-drill-sm5-initial-interval 0.25)
 (setq org-drill-learn-fraction 0.2)
 #+END_SRC
 *** Set a custom tag for drills
@@ -435,15 +464,10 @@ can select what to screenshot) via ~org-download-screenshot~.
 (setq org-src-tab-acts-natively t) ;; you want this to have completion in blocks
 (setq org-hide-emphasis-markers t) ;; to hide the *,=, or / markers
 (setq org-pretty-entities t)       ;; to have \alpha, \to and others display as utf8 http://orgmode.org/manual/Special-symbols.html
-(setq org-cycle-separator-lines 0) ;; hides empty lines between headlines when looking at an outline
-#+end_src
-** org-mode configuration
-
-#+begin_src emacs-lisp
-(setq org-catch-invisible-edits show-and-error) ;; An invisible area is hidden as "...", but can still be edited. This setting
+(setq org-cycle-separator-lines t) ;; hides empty lines between headlines when looking at an outline
+;(setq org-catch-invisible-edits show-and-error) ;; An invisible area is hidden as "...", but can still be edited. This setting
                                                 ;; throws an error and shows the hidden area.
 #+end_src
-
 ** Agenda
 *** Agenda general configuration
 
@@ -477,16 +501,16 @@ These are my personal files that I want to be displayed in the agenda:
 #+begin_src emacs-lisp
  (setq org-agenda-files
    (quote
-    ("~/Documents/Notizen/privat.org" "~/org/journal_privat.org" "~/workspace/inria/research-collab/journal.org")))
+    ("~/Documents/Notizen/privat.org" "~/org/journal_privat.org" )))
 #+end_src
 
 #+begin_src emacs-lisp
-(tags-todo "STEUERN" 
-  ((org-agenda-overriding-header "Phone Calls")
-  ( org-agenda-files
-   (quote
-    ("~/Documents/Notizen/privat.org" "~/org/journal_privat.org" "~/workspace/inria/research-collab/journal.org"))
-)))
+;(tags-todo "STEUERN" 
+  ;((org-agenda-overriding-header "Phone Calls")
+  ;( org-agenda-files
+   ;(quote
+    ;("~/Documents/Notizen/privat.org" "~/org/journal_privat.org" ))
+;)))
 #+end_src
 
 *** Add short cut keys :ARNAUD:
@@ -515,16 +539,16 @@ These are my personal files that I want to be displayed in the agenda:
 (setq org-agenda-custom-commands
       '(("a" "Agenda and Home-related tasks"
          (
-          (stuck "" (
-            (org-agenda-overriding-header "Bescheuerte Projekte")))
-          (tags-todo "STEUERN")
-          (tags "garden")
+          ;(stuck "" ( (org-agenda-overriding-header "Bescheuerte Projekte")))
+          (tags-todo "-KOCHREZEPT-BUCH/!TODO|STARTED|WAITING")
+          ; (tags "garden")
           (agenda "")
        ))
-       ("o" "Agenda and Office-related tasks"
-         ((agenda "")
-          (tags-todo "work")
-          (tags "office")))))
+       ("r" "Kochrezepte die noch nie gekocht wurden"
+         (
+          (tags-todo "+KOCHREZEPT/!TODO")
+       ))
+       ))
 #+end_src
 
 *** Hide empty blocks
@@ -621,7 +645,8 @@ This loads and enables the
        '((:name "Books to read"
                 :and (:todo "UNREAD" :tag ("BUCH" "book")))
          (:discard (:anything t)))))
-  (org-todo-list))
+;  (org-todo-list)
+)
 #+end_src 
 
 #+RESULTS:
@@ -650,7 +675,8 @@ This loads and enables the
          (:name "Scheduled"
                 :time-grid t)
 )))
-  (org-todo-list))
+ ; (org-todo-list)
+)
 #+end_src
 
 #+RESULTS:
@@ -684,9 +710,9 @@ quoted*. If this is not done, this source block will *not* be tangled!
 * Org-mode + babel:
 ** Seamless use of babel (no confirmation, lazy export)              :ARNAUD:
 #+begin_src emacs-lisp
-(setq org-export-babel-evaluate nil) ;; This is for org-mode<9. 
+(setq org-export-babel-evaluate nil) ;; This is for org-mode < 9. 
 ;;  Otherwise, you need to set #+PROPERTY: header-args :eval never-export in the beginning or your document
-(setq org-confirm-babel-evaluate nil)
+; (setq org-confirm-babel-evaluate nil)
 #+end_src
 ** Some initial languages we want org-babel to support:             :ARNAUD:
 #+begin_src emacs-lisp
@@ -816,7 +842,9 @@ This comes with a session argument (e.g., in case you want to keep ssh connexion
 ** General articles                                                    :LUKA:
 I'm not completely sure I need this. I could probably remove it...
 #+begin_src emacs-lisp
-(add-to-list 'org-latex-classes '("article" "\\documentclass{article}\n \[NO-DEFAULT-PACKAGES]\n \[EXTRA]\n  \\usepackage{graphicx}\n  \\usepackage{hyperref}"  ("\\section{%s}" . "\\section*{%s}") ("\\subsection{%s}" . "\\subsection*{%s}")                       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")                       ("\\paragraph{%s}" . "\\paragraph*{%s}")                       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+(add-to-list 'org-latex-classes '("article" "\\documentclass{article}\n \[NO-DEFAULT-PACKAGES]\n \[EXTRA]\n  \\usepackage{graphicx}\n  \\usepackage{hyperref}" ("\\section{%s}" . "\\section*{%s}") ("\\subsection{%s}" . "\\subsection*{%s}")                       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")                       ("\\paragraph{%s}" . "\\paragraph*{%s}")                       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+(add-to-list 'org-latex-packages-alist '("" "booktabs"))
 #+end_src
 
 #+RESULTS:...
@@ -1131,6 +1159,7 @@ I set these variables via the GUI but I don't know how to set them
 here.
 
 #+BEGIN_SRC emacs-lisp
+(require 'remember)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -1138,7 +1167,7 @@ here.
  ;; If there is more than one, they won't work right.
  ;;'(custom-enabled-themes (quote (tango-dark)))
  '(line-number-mode nil)
- '(org-babel-exp-inline-code-template "src_%lang[%switches%flags]{}")
+ '(org-babel-exp-inline-code-template "src_%lang[%switches%flags]{%body}")
  '(org-babel-shell-names
    (quote
     ("sh" "bash" "csh" "ash" "dash" "ksh" "mksh" "posh" "zsh")))
@@ -1155,7 +1184,13 @@ here.
  '(org-reverse-note-order t)
  '(package-selected-packages
    (quote
-    (org-table-sticky-header org-super-agenda org-chef org-bullets magit helm dash-functional typopunct ob-lua lua-mode evil-org evil-easymotion ess epresent color-theme-sanityinc-tomorrow color-theme)))
+    (org-noter-pdftools use-package org-roam org-cliplink
+    org-pdftools org-noter evil org-evil org-ref persist
+    org-table-sticky-header org-super-agenda org-chef org-bullets
+    magit helm dash-functional typopunct ob-lua lua-mode evil-org
+    evil-easymotion ess epresent color-theme-sanityinc-tomorrow
+    color-theme)))
+
  '(remember-annotation-functions (quote (org-remember-annotation)))
  '(remember-handler-functions (quote (org-remember-handler)))
  '(safe-local-variable-values
@@ -1175,11 +1210,11 @@ here.
       ("=" org-verbatim verbatim)
       ("~" org-code verbatim)
       ("+"
-       (:strike-through nil)))))))
+       (:strike-through nil))))))
+)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-(require 'remember)
 (evilem-default-keybindings ",")
 ;; Escape on jj
 (defun escape-if-next-char (c)
@@ -1230,19 +1265,20 @@ here.
           ("\\paragraph{$blacktriangleright$ %s}" . "\\paragraph*{%s}")
           ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
         )
-        '("jura-EA"
-        "\\documentclass[12pt,a4paper,oneside,smallheadings,pointlessnumbers,BCOR12mm,DIVcalc]{scrreprt}%aus dem KOMA-Script-Paket"
+(add-to-list 'org-latex-classes
+        '("jura-ea"
+           "\\documentclass[12pt,a4paper,oneside,headings=small,numbers=noenddot,BCOR=12mm,DIV=calc]{scrbook}%aus dem KOMA-Script-Paket "
         ;; These are the headline levels and their corresponding LaTeX commands. Make sure they exist!
-          ("\\chapter{%s}" . "\\chapter*{%s}") ;; Level 1
-          ("\\section{%s}" . "\\section*{%s}") ;; Level 2
-        ("\\subsection{%s}" . "\\subsection*{%s}") ;; Level 3
+          ("\\chapter{%s}" . "\\chapter*{%s}")
+          ("\\section{%s}" . "\\section*{%s}")
+        ("\\subsection{%s}" . "\\subsection*{%s}")
         ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
         ("\\paragraph{%s}" . "\\paragraph*{%s}")
         ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
-        ;; Non-standard definitions
+        ;;
         ("\\abschnitt{%s}" . "\\abschnitt*{%s}")
         ("\\uabschnitt{%s}" . "\\uabschnitt*{%s}")
-   )))
+   ))))
 
 #+END_SRC
 
@@ -1262,6 +1298,12 @@ here.
          "\\(part\\|chapter\\|\\(?:sub\\)*section\\|\\(?:sub\\)?paragraph\\)"
          "\\1*" data nil nil 1)
       data)))
+
+(pdf-tools-install)
+(require 'org-noter-pdftools)
+(with-eval-after-load 'pdf-annot
+   (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note))
+
 
 (setq org-export-filter-headline-functions '(headline-numbering-filter))
 (global-set-key (kbd "C-x x") 'execute-extended-command)
