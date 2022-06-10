@@ -269,7 +269,7 @@ Inserted by installing 'org-mode' or when a release is made."
                   "*** TODO %? %^g
 SCHEDULED: %^t" )
                  ("k" "Priv. Journal - Kochrezept" plain (file+function "~/org/journal_privat.org" Shurakai/find-journal-tree)
-                  (file "~/dotfiles/emacs/org-capture-templates/kochrezept" ))
+                  (file "~/dotfiles/emacs/.emacs.d/org-capture-templates/kochrezept" ))
                  ("f" "Franz. Vokabel" plain (file "~/Documents/Notizen/Franzoesisch/Vokabeln.org")
                   "** \\nbsp{} :KARTEIKARTE:FRANZ:
    :PROPERTIES:
@@ -477,6 +477,7 @@ SCHEDULED: %^t" )
 (prefer-coding-system 'utf-8)
 
 ; Escape on jj
+; There is actually an entire evil-escape package for this that also exits buffers (https://github.com/syl20bnr/evil-escape/blob/master/evil-escape.el)
 (defun escape-if-next-char (c)
   "Watches the next letter.  If c, then switch to Evil's normal mode; otherwise insert a k and forward unpressed key to unread-command events"
   (self-insert-command 1)
@@ -484,7 +485,7 @@ SCHEDULED: %^t" )
     (if (= c next-key)
       (progn
         (delete-backward-char 1)
-        (evil-esc 1))
+        (evil-force-normal-state)) ; CH: (evil-esc 1) didn't leave insert mode anymore (noticed in 2022), so I'm using this now - it seems to work...
       (setq unread-command-events (list next-key)))))
 
 (defun escape-if-next-char-is-j (arg)
