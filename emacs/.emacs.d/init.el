@@ -54,6 +54,10 @@
 
     (define-key evil-insert-state-map (kbd "j") 'escape-if-next-char-is-j) ;; Ensure that jj leaves insert mode but don't lag after typing the first j
 
+    (use-package undo-tree
+      :config
+      (global-undo-tree-mode t))
+
     ;(use-package evil-indent-textobject
       ;:ensure t)
 
@@ -79,6 +83,7 @@
 
   :custom
     (evil-want-C-i-jump nil) ; Without this, tab doesn't work ...
+    (evil-undo-system 'undo-tree)
 )
 
 ;;______________________________________________________________________
@@ -496,7 +501,7 @@ SCHEDULED: %^t" )
 
 
 ;;
-;; Christian: I took the following two functions from Karl Voit's public config
+;; Christian: I took the following two functions from Karl Voit's public config. They help with creating a CUSTOM_ID (or just ID) automatically.
 ;; https://github.com/novoid/dot-emacs/blob/master/config.org (22.05.22)
 ;; There is also a blog post on an older version of this: https://karl-voit.at/2019/11/16/UOMF-Linking-Headings/
 ;;
