@@ -159,7 +159,7 @@ myKeys = [
 --       , ((modm,               xK_Down),  prevScreen)
          , ((modm .|. shiftMask, xK_Up),    shiftNextScreen)
          , ((modm .|. shiftMask, xK_Down),  shiftPrevScreen)
-         , ((modm .|. shiftMask, xK_l),     spawn "gnome-screensaver-command -l")
+         , ((modm .|. shiftMask, xK_l),     spawn "dm-tool lock") -- Used to be gnome-screensaver-command -l, but that has been deprecated for a long time. Also, I'm using lightdm not gdm
          , ((modm,               xK_f),     sendMessage ToggleLayout)
          , ((modm,               xK_F4),    spawn "xcalib -invert -alter")
 --  Used with a secondary screen
