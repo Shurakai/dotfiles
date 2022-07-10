@@ -2,6 +2,9 @@
       ;debug-on-signal nil
       ;debug-on-quit nil)
 
+; cheinrich: I started this configuration a long time ago, but recently also discovered https://github.com/yantar92/emacs-config/blob/master/config.org
+; which is a huge config file. It is mostly not for me - but maybe you may want to check it out.
+
 (defvar my/init-el-start-time (current-time) "For benchmarking my init.el: Time when init.el was started")
 
 ;;;
@@ -32,7 +35,7 @@
 
     (use-package evil-surround
       :straight (evil-surround :type git :host github :repo "emacs-evil/evil-surround")
-      :ensure t
+      ;:ensure t
       :config (global-evil-surround-mode))
 
 	;; Org bindings for evil
@@ -54,6 +57,7 @@
 
     (define-key evil-insert-state-map (kbd "j") 'escape-if-next-char-is-j) ;; Ensure that jj leaves insert mode but don't lag after typing the first j
 
+    ;; Required until emacs 28; once upgraded to emacs 28, check evil-undo-system and set that value to 'undo-redo
     (use-package undo-tree
       :config
       (global-undo-tree-mode t))
@@ -269,7 +273,7 @@ Inserted by installing 'org-mode' or when a release is made."
                  ;("j" "Berufl. Journal" plain (file+function "~/workspace/inria/research-collab/journal.org" Shurakai/find-journal-tree)
                  ; "*** %? %^g" )
                  ("p" "Priv. Journal - normaler Eintrag" plain (file+function "~/org/journal_privat.org" Shurakai/find-journal-tree)
-                  "*** %? %^g" )
+                  "*** %? %(org-set-tags-command)" )
                  ("s" "Priv. Journal - Eintrag mit Datum" plain (file+function "~/org/journal_privat.org" Shurakai/find-journal-tree)
                   "*** TODO %? %^g
 SCHEDULED: %^t" )
@@ -289,22 +293,34 @@ SCHEDULED: %^t" )
    ;;;
    ;;; Org Agenda
    ;;;
-   (add-to-list 'org-modules 'org-habit) ;; Habits must be loaded this way according to the org manual: https://orgmode.org/manual/Tracking-your-habits.html - how to load it with use-package?
+
    (setq org-agenda-include-all-todo t)
    (setq org-agenda-include-diary t) ;; Shows entries from the Emacs diary - which I don't use...
-   (setq org-agenda-ndays 7)
+   (setq org-agenda-span 'week) ; org-agenda-ndays is obsolete, therefore we now use org-agenda-span
    (setq org-agenda-show-all-dates t)
    (setq org-agenda-skip-deadline-if-done t)
    (setq org-agenda-skip-scheduled-if-done t)
-   (setq org-agenda-start-on-weekday nil)
+   (setq org-agenda-skip-scheduled-if-deadline-is-shown t) ; If a task with a deadline has also been scheduled (or potentially even has an active timestamp), do not show an additional entry - only show the deadline
+   (setq org-agenda-skip-deadline-prewarning-if-scheduled 'pre-scheduled) ; Don't show prewarnings before the scheduled date
+   (setq org-agenda-start-on-weekday nil) ; Always start on the current day, not a specific weekday
    (setq org-agenda-start-with-follow-mode t) ;; When the curser is positioned on a line (or moved), show that entry in another window
+   (setq org-agenda-sticky t) ; Keep agenda buffer in the background and do not re-generate every time agenda is called; I believe this might be a performance improvement at some point - refresh agenda buffer by pressing =r=
+
+   ; Do not show tasks that have been scheduled or have deadlines in the normal todo list
+   (setq org-agenda-todo-ignore-deadlines (quote all))
+   (setq org-agenda-todo-ignore-scheduled (quote all))
+
+   (setq org-agenda-window-setup (quote other-window)) ; Open agenda in another window
    (setq org-agenda-files (quote ("~/Documents/Notizen/privat.org" "~/org/journal_privat.org" )))
    (setq org-deadline-warning-days 14)
    (setq org-stuck-projects '("+LEVEL=3/-DONE-CANCELLED-DEFERRED-READ-TESTED-VISITED" ("*") nil "")) ;; This needs to be adapted
 
-   (setq org-agenda-sorting-strategy 
-     (quote 
-       (time-up priority-down)))
+   (setq org-agenda-sorting-strategy
+     (quote
+      ((agenda habit-down time-up priority-down category-keep deadline-up alpha-up)
+       (todo priority-down category-keep)
+       (tags priority-down category-keep)
+       (search category-keep))))
 
    (setq org-agenda-custom-commands '(
      ("a" "Agenda and open tasks" (
@@ -316,6 +332,33 @@ SCHEDULED: %^t" )
         (tags-todo "+KOCHREZEPT/!TODO")
      ))
    ))
+
+   (add-to-list 'org-modules 'org-habit) ;; Habits must be loaded this way according to the org manual: https://orgmode.org/manual/Tracking-your-habits.html - how to load it with use-package?
+   (setq org-habit-show-habits-only-for-today t) ;
+
+   ;;; Org Habit colors
+   ; See https://protesilaos.com/codelog/2022-01-02-review-modus-themes-org-habit-colours/
+   ; Tango colors: http://tango.freedesktop.org/static/cvs/tango-art-tools/palettes/Tango-Palette.png
+
+   ; cheinrich: To avoid too many colors, I decided to set colors to the same value, no matter whether
+   ; they are in the future or not
+
+   ; Face for days on which a task shouldn‘t be done yet
+   (set-face-attribute 'org-habit-clear-face nil :background "#4e9a06") ; dark green
+   (set-face-attribute 'org-habit-clear-future-face nil :background "#4e9a06") ; dark green
+
+   ; Face for days on which a task should start to be done (could have been done)
+   (set-face-attribute 'org-habit-ready-face nil :background "#8ae234") ; light green
+   (set-face-attribute 'org-habit-ready-future-face nil :background "#8ae234") ; light green
+
+   ; Face for days on which a task is due (if the task was going to be overdue the next day)
+   (set-face-attribute 'org-habit-alert-face nil :background "#fce94f") ; yellow
+   (set-face-attribute 'org-habit-alert-future-face nil :background "#fce94f") ; yellow
+
+   ; Face for days on which a task is overdue
+   (set-face-attribute 'org-habit-overdue-face nil :background "#ef2929") ; red
+   (set-face-attribute 'org-habit-overdue-future-face nil :background "#ef2929") ; dark red
+
 
    ;;;
    ;;; LaTeX
@@ -464,7 +507,17 @@ SCHEDULED: %^t" )
 (column-number-mode 1)
 (line-number-mode 1)
 (tool-bar-mode -1) ; Disable toolbar
+(setq-default line-spacing 0.00)
 ;;;(scroll-bar-mode 0)
+
+; Disable "large file warnings" for files less than 50 MB; the default (10 MB) often triggers warnings for PDFs
+(setq large-file-warning-threshold (* 50 1024 1024)); 50 Mb
+(setq bidi-paragraph-direction 'left-to-right) ; Allegedly speeds emacs up a bit by telling it that all text is left to right (which is always the case for me)
+
+; Set default fonts; passing the :height parameter helps with fontsize
+(set-face-attribute 'default nil :family "Meslo LG M DZ for Powerline")
+;(set-fontset-font "fontset-default" 'chinese-gbk (font-spec :size 15.0 :family "Sarasa Mono hc")) ;
+
 
 (setq frame-title-format '("Emacs - " (buffer-file-name "%f" (dired-directory dired-directory "%b")))) ;; Overwrite default 'Emacs@hostname'
 (setq inhibit-splash-screen t) ;; Suppress the initial splash screen so that my default file is shown
@@ -607,6 +660,6 @@ SCHEDULED: %^t" )
 
 (bind-keys
   :map my-map
-  ("g i" . my/id-get-or-generate))
+  ("g h" . my/id-get-or-generate)) ; 'generate headline'
 
 (message "BENCHMARK: Init.el loaded in in %.2fs " (float-time (time-subtract (current-time) my/init-el-start-time)))
