@@ -23,8 +23,8 @@ set visualenterauto false
 set wordpattern [^\s\/]+
 
 " Remove unnecessary hints on duckduckgo
-bindurl ^https://duckduckgo.com f hint -Jc .result__a,.module__more-at,.module__more-at-bottom
-bindurl ^https://duckduckgo.com F hint -Jbc .result__a,.module__more-at,.module__more-at-bottom
+bindurl ^https://duckduckgo.com f hint -Jc [data-testid="result-title-a"]
+bindurl ^https://duckduckgo.com F hint -Jbc [data-testid="result-title-a"]
 bindurl youtu((\.be)|(be\.com)) f hint -J
 
 "
@@ -140,7 +140,7 @@ setpref browser.shell.checkDefaultBrowser false
 setpref browser.startup.homepage "about:blank"
 setpref browser.startup.homepage_override.mstone "ignore"
 setpref browser.startup.page 3
-setpref browser.tabs.closeWindowWithLastTab false
+setpref browser.tabs.closeWindowWithLastTab true
 setpref browser.tabs.remote.autostart.2 true
 setpref browser.uidensity 1
 setpref browser.urlbar.placeholderName ""
