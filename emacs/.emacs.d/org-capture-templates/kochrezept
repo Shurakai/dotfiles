@@ -1,4 +1,7 @@
 *** TODO %? :KOCHREZEPT:%^g
+:PROPERTIES:
+:CATEGORY: Kochrezept
+:END:
 %^{RATING}p
 %^{CUISINE}p
 %^{VEGETARIAN|yes}p
