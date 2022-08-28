@@ -56,19 +56,23 @@ Config { font = "xft:Meslo LG M DZ for Powerline:size=8:antialias=true,FontAweso
 
            , Run Date "\xf133 %a, %d. %B %R" "date" 300
 
-           -- Weather codes: 
+           -- Weather codes -> must be adapted in the variable template as well! %EDDM% displays weather for Munich, %LFLS% for Grenoble ... 
+           -- The weather plugin always queries https://tgftp.nws.noaa.gov/data/observations/metar/decoded/<code>.TXT
+           -- A list with code can be found here: https://weather.rap.ucar.edu/surface/stations.txt
+           --
            -- Grenoble: LFLS 
            -- Champaign, IL: KCMI
            -- Cologne: EDDK
-           , Run WeatherX "LFLS" [ ("clear", "\xf185")
+           -- Munich: EDDM
+           , Run WeatherX "EDDM" [ ("clear", "\xf185")
                                  , ("sunny", "\xf185")
                                  , ("mostly clear", "\xf185")
                                  , ("mostly sunny", "\xf185")
-                                 , ("partly sunny", "⛅")
-                                 , ("fair", "🌑")
+                                 , ("partly sunny", "\x26c5")
+                                 , ("fair", "\x1f311")
                                  , ("cloudy","\xf0c2")
                                  , ("overcast","\xf0c2")
-                                 , ("partly cloudy", "⛅")
+                                 , ("partly cloudy", "\x26c5")
                                  , ("mostly cloudy", "\xf0c2")
                                  , ("considerable cloudiness", "\xf0c2")]
                                  ["--template","<tempC>°C <skyConditionS>"
@@ -81,5 +85,5 @@ Config { font = "xft:Meslo LG M DZ for Powerline:size=8:antialias=true,FontAweso
        ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = "%StdinReader% }{ <fc=#FFB86C>%cpu%</fc> | %memory% | <action=`gnome-power-statistics` button=12345>%battery%</action> | %dynnetwork% | <fc=lightblue>%date%</fc> @ %LFLS% "
+       , template = "%StdinReader% }{ <fc=#FFB86C>%cpu%</fc> | %memory% | <action=`gnome-power-statistics` button=12345>%battery%</action> | %dynnetwork% | <fc=lightblue>%date%</fc> @ %EDDM% "
        }
