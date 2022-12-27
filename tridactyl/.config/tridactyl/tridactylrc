@@ -1,11 +1,16 @@
 alias tabsort jsb browser.tabs.query({}).then(tabs => tabs.sort((t1, t2) => t1.url.localeCompare(t2.url)).forEach((tab, index) => browser.tabs.move(tab.id, {index})))
 alias tabuniq jsb browser.tabs.query({}).then(tabs => browser.tabs.remove(tabs.filter((tab, index) => tabs.slice(index + 1).find(t => t.url == tab.url)).map(tab => tab.id)))
 
+" Disable mouse
+" autocmd DocLoad .* no_mouse_mode
+bind <C-m> mouse_mode " Enable mouse_mode
+
 bind gh followpage prev
 bind gl followpage next
 
 " German keyboard layout
 set hintchars asdfghjklö
+set hintuppercase false
 
 " Just create the containers, even when they don't exist. Allows us to specify any container we want...
 set auconcreatecontainer true
@@ -25,6 +30,8 @@ set wordpattern [^\s\/]+
 " Remove unnecessary hints on duckduckgo
 bindurl ^https://duckduckgo.com f hint -Jc [data-testid="result-title-a"]
 bindurl ^https://duckduckgo.com F hint -Jbc [data-testid="result-title-a"]
+"bindurl ^https://duckduckgo.com f hint -bc [class="module__more-at-bottom"]
+"bindurl ^https://duckduckgo.com f hint -bc "#duckbar_static > li a"
 bindurl youtu((\.be)|(be\.com)) f hint -J
 
 "
