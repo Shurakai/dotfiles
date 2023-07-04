@@ -1,6 +1,6 @@
 alias cp='cp -a'
 alias ls='ls --color=auto -h'
-alias l='ls -AlF'
+alias l='ls -Alp'
 alias df='df -h'
 alias mkdir='mkdir -p -v'
 alias rm='rm -i --preserve-root'
