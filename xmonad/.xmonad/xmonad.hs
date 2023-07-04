@@ -59,7 +59,7 @@ myTerminal = "URxvt"
 
 main = do
     xmproc <- spawnPipe "xmobar"
-    xmonad $ docks defaultConfig
+    xmonad $ docks def
         { manageHook  = myManageHook <+> manageDocks
         , terminal    = map toLower myTerminal
         , focusedBorderColor = "#5d0017"
@@ -204,7 +204,7 @@ myKeys = [
          , ((modm .|. shiftMask,   xK_s     ), safePromptSelection "firefox")
 
          -- Shows/hides my terminal
-         , ((modm, xK_c), scratchpadSpawnAction defaultConfig {terminal = map toLower myTerminal } )
+         , ((modm, xK_c), scratchpadSpawnAction def {terminal = map toLower myTerminal } )
          , ((modm .|. shiftMask, xK_a      ), addWorkspacePrompt myXPConfig)
          , ((modm .|. shiftMask, xK_r      ), removeEmptyWorkspace)
          , ((modm .|. shiftMask, xK_v      ), selectWorkspace myXPConfig)
