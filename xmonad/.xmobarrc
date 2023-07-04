@@ -1,13 +1,18 @@
-Config { font = "xft:Meslo LG M DZ for Powerline:size=8:antialias=true,FontAwesome:size=8" -- You can add :bold or :italic if you want
-       , additionalFonts = [ "xft:FontAwesome:pixelsize=13" ]
+--Config { font = "Meslo LG M DZ for Powerline:size=8:antialias=true,FontAwesome:size=8" -- You can add :bold or :italic if you want
+-- Since xmobar 0.45, cairo/pango instead of X11 are used for drawing. Hence, the font syntax needs to be changed https://codeberg.org/xmobar/xmobar/src/branch/master/doc/quick-start.org#fonts
+Config { font = "Meslo LG M DZ for Powerline 12" -- You can add :bold or :italic if you want
+--     , additionalFonts = [ "xft:FontAwesome:pixelsize=13" ]
+       , additionalFonts = [ "FontAwesome 8" ]
        , border = BottomB
+--       , dpi=144
        , bgColor = "black"
        , fgColor = "grey"
 -- This needs to be adjusted for the trayer. See the archlinux wiki for a description:
 -- https://wiki.archlinux.org/index.php/Xmobar
 --     , position = TopW L 85
+       , position = TopH 30 -- Top position, 30px high (see https://codeberg.org/xmobar/xmobar/src/branch/master/doc/quick-start.org#user-content-headline-9)
        , hideOnStart  = False -- Start with window unmapped (hidden)?
-       , lowerOnStart = False -- Move xmobar to bottom of window stack on start
+       , lowerOnStart = False -- Move xmobar to bottom of window stack on start?
        , allDesktops  = True -- Show on all desktops
        , overrideRedirect = True
        , pickBroadest = False -- This will pick the screen with the highest resolution (with respect to the x-axis)
@@ -20,15 +25,15 @@ Config { font = "xft:Meslo LG M DZ for Powerline:size=8:antialias=true,FontAweso
               Run DynNetwork ["--template","\xf1eb: \xf0ab <rx> kb \xf0aa <tx> kb"
                             , "-L"," 0"
                             , " -H","32"
-                            , "--normal","green"
-                            , "--high","red"
+                            , "--normal","limegreen" -- Is seemingly ignored here. Not listed in the manual either
+                            , "--high","red" -- Is seemingly ignored here. Not listed in the manual either
                             , "--","--devices", "wlp61s0,enp0s25"  -- The "--" part really needs to be here
                             ] 20
-            , Run Network "enp0s25"  ["--template","eth: <rx> kb <tx> kb" ,"-L"," 0","-H","32","--normal","green","--high","red"] 20
-            , Run Cpu             ["--template","\xf108 <total>%"
+            , Run Network "enp0s25"  ["--template","eth: <rx> kb <tx> kb" ,"-L"," 0","-H","32","--normal","limegreen","--high","red"] 20
+            , Run Cpu             ["--template","<fc=#FFB86C>\xf108</fc> <total>%"
                                  , "--Low","10"
                                  , "--High","50"
-                                 , "--low","green"
+                                 , "--low","limegreen"
                                  , "--normal","yellow"
                                  , "--high","red"] 20
 
@@ -37,7 +42,7 @@ Config { font = "xft:Meslo LG M DZ for Powerline:size=8:antialias=true,FontAweso
                                  , "--High","80"
                                  , "--low","red"
                                  , "--normal","yellow"
-                                 , "--high","green"
+                                 , "--high","limegreen"
                                  ] 20
 		    , Run Thermal "THM0" ["--template","<temp> °C"
                                  , "--Low","30"
@@ -49,7 +54,7 @@ Config { font = "xft:Meslo LG M DZ for Powerline:size=8:antialias=true,FontAweso
             , Run Memory      ["--template","\xf233 <usedratio>%"
                                  , "--Low", "20"
                                  , "--High", "80"
-                                 , "--low"      , "green"
+                                 , "--low"      , "limegreen" -- light green
                                  , "--normal"   , "orange"
                                  , "--high"     , "red"
             ] 20
@@ -84,6 +89,6 @@ Config { font = "xft:Meslo LG M DZ for Powerline:size=8:antialias=true,FontAweso
             , Run StdinReader
        ]
        , sepChar = "%"
-       , alignSep = "}{"
-       , template = "%StdinReader% }{ <fc=#FFB86C>%cpu%</fc> | %memory% | <action=`gnome-power-statistics` button=12345>%battery%</action> | %dynnetwork% | <fc=lightblue>%date%</fc> @ %EDDM% "
+       , alignSep = "}{" -- Helps dividing the xmobar into three different sections; left, middle, right; see https://codeberg.org/xmobar/xmobar/src/branch/master/doc/quick-start.org#user-content-bar-sections
+       , template = "%StdinReader% }{ %cpu% | %memory% | <action=`gnome-power-statistics` button=12345>%battery%</action> | %dynnetwork% | <fc=lightblue>%date%</fc> @ %EDDM% "
        }
