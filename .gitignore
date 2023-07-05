@@ -4,11 +4,15 @@
 *.key
 gpg/.gnupg/random_seed
 gpg/.gnupg/cr*
+gpg/.gnupg/pubring.kbx
+gpg/.gnupg/tofu.db
 gpg/*/.*
 xmonad/.xmonad/xmonad-x86_64-linux
+xmonad/.xmonad/build-x86_64-linux/
 xmonad/.xmonad/*.errors
 xmonad/.xmonad/*.hi
 xmonad/.xmonad/history
+xmonad/.xmonad/prompt-history
 newsbeuter/.newsbeuter/urls
 newsbeuter/.newsbeuter/*.*
 zsh/.zshrc.local
