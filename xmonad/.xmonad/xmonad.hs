@@ -81,10 +81,8 @@ gesetze = searchEngine "gesetze" "https://dejure.org/cgi-bin/suche?Suchenach="
 -- specialize the search engine by simply pressing another button (as defined here).
 -- The prompt only opens then.
 searchEngineMap method = M.fromList $
-    [ ((0, xK_g), method google)
-    , ((0, xK_d), method duckduckgo)
+    [ ((0, xK_d), method duckduckgo)
     , ((0, xK_g), method gesetze)
-    , ((0, xK_i), method imdb)
     , ((0, xK_o), method openstreetmap)
     , ((0, xK_p), method pons)
     , ((0, xK_w), method wikipedia)
@@ -157,7 +155,7 @@ myKeys = [
        , ((modm .|. shiftMask, xK_Left),  shiftToPrev)
 --       , ((modm,               xK_Up),    nextScreen)
 --       , ((modm,               xK_Down),  prevScreen)
-         , ((modm .|. shiftMask, xK_Up),    shiftNextScreen)
+         , ((modm .|. shiftMask, xK_Up),    shiftNextScreen) -- Shifts window to the next physical screen, not workspace
          , ((modm .|. shiftMask, xK_Down),  shiftPrevScreen)
          , ((modm .|. shiftMask, xK_l),     spawn "dm-tool lock") -- Used to be gnome-screensaver-command -l, but that has been deprecated for a long time. Also, I'm using lightdm not gdm
          , ((modm,               xK_f),     sendMessage ToggleLayout)
@@ -171,6 +169,7 @@ myKeys = [
          , ((modm,               xK_F9),    spawn "light -U 10" ) -- In percent
          , ((modm,               xK_F10),   spawn "light -A 10" ) -- In percent
          , ((modm,               xK_F11),   spawn "light -S 33" ) -- In percent
+         -- Copies the password to the clipboard
          , ((modm,               xK_p),    passPrompt myXPConfig)
          -- Increment the number of windows in the master area.
          , ((modm, xK_comma), sendMessage (IncMasterN 1))
@@ -196,11 +195,14 @@ myKeys = [
          --
          -- Search related settings
          --
-         -- search prompt
-         , ((modm,                 xK_s     ), SM.submap $ searchEngineMap $ promptSearch myXPConfig)
+         -- search prompts. See variable searchEngineMap; you
+         -- need to press mod+s+<key of the engine you want>
+         -- I never used it, but that might change at some point
+         --
+         --, ((modm,                 xK_s     ), SM.submap $ searchEngineMap $ promptSearch myXPConfig)
          -- search clipboard with specified search engine
-         , ((modm .|. controlMask, xK_s   ), SM.submap $ searchEngineMap $ selectSearch)
-         -- open clipboard contents as URL
+         --, ((modm .|. controlMask, xK_s   ), SM.submap $ searchEngineMap $ selectSearch)
+         -- open clipboard contents as URL: copy something into your clipboard, press mod+shift+s and it will be opened in firefox
          , ((modm .|. shiftMask,   xK_s     ), safePromptSelection "firefox")
 
          -- Shows/hides my terminal
