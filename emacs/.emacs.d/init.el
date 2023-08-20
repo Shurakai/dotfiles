@@ -4,6 +4,8 @@
 
 ; cheinrich: I started this configuration a long time ago, but recently also discovered https://github.com/yantar92/emacs-config/blob/master/config.org
 ; which is a huge config file. It is mostly not for me - but maybe you may want to check it out.
+; Also Karl Voits config: https://github.com/novoid/dot-emacs/blob/master/config.org 
+; There is an extremely detailed (but old (2015)) description of a workflow in org: http://doc.norang.ca/org-mode.html; (this is also attached to my personal journal as of 2023-07-05)
 
 (defvar my/init-el-start-time (current-time) "For benchmarking my init.el: Time when init.el was started")
 
@@ -30,6 +32,8 @@
 
 (use-package evil
   :straight (evil)
+  :init
+  (setq evil-want-C-u-scroll t) ; This removes the C-u user prefix and makes evil-mode scroll up; I still need to remap the so-called universal-argument somewhere...
   :config
     (evil-mode 1)
 
@@ -124,28 +128,72 @@ Inserted by installing 'org-mode' or when a release is made."
 
 (provide 'org-version)
 
+; Update the TODO state for parent tasks: when they are
+; in state NEXT, change them to TODO: NEXT is for tasks (which have no subtasks),
+; not projects (which may have subtasks)
+;
+; Found on http://doc.norang.ca/org-mode.html 18.46 ("NEXT is for Tasks")
+(defun my/mark-next-parent-tasks-todo ()
+  "Visit each parent task and change NEXT states to TODO"
+  (let ((mystate (or (and (fboundp 'org-state)
+                          state)
+                     (nth 2 (org-heading-components)))))
+    (when mystate
+      (save-excursion
+        (while (org-up-heading-safe)
+               (when (member (nth 2 (org-heading-components)) (list "NEXT"))
+                 (org-todo "TODO")))))))
+
+(add-hook 'org-after-todo-state-change-hook 'my/mark-next-parent-tasks-todo 'append)
+;(add-hook 'org-clock-in-hook 'my/mark-next-parent-tasks-todo 'append)
+
 ;; (straight-use-package 'org) ; or org-plus-contrib if desired
 
 (use-package org
+  :init
+  (setq org-list-allow-alphabetical t) ; Allow lists of the type a. / b. / c.
+  (setq org-list-demote-modify-bullet (quote (("-" . "*")
+                                              ("*" . "+")
+                                              ("+" . "1.")
+                                              ("1." . "A.")
+                                           ;   ("2." . "a.")
+                                           ;  ("2." . "b.")
+                                              ("A." . "1)")
+                                           ;   ("b." . "2)")
+                                              ("1)" . "a)")
+                                           ;   ("2)" . "b)")
+                                              ("a)" . "*")
+                                           ;   ("b)" . "-")
+                                           ;   ("A." . "1)")
+                                           ;   ("B." . "-")
+                                           ;   ("A)" . "1)")
+                                           ;   ("B)" . "-")
+     )))
+
   :custom
 
   (org-directory "~/Documents/Notizen/")
 
-  (org-alphabetical-lists t)
   ;;(setq org-confirm-babel-evaluate nil) ; Otherwise, you need to set #+PROPERTY: header-args :eval never-export in the beginning or your document
   ;(org-babel-exp-inline-code-template "src_%lang[%switches%flags]{%body}")
   (org-babel-shell-names '("sh" "bash" "csh" "ash" "dash" "ksh" "mksh" "posh" "zsh"))
   (org-babel-python-command "python3")
-  (org-cycle-separator-lines 2) ;; >= n empty (!) lines are needed to show them after the end of a subtree; otherwise, < n empty lines are ignored; when 0, then empty lines are never shown
+  (org-clone-delete-id t) ; Remove the :ID: property from a headline when cloning
+  (org-cycle-include-plain-lists t) ;
+  (org-cycle-separator-lines 2) ;; >= n empty (!) lines are needed to show them after the end of a subtree; otherwise, < n empty lines are ignored; when 0, then empty lines are never shown -> see also the variable org-blank-before-new-entry to control before on inserting a new headline
+  (org-ellipsis "▼")
+  (org-enforce-todo-checkbox-dependencies t) ; Empty checkboxes should block the headline from entering a DONE state
+  (org-enforce-todo-dependencies t) ; Children with TODO states block parents from entering a DONE state
   (org-fold-catch-invisible-edits 'show-and-error) ;; An invisible area is hidden as "...", but can still be edited. This setting
                                                    ;; throws an error and shows the hidden area.
   (org-hide-emphasis-markers t) ;; to hide the *,=, or / markers
   (org-hide-leading-stars t)
+  (org-remove-highlights-with-change t) ; if set to nil: keep highlights when using =C-c / /= and making changes to the buffer
   (org-pretty-entities t)       ;; to have \alpha, \to and others display as utf8 http://orgmode.org/manual/Special-symbols.html
+  (org-startup-folded 'overview) ; often set per #+STARTUP - 'overview == 'folded folds all headlines when the file is opened
   (org-src-fontify-natively t)  ;; you want this to activate coloring in blocks
   (org-src-tab-acts-natively t) ;; you want this to have completion in blocks
   (org-use-sub-superscripts "{}")
-
 
   (org-log-into-drawer t) ;; Log into a drawer called "LOGBOOK" (so that we can fold it away)
   ;; This redefines the log messages; note that this does not /activate/ the messages by itself, that has to be done e.g. by setting
@@ -161,6 +209,10 @@ Inserted by installing 'org-mode' or when a release is made."
                            (deldeadline . "%t: Deadline removed (was %S)")
                            (refile      . "%t: Refiled")
                            (clock-out   . "")))
+
+  (org-treat-S-cursor-todo-selection-as-state-change t) ; When using Shift-<Left,Right> to change the TODO state on a headline, should this be treated as a state change that is logged?
+
+  (org-yank-adjusted-subtrees t) ; Paste using =org-paste-subtree=
 
   ;; This portion is for ESS-Script (used by the org-babel R script)
   (inferior-R-args "--no-save --no-restore") ; When quitting a session manually, don't ask if this should be saved
@@ -248,15 +300,15 @@ Inserted by installing 'org-mode' or when a release is made."
      (python . t)
      (R . t)
      (C . t)
-     (ruby . t)
+     ;(ruby . t)
      ;(ocaml . t)
      ;(ditaa . t)
      ;(dot . t)
      (haskell . t)
      ;(octave . t)
-     (sqlite . t)
-     (perl . t)
-     (screen . t)
+     ;(sqlite . t)
+     ;(perl . t)
+     ;(screen . t)
      ;(plantuml . t)
      ;(lilypond . t)
      (org . t)
@@ -273,7 +325,7 @@ Inserted by installing 'org-mode' or when a release is made."
                  ;("j" "Berufl. Journal" plain (file+function "~/workspace/inria/research-collab/journal.org" Shurakai/find-journal-tree)
                  ; "*** %? %^g" )
                  ("p" "Priv. Journal - normaler Eintrag" plain (file+function "~/org/journal_privat.org" Shurakai/find-journal-tree)
-                  "*** %? %(org-set-tags-command)" )
+                  "*** %? %^g " ) ; %(org-set-tags-command)
                  ("s" "Priv. Journal - Eintrag mit Datum" plain (file+function "~/org/journal_privat.org" Shurakai/find-journal-tree)
                   "*** TODO %? %^g
 SCHEDULED: %^t" )
@@ -284,48 +336,65 @@ SCHEDULED: %^t" )
    :PROPERTIES:
    :DRILL_CARD_TYPE: twosided
    :END:
-   \*** Deutsch
-       %^{prompt}
-   \*** Französisch
-       %^{prompt}
+*** Deutsch
+    %^{prompt}
+*** Französisch
+    %^{prompt}
    "))))
+
 
    ;;;
    ;;; Org Agenda
    ;;;
 
+   (setq org-agenda-compact-blocks nil) ; if t then "week agenda" and separator lines are not shown in the agenda
    (setq org-agenda-include-all-todo t)
    (setq org-agenda-include-diary t) ;; Shows entries from the Emacs diary - which I don't use...
+   (setq org-agenda-persistent-filter t) ; Make filters persistent
+   (setq org-agenda-show-future-repeats t) ; Show all repetitions of an event; can be set to 'next in order to only show the next event
    (setq org-agenda-span 'week) ; org-agenda-ndays is obsolete, therefore we now use org-agenda-span
-   (setq org-agenda-show-all-dates t)
+   (setq org-agenda-tags-column 'auto) ; Align tags to the right of the window by setting this to 'auto
+   (setq org-agenda-show-all-dates t) ; Show dates even if they are empty
+   (setq org-agenda-skip-additional-timestamps-same-entry t); After search for a timestamp has matched once for an entry, do not continue to search that entry
    (setq org-agenda-skip-deadline-if-done t)
    (setq org-agenda-skip-scheduled-if-done t)
    (setq org-agenda-skip-scheduled-if-deadline-is-shown t) ; If a task with a deadline has also been scheduled (or potentially even has an active timestamp), do not show an additional entry - only show the deadline
    (setq org-agenda-skip-deadline-prewarning-if-scheduled 'pre-scheduled) ; Don't show prewarnings before the scheduled date
-   (setq org-agenda-start-on-weekday nil) ; Always start on the current day, not a specific weekday
+   (setq org-agenda-skip-timestamp-if-done t) ; Ignore timestamps of DONE states
+   (setq org-agenda-skip-timestamp-if-deadline-is-shown t) ; Similar to above (scheduled-if-deadline-is-shown)
+   (setq org-agenda-start-on-weekday nil) ; Always start on the current day, not a specific weekday; set this to 1 in order to start on Monday
    (setq org-agenda-start-with-follow-mode t) ;; When the curser is positioned on a line (or moved), show that entry in another window
-   (setq org-agenda-sticky t) ; Keep agenda buffer in the background and do not re-generate every time agenda is called; I believe this might be a performance improvement at some point - refresh agenda buffer by pressing =r=
 
+   (setq org-agenda-tags-todo-honor-ignore-options t) ; Ignore items also in tags+todo list if they are ignored
    ; Do not show tasks that have been scheduled or have deadlines in the normal todo list
+   (setq org-agenda-todo-ignore-with-date nil)
    (setq org-agenda-todo-ignore-deadlines (quote all))
    (setq org-agenda-todo-ignore-scheduled (quote all))
+   (setq org-agenda-todo-ignore-timestamp (quote all))
 
-   (setq org-agenda-window-setup (quote other-window)) ; Open agenda in another window
+   ; Agenda window setup
+   (setq org-agenda-window-setup 'only-window) ; Open agenda in another window
+   (setq org-agenda-restore-windows-after-quit t) ; Return to previous windows when closing the agenda
+   (setq org-agenda-sticky t) ; Keep agenda buffer in the background and do not re-generate every time agenda is called; I believe this might be a performance improvement at some point - refresh agenda buffer by pressing =r=
+
+   (setq org-agenda-search-headline-for-time nil) ; Don't look for timestamps in headlines
    (setq org-agenda-files (quote ("~/Documents/Notizen/privat.org" "~/org/journal_privat.org" )))
    (setq org-deadline-warning-days 14)
-   (setq org-stuck-projects '("+LEVEL=3/-DONE-CANCELLED-DEFERRED-READ-TESTED-VISITED" ("*") nil "")) ;; This needs to be adapted
+   ;(setq org-stuck-projects '("+LEVEL=3/+TODO-DONE-CANCELLED-DEFERRED-READ-TESTED-VISITED" ("*") nil "")) ;; This needs to be adapted
+   (setq org-stuck-projects '("+LEVEL>=3+CATEGORY={Privat}/!" ("TODO" "NEXT") nil "")) ; The exclamation mark means: must have a TODO keyword set
+
 
    (setq org-agenda-sorting-strategy
      (quote
-      ((agenda habit-down time-up priority-down category-keep deadline-up alpha-up)
-       (todo priority-down category-keep)
-       (tags priority-down category-keep)
+      ((agenda habit-down time-up priority-down category-up deadline-up effort-up alpha-up)
+       (todo priority-down category-up effort-up)
+       (tags priority-down category-up effort-up)
        (search category-keep))))
 
    (setq org-agenda-custom-commands '(
      ("a" "Agenda and open tasks" (
         ;(stuck "" ( (org-agenda-overriding-header "Bescheuerte Projekte")))
-        (tags-todo "-KOCHREZEPT-BUCH/!TODO|STARTED|WAITING") ; Show everything with one of the listed TODO states that does not have one of the tags
+        (tags-todo "-CATEGORY={Unterhltg.\\|Kochrezept\\|Reisen}-RESTAURANT-KOCHREZEPT-REISEN-BUCH/!TODO|STARTED|WAITING") ; Show everything with one of the listed TODO states that does not have one of the tags
         (agenda "") ;; Agenda auch anzeigen
      ))
      ("k" "Kochrezepte die noch nie gekocht wurden" (
@@ -333,31 +402,44 @@ SCHEDULED: %^t" )
      ))
    ))
 
-   (add-to-list 'org-modules 'org-habit) ;; Habits must be loaded this way according to the org manual: https://orgmode.org/manual/Tracking-your-habits.html - how to load it with use-package?
-   (setq org-habit-show-habits-only-for-today t) ;
+   ; From http://doc.norang.ca/org-mode.html, 18.3.1
+   (add-hook 'org-agenda-mode-hook '(lambda () (hl-line-mode 1)) 'append)
 
-   ;;; Org Habit colors
-   ; See https://protesilaos.com/codelog/2022-01-02-review-modus-themes-org-habit-colours/
-   ; Tango colors: http://tango.freedesktop.org/static/cvs/tango-art-tools/palettes/Tango-Palette.png
+   ; cheinrich:
+   ; This variable defines what is being shown when we jump to a certain
+   ; location; there are more options available (such as org-goto etc.),
+   ; but I don't think I need those now
+   (setq org-fold-show-context-detail '((agenda . ancestors)
+                                    (bookmark-jump . lineage)
+                                    (isearch . lineage)
+                                    (default . ancestors)))
 
-   ; cheinrich: To avoid too many colors, I decided to set colors to the same value, no matter whether
-   ; they are in the future or not
+   (use-package org-habit
+        :config
+           ;;; Org Habit colors
+           ; See https://protesilaos.com/codelog/2022-01-02-review-modus-themes-org-habit-colours/
+           ; Tango colors: http://tango.freedesktop.org/static/cvs/tango-art-tools/palettes/Tango-Palette.png
 
-   ; Face for days on which a task shouldn‘t be done yet
-   (set-face-attribute 'org-habit-clear-face nil :background "#4e9a06") ; dark green
-   (set-face-attribute 'org-habit-clear-future-face nil :background "#4e9a06") ; dark green
+           ; cheinrich: To avoid too many colors, I decided to set colors to the same value, no matter whether
+           ; they are in the future or not
 
-   ; Face for days on which a task should start to be done (could have been done)
-   (set-face-attribute 'org-habit-ready-face nil :background "#8ae234") ; light green
-   (set-face-attribute 'org-habit-ready-future-face nil :background "#8ae234") ; light green
+           ; Face for days on which a task shouldn‘t be done yet
+           (setq org-habit-show-habits-only-for-today t) ;
+           (set-face-attribute 'org-habit-clear-face nil :background "#4e9a06") ; dark green
+           (set-face-attribute 'org-habit-clear-future-face nil :background "#4e9a06") ; dark green
 
-   ; Face for days on which a task is due (if the task was going to be overdue the next day)
-   (set-face-attribute 'org-habit-alert-face nil :background "#fce94f") ; yellow
-   (set-face-attribute 'org-habit-alert-future-face nil :background "#fce94f") ; yellow
+           ; Face for days on which a task should start to be done (could have been done)
+           (set-face-attribute 'org-habit-ready-face nil :background "#8ae234") ; light green
+           (set-face-attribute 'org-habit-ready-future-face nil :background "#8ae234") ; light green
 
-   ; Face for days on which a task is overdue
-   (set-face-attribute 'org-habit-overdue-face nil :background "#ef2929") ; red
-   (set-face-attribute 'org-habit-overdue-future-face nil :background "#ef2929") ; dark red
+           ; Face for days on which a task is due (if the task was going to be overdue the next day)
+           (set-face-attribute 'org-habit-alert-face nil :background "#fce94f") ; yellow
+           (set-face-attribute 'org-habit-alert-future-face nil :background "#fce94f") ; yellow
+
+           ; Face for days on which a task is overdue
+           (set-face-attribute 'org-habit-overdue-face nil :background "#ef2929") ; red
+           (set-face-attribute 'org-habit-overdue-future-face nil :background "#ef2929") ; dark red
+   )
 
 
    ;;;
@@ -411,17 +493,17 @@ SCHEDULED: %^t" )
    (use-package ox-koma-letter)
    (use-package ox-extra
      :config
-      (ox-extras-activate '(ignore-headlines))
+      (ox-extras-activate '(ignore-headlines)) ; See the ox-extra.el documentation
       (defun headline-numbering-filter (data backend info)
-      "No numbering in headlines that have a property :numbers: no"
-      (let* ((beg (next-property-change 0 data))
-             (headline (if beg (get-text-property beg :parent data))))
-        (if (and (eq backend 'latex)
-             (string= (org-element-property :NUMBERS headline) "no"))
-            (replace-regexp-in-string
-             "\\(part\\|chapter\\|\\(?:sub\\)*section\\|\\(?:sub\\)?paragraph\\)"
-             "\\1*" data nil nil 1)
-          data)))
+        "No numbering in headlines that have a property :numbers: no"
+        (let* ((beg (next-property-change 0 data))
+               (headline (if beg (get-text-property beg :parent data))))
+          (if (and (eq backend 'latex)
+               (string= (org-element-property :NUMBERS headline) "no"))
+              (replace-regexp-in-string
+               "\\(part\\|chapter\\|\\(?:sub\\)*section\\|\\(?:sub\\)?paragraph\\)"
+               "\\1*" data nil nil 1)
+            data)))
       (setq org-export-filter-headline-functions '(headline-numbering-filter)))
 
    ;;;
@@ -450,6 +532,20 @@ SCHEDULED: %^t" )
       (org-drill-sm5-initial-interval 0.25)
       (org-drill-learn-fraction 0.2)
    )
+
+   (use-package org-id
+
+      :config
+      (defun org-id-get-create (&optional force)
+          "Create an ID for the current entry and return it.
+        If the entry already has an ID, just return it.
+        With optional argument FORCE, force the creation of a new ID."
+          (interactive "P")
+            (when force
+                  (org-entry-put (point) "ID" nil))
+              (my/id-get-or-generate ))
+
+      (setq org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id))
 
    ;;;
    ;;; Org noter
@@ -492,6 +588,7 @@ SCHEDULED: %^t" )
     (global-set-key "\C-x\ \C-r" 'recentf-open-files))
 
 
+;; If typopunct mode is not wanted, either turn it off or use C-q " / C-q ' etc. to bypass it
 (use-package typopunct
   :straight (typopunct :type git :host github :repo "emacsmirror/typopunct" :depth 1)
 
@@ -515,8 +612,14 @@ SCHEDULED: %^t" )
 (setq bidi-paragraph-direction 'left-to-right) ; Allegedly speeds emacs up a bit by telling it that all text is left to right (which is always the case for me)
 
 ; Set default fonts; passing the :height parameter helps with fontsize
+; Don't take the Powerline font if you want to display certain special characters,
+; such as IPA (pronounciation alphabet), e.g., ɑ̃ was split in two characters with the
+; Powerline font
+;(set-face-attribute 'default nil :family "Meslo LG M DZ")
 (set-face-attribute 'default nil :family "Meslo LG M DZ for Powerline")
 ;(set-fontset-font "fontset-default" 'chinese-gbk (font-spec :size 15.0 :family "Sarasa Mono hc")) ;
+(set-face-attribute 'italic nil :slant 'italic :underline 'unspecified)
+
 
 
 (setq frame-title-format '("Emacs - " (buffer-file-name "%f" (dired-directory dired-directory "%b")))) ;; Overwrite default 'Emacs@hostname'
