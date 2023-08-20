@@ -56,40 +56,40 @@
         DIRSTACKSIZE=10
      #+END_SRC
 
-** Options [26/175]
+** Options [35/156]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
 :END:
-*** Changing Directories [70%]
+*** Changing Directories [100%]
 **** DONE =AUTO_CD= (-J)
-     :PROPERTIES:
-       :CUSTOM_ID: OPTION_AUTO_CD
-     :END:
+:PROPERTIES:
+:CUSTOM_ID: OPTION_AUTO_CD
+:END:
 
-     If this option is enabled, =cd= can be omitted almost always changing
-     directories; the only case where it is still required is if the directory
-     name happens to be equal to a command name. This option is very
-     convenient to quickly change directories, for instance
-     going one directory up becomes just =..= instead of =cd ..=.
+If this option is enabled, =cd= can be omitted almost always changing
+directories; the only case where it is still required is if the directory
+name happens to be equal to a command name. This option is very
+convenient to quickly change directories, for instance
+going one directory up becomes just =..= instead of =cd ..=.
 
-     #+BEGIN_EXAMPLE
-        % mkdir directory
-        % directory
-        zsh: command not found: directory
-        % setopt AUTO_CD
-        % directory  # Now equivalent to 'cd directory'
-        % mkdir dir  # We create a directory that has the name of a command
-        % dir        # This is not equivalent to 'cd dir' because command 'dir' exists!
-        dir directory
-     #+END_EXAMPLE
+#+BEGIN_EXAMPLE
+% mkdir directory
+% directory
+zsh: command not found: directory
+% setopt AUTO_CD
+% directory  # Now equivalent to 'cd directory'
+% mkdir dir  # We create a directory that has the name of a command
+% dir        # This is not equivalent to 'cd dir' because command 'dir' exists!
+dir directory
+#+END_EXAMPLE
 
-     #+BEGIN_SRC zsh :tangle zshrc
-       setopt AUTO_CD
-     #+END_SRC
+#+BEGIN_SRC zsh :tangle zshrc
+setopt AUTO_CD
+#+END_SRC
 
-     #+BEGIN_SRC zsh :tangle zshrc.default
-       setopt NO_AUTO_CD
-     #+END_SRC
+#+BEGIN_SRC zsh :tangle zshrc.default
+setopt NO_AUTO_CD
+#+END_SRC
 **** DONE =AUTO_PUSHD= (-N)
      :PROPERTIES:
         :CUSTOM_ID: OPTION_AUTO_PUSHD
@@ -165,32 +165,113 @@
       unsetopt CDABLE_VARS
      #+END_SRC
 
-**** TODO =CHASE_DOTS=
-**** TODO =CHASE_LINKS= (-w)
-     :PROPERTIES:
-        :CUSTOM_ID: OPTION_CHASE_LINKS
-     :END:
+**** DONE =CHASE_DOTS=
+:PROPERTIES:
+:CUSTOM_ID: OPTION_CHASE_DOTS
+:END:
 
-     If this option is set, if you pass a symlink to =cd= (or even a symlink as a part
-     of the path you pass), each symlink will be resolved to the actual folder.
+This option resolves directories to its physical directory if =..= is encountered anyhwere in the path
+(or if only =cd ..= is used). This means that the working directory is fully resolved once =..= is encountered.
 
-     #+BEGIN_EXAMPLE
-       % ls -ald *(@) # Show all symlinks in the current folder
-       lrwxrwxrwx 1 ch ch 24 Jun 22 19:56 homedir -> /home/ch
-       % cd homedir
-     #+END_EXAMPLE
+This option is similar to [[#OPTION_CHASE_LINKS]]. But as the name suggests, =CHASE_LINKS= is an option
+used to resolve symbolic links to the physical directory whereas this option works on standard
+directories as well.
 
-     Note: You can also achieve this behavior by passing the =-P= option to =cd=.
+#+BEGIN_EXAMPLE
+% unsetopt CHASE_DOTS
+% mkdir /tmp/example/
+% ln -s /home/ch /tmp/example/link
+% cd /tmp/example/link
+% cd ..
+% pwd
+/tmp/example
+% setopt CHASE_DOTS
+% cd /tmp/example/link # Changes to /home/ch, but that is not yet resolved as no .. has been found
+% cd ..
+% pwd
+/home
+#+END_EXAMPLE
 
-     #+BEGIN_SRC zsh :tangle zshrc
-       unsetopt CHASE_LINKS
-     #+END_SRC
+#+BEGIN_SRC zsh :tangle zshrc
+unsetopt CHASE_DOTS
+#+END_SRC
 
-     #+BEGIN_SRC zsh :tangle zshrc.default
-       unsetopt CDABLE_VARS
-     #+END_SRC
+#+BEGIN_SRC zsh :tangle zshrc.default
+unsetopt CDABLE_DOTS
+#+END_SRC
 
-**** TODO =POSIX_CD=
+**** DONE =CHASE_LINKS= (-w)
+:PROPERTIES:
+:CUSTOM_ID: OPTION_CHASE_LINKS
+:END:
+
+If this option is set, if you pass a symlink to =cd= (or even a symlink as a part
+of the path you pass), each symlink will be resolved to the actual folder.
+
+#+BEGIN_EXAMPLE
+% ls -ald *(@) # Show all symlinks in the current folder
+lrwxrwxrwx 1 ch ch 24 Jun 22 19:56 homedir -> /home/ch
+% unsetopt CHASE_LINKS
+% cd homedir
+% pwd
+homedir
+% cd # assume that this command brings me back to the previously active directory (cd -1)
+% setopt CHASE_LINKS
+% cd homedir
+% pwd
+/home/ch
+#+END_EXAMPLE
+
+Note: You can also achieve this behavior by passing the =-P= option to =cd=.
+
+#+BEGIN_SRC zsh :tangle zshrc
+unsetopt CHASE_LINKS
+#+END_SRC
+
+#+BEGIN_SRC zsh :tangle zshrc.default
+unsetopt CDABLE_VARS
+#+END_SRC
+
+**** DONE =POSIX_CD=
+
+Changes the behavior of the =cd, chdir, pushd= commands for increased POSIX standard compliance.
+
+If =POSIX_CD= is not set, the behavior of the =cd= command is described in the manual under [[https://zsh.sourceforge.io/Doc/Release/Shell-Builtin-Commands.html#Shell-Builtin-Commands][zsh: 17 Shell Builtin
+Commands]].
+
+If =POSIX_CD= is set, the behavior is changed in several ways:
+ 
+1. =cd= will now first test if any directory in the =cdpath= / =CDPATH= variable contain the directory and
+   if so, will change to that directory. Any directory under the current working directory is
+   ignored - i.e., the directories listed in =cdpath= have a higher priority.
+2. =cd= will no longer take arguments of the form ={+|-}n=, i.e., navigating the directory stack is no
+   longer possible. (See related options such as [[#PUSHD_MINUS]].)
+
+#+BEGIN_EXAMPLE
+% unsetopt POSIX_CD
+% mkdir /tmp/foo
+% mkdir /tmp/foo/bar
+% mkdir /tmp/bar
+% cdpath=(/tmp)
+% cd /tmp/foo
+% cd bar
+% pwd
+/tmp/foo/bar
+% cd /tmp/foo
+% setopt POSIX_CD
+% cd bar
+% pwd
+/tmp/bar
+#+END_EXAMPLE
+
+#+BEGIN_SRC zsh :tangle zshrc
+unsetopt POSIX_CD
+#+END_SRC
+
+#+BEGIN_SRC zsh :tangle zshrc.default
+unsetopt POSIX_CD
+#+END_SRC
+   
 **** DONE =PUSHD_IGNORE_DUPS=
      :PROPERTIES:
      :CUSTOM_ID: OPTION_PUSHD_IGNORE_DUPS
@@ -345,8 +426,7 @@
      Note: If you don't want the stack to contain duplicates as
      in the example above, use the [[#OPTION_PUSHD_IGNORE_DUPS][PUSHD_IGNORE_DUPS option]].
 
-
-*** Completion [30%]
+*** Completion [75%]
    cf. Section 16.2.2 http://zsh.sourceforge.net/Doc/Release/Options.html#Options
 **** STARTED =ALWAYS_LAST_PROMPT= <Default>
 
@@ -462,6 +542,52 @@
      #+END_SRC
 
 **** TODO =HASH_LIST_ALL= <D>
+
+This option is required for completion.
+
+To understand why, consider what happens when you want to execute a command: first, ZSH determines the exact path of the command by searching all directories
+listed in the =PATH= variable (with directories listed in the order of priority, i.e., from highest
+priority to lowest priority). To speed up consecutive searches, ZSH fills a /hash-table/ with key-value
+pairs for every directory listed in =PATH= that it has previously searched, where the key is the command and the value is the path of the first occurrence of that
+command (i.e., only the very first occurrence in a folder in =PATH=). That is, when you execute the
+next command, ZSH first checks if the command is already known by searching the hash-table and only
+restarts scanning all directories if it has not yet been added.
+
+ZSH doesn‘t need to search all folders but only until the first match for the command has been found. As a consequence, not
+all commands are added to the hash table until all directories have been scanned. To enforce
+searching all directories immediately, and not just until the first match, =HASH_LIST_ALL= can be set, even though the first scan is a bit slower since more
+directories are fully scanned.
+
+Note that, if =HASH_LIST_ALL= is not activated, then command completion is not available - as there is no guarantee
+that all directories have been scanned, no guarantee exists that all commands are available for completion.
+
+Note: This hash-table can be printed using the =hash= built-in command (and regenerated using the =rehash= command).
+
+#+begin_example
+% hash
+# output reduced to only the last few lines
+zless=/usr/bin/zless
+zmore=/usr/bin/zmore
+znew=/usr/bin/znew
+zsh=/usr/bin/zsh
+zsh5=/usr/bin/zsh5
+zstd=/usr/bin/zstd
+zstdcat=/usr/bin/zstdcat
+zstdgrep=/usr/bin/zstdgrep
+zstdless=/usr/bin/zstdless
+zstdmt=/usr/bin/zstdmt
+#+end_example
+
+(See also [[https://zsh.sourceforge.io/Guide/zshguide03.html#l30][A User's Guide to the Z-Shell]] for some more information.)
+
+#+BEGIN_SRC zsh :tangle zshrc
+setopt HASH_LIST_ALL
+#+END_SRC
+
+#+BEGIN_SRC zsh :tangle zshrc.default
+setopt HASH_LIST_ALL
+#+END_SRC
+
 **** STARTED =LIST_AMBIGUOUS= <D>
 
      Check userguide 6.2.1
@@ -531,7 +657,7 @@
 
      was set explicitly before. 
 
-*** Expansion and globbing [17%]
+*** Expansion and globbing [21%]
 **** TODO =BAD_PATTERN= (+2) <C> <Z>
 **** STARTED =BARE_GLOB_QUAL= <Z>
 
@@ -718,7 +844,7 @@
 **** TODO =INC_APPEND_HISTORY_TIME=
 **** TODO =SHARE_HISTORY= <K>
 
-*** Initialisation [0%]
+*** Initialisation [25%]
 **** DONE =ALL_EXPORT= (-a, ksh: -a)
      :PROPERTIES:
         :CUSTOM_ID: OPTION_ALL_EXPORT
@@ -757,7 +883,7 @@
 **** TODO =GLOBAL_EXPORT= (<Z>)
 **** TODO =GLOBAL_RCS= (-d) <D>
 **** TODO =RCS= (+f) <D>
-*** Input/Output [14%]
+*** Input/Output [15%]
 **** DONE =ALIASES= <D>
 
      With this option you can disable aliases (as they are enabled by default);
@@ -839,8 +965,68 @@
 **** TODO =SHORT_LOOPS= <C> <Z>
 **** TODO =SUN_KEYBOARD_HACK= (-L)
 
-*** Job Control [44%]
-**** TODO =AUTO_CONTINUE=
+*** Job Control [88%]
+**** DONE =AUTO_CONTINUE=
+:PROPERTIES:
+:CUSTOM_ID: OPTION_AUTO_CONTINUE
+:END:
+
+When starting jobs from your shell, they are owned by that shell and exhibit behavior that is often
+dependent on the shell‘s process; for instance, if you send a SIGHUP (/signal hang up/) to the shell,
+that signal would also be send to all jobs executed under that shell. (See the output of the =jobs=
+command if there are any.)
+
+#+begin_example
+zsh─┬─eog───5*[{eog}]
+    └─some_other_process
+#+end_example
+
+If you want to remove a process from a shell‘s job list (and hence change the way it responds to,
+e.g., a SIGHUP) you can use the builtin =disown= to do so. Once you have disowned the process, you can
+no longer use =bg= and =fg= on that process to run it in the background or the foreground.
+
+What =AUTO_CONTINUE= does is that it automatically sends a =SIGCONT= (/signal continue/) to the process
+when =disown= is used.
+
+#+begin_example
+% unsetopt AUTO_CONTINUE
+% eog .
+# Now I press Control-Z in order to move the process to the background; this is because I have
+# used the following in my config:
+# zle -N foreground-vi
+# bindkey '^Z' foreground-vi
+zsh: suspended  eog .
+% jobs
+[1]  + suspended  eog .
+% # Typing exit here would kill the subprocess as well
+% # Typing kill %1 would kill the subprocess (but not the shell)
+% disown %1
+disown: warning: job is suspended, use `kill -CONT -82336' to resume
+# The process is still halted, hence cannot be used. However, you could send a SIGCONT manually to
+# the process to continue it: kill -CONT -82336
+% jobs # No output, as no more jobs are active
+% kill %1
+kill: %1: no such job
+% kill 82336 # Kill the above process
+# And now for the opposite ...
+% setopt AUTO_CONTINUE
+% eog .
+^Z # See above (foreground-vi)
+zsh: suspended  eog .
+% disown %1
+[1]  + continued  eog . # The CONT signal is now sent automatically
+% jobs
+% # Still no jobs!
+#+END_EXAMPLE
+
+#+BEGIN_SRC zsh :tangle zshrc
+setopt AUTO_CONTINUE
+#+END_SRC
+
+#+BEGIN_SRC zsh :tangle zshrc.default
+setopt NO_AUTO_CONTINUE
+#+END_SRC
+
 **** DONE =AUTO_RESUME= (-W)
      :PROPERTIES:
         :CUSTOM_ID: OPTION_AUTO_RESUME
@@ -920,56 +1106,85 @@
         setopt BG_NICE
      #+END_SRC
 
-**** TODO =CHECK_JOBS= <Z>
+**** DONE =CHECK_JOBS= <Z>
+:PROPERTIES:
+:CUSTOM_ID: OPTION_CHECK_JOBS
+:END:
+
+Reports status of suspended and background jobs when trying to exit the shell. If disabled,
+jobs will be killed automatically if [[#OPTION_HUP]] is activated.
+
+Hint: if the previous command line contains the =jobs= command, this check is omitted. (Hook functions
+as defined under /Special Functions/ in the manual (see [[https://zsh.sourceforge.io/Doc/Release/Functions.html#Functions][zsh: 9 Functions]])
+
+#+begin_example
+% setopt CHECK_JOBS
+% eog . &
+[1] 86845
+% exit
+zsh: you have running jobs.
+% # exit # second exit command would actually exit
+% setopt NO_CHECK_JOBS
+% exit
+zsh: warning: 1 jobs SIGHUPed
+#+end_example
+
+#+BEGIN_SRC zsh :tangle zshrc
+setopt CHECK_JOBS
+#+END_SRC
+
+#+BEGIN_SRC zsh :tangle zshrc.default
+setopt CHECK_JOBS
+#+END_SRC
 **** DONE =HUP= <Z>
-     :PROPERTIES:
-     :CUSTOM_ID: OPTION_HUP
-     :END:
+:PROPERTIES:
+:CUSTOM_ID: OPTION_HUP
+:END:
 
-     This option is enabled by default in ZSH and will cause ZSH
-     to send the =HUP= (/hang up/) signal to be sent to any background
-     process if the shell is going to terminate (i.e., you used one of
-     ~exit~, ~logout~, ~bye~ etc. or a non-interactive shell started
-     background jobs).
+This option is enabled by default in ZSH and will cause ZSH
+to send the =HUP= (/hang up/) signal to be sent to any background
+process if the shell is going to terminate (i.e., you used one of
+exit~, ~logout~, ~bye~ etc. or a non-interactive shell started
+background jobs).
 
-     That is, with this option unset, jobs will continue to run
-     normall when the shell exits.
+That is, with this option unset, jobs will continue to run
+normall when the shell exits.
 
-     #+BEGIN_EXAMPLE
-        # First shell
-        % setopt NO_HUP
-        % sleep 500 &
-        [1] 20931               
-        % exit
-        zsh: you have running jobs.
-        % exit                      # 2nd exit = exits. See also CHECK_JOBS option.
+#+BEGIN_EXAMPLE
+   # First shell
+   % setopt NO_HUP
+   % sleep 500 &
+   [1] 20931               
+   % exit
+   zsh: you have running jobs.
+   % exit                      # 2nd exit = exits. See also CHECK_JOBS option.
 
-        # Executed in a 2nd shell!
-        % ps auxw | grep "sleep"
-        ch 20988  0.0  0.0  13064   608 pts/8    SN   01:04   0:00 sleep 500
+   # Executed in a 2nd shell!
+   % ps auxw | grep "sleep"
+   ch 20988  0.0  0.0  13064   608 pts/8    SN   01:04   0:00 sleep 500
 
 
-        # Start a new shell...
-        % setopt HUP
-        % sleep 500 &
-        [1] 21168               
-        % exit
-        zsh: you have running jobs.
-        % exit                      # 2nd exit = exits. See also CHECK_JOBS option.
+   # Start a new shell...
+   % setopt HUP
+   % sleep 500 &
+   [1] 21168               
+   % exit
+   zsh: you have running jobs.
+   % exit                      # 2nd exit = exits. See also CHECK_JOBS option.
 
-        # Executed in a 2nd shell!
-        % ps auxw | grep "sleep"    # Returns nothing, as process was killed!
-                                    # (for you, it may return 20931 from above...)
-        %                           # Yup, nothing there...
-     #+END_EXAMPLE
-     
-     #+BEGIN_SRC zsh :tangle zshrc
-        setopt HUP
-     #+END_SRC
+   # Executed in a 2nd shell!
+   % ps auxw | grep "sleep"    # Returns nothing, as process was killed!
+                               # (for you, it may return 20931 from above...)
+   %                           # Yup, nothing there...
+#+END_EXAMPLE
 
-     #+BEGIN_SRC zsh :tangle zshrc.default
-        setopt HUP
-     #+END_SRC
+#+BEGIN_SRC zsh :tangle zshrc
+   setopt HUP
+#+END_SRC
+
+#+BEGIN_SRC zsh :tangle zshrc.default
+   setopt HUP
+#+END_SRC
 
 **** DONE =LONG_LIST_JOBS= (-R)
      :PROPERTIES:
@@ -1162,7 +1377,7 @@
 **** TODO =RESTRICTED= (-r)
 **** TODO =SHIN_STDIN= (-s, ksh: -s)
 **** TODO =SINGLE_COMMAND= (-t, ksh: -t)
-*** ZLE [0%]
+*** ZLE [16%]
 **** TODO =BEEP= (+B) <D>
 **** TODO =COMBINING_CHARS=
 **** TODO =EMACS=
@@ -1231,23 +1446,42 @@
 **** TODO =ZLE= (-Z)
 
 
-** Option aliases
+** DONE Option aliases
    These are aliases for the options above, as seen in section 16.3 of the manual.
 **** TODO Migrate these aliases to the options above, use the :PROPERTIES: drawer and define a property such as "ALIAS".
-**** TODO =BRACE_EXPAND=
-**** TODO =DOT_GLOB=
-**** TODO =HASH_ALL=
-**** TODO =HIST_APPEND=
-**** TODO =HIST_EXPAND=
-**** TODO =LOG=
-**** TODO =MAIL_WARN=
-**** TODO =ONE_CMD=
-**** TODO =PHYSICAL=
-**** TODO =PROMPT_VARS=
-**** TODO =STDIN=
-**** TODO =TRACK_ALL=
+**** DONE =BRACE_EXPAND=
+
+Equivalent to unsetting [[#OPTION_IGNORE_BRACES]], i.e., =setopt NO_IGNORE_BRACES=. (Used for ksh and bash compatibility.)
+
+**** DONE =DOT_GLOB=
+
+Equivalent to setting [[#OPTION_GLOB_DOTS]], i.e., =setopt GLOB_DOTS=. (Used for bash compatibility.)
+**** DONE =HASH_ALL=
+
+Equivalent to setting [[#OPTION_HASH_CMDS]], i.e., =setopt HASH_CMDS=. (Used for bash compatibility.)
+**** DONE =HIST_APPEND=
+
+Equivalent to setting [[#OPTION_APPEND_HISTORY]], i.e., =setopt APPEND_HISTORY=. (Used for bash compatibility.)
+**** DONE =HIST_EXPAND=
+Equivalent to setting [[#OPTION_BANG_HIST]], i.e., =setopt BANG_HIST=. (Used for bash compatibility.)
+**** DONE =LOG=
+
+Equivalent to unsetting [[#OPTION_HIST_NO_FUNCTIONS]], i.e., =setopt NO_HIST_NO_FUNCTIONS=. (Used for ksh compatibility.)
+**** DONE =MAIL_WARN=
+Equivalent to setting [[#OPTION_MAIL_WARNING]], i.e., =setopt MAIL_WARNING=. (Used for bash compatibility.)
+**** DONE =ONE_CMD=
+Equivalent to setting [[#OPTION_SINGLE_COMMAND]], i.e., =setopt SINGLE_COMMAND=. (Used for bash compatibility.)
+**** DONE =PHYSICAL=
+Equivalent to setting [[#OPTION_CHASE_LINKS]], i.e., =setopt CHASE_LINKS=. (Used for ksh and bash compatibility.)
+**** DONE =PROMPT_VARS=
+Equivalent to setting [[#OPTION_PROMPT_SUBST]], i.e., =setopt PROMPT_SUBST=. (Used for bash compatibility.)
+**** DONE =STDIN=
+Equivalent to setting [[#OPTION_SHIN_STDIN]], i.e., =setopt SHIN_STDIN=. (Used for ksh compatibility.)
+**** DONE =TRACK_ALL=
+Equivalent to setting [[#OPTION_HASH_CMDS]], i.e., =setopt HASH_CMDS=. (Used for ksh compatibility.)
 
 ** Single letter options
 **** TODO Migrate these aliases to the options above, use the :PROPERTIES: drawer and define a property such as "SINGLE_LETTER".
 
      The single letters are already present in the headlines above, such as (-4) etc.
+     
