@@ -10,6 +10,16 @@
 #+PROPERTY: header-args:emacs-lisp :tangle init.el
 
 This is my personal emacs configuration, although I took quite a bit from [[http://mescal.imag.fr/membres/arnaud.legrand/misc/init.org][Arnaud Legrand]].
+
+Also check the documentation on http://doc.norang.ca/org-mode.html (also attached to my personal journal, 2023-07-05).
+
+#+begin_src emacs-lisp
+; cheinrich: I started this configuration a long time ago, but recently also discovered https://github.com/yantar92/emacs-config/blob/master/config.org
+; which is a huge config file. It is mostly not for me - but maybe you may want to check it out.
+; Also Karl Voits config: https://github.com/novoid/dot-emacs/blob/master/config.org 
+; There is an extremely detailed (but old (2015)) description of a workflow in org: http://doc.norang.ca/org-mode.html; (this is also attached to my personal journal as of 2023-07-05)
+#+end_src
+
 I'm a VIM guy; I hence use evil-mode.
 
 * Load files and important plugins
