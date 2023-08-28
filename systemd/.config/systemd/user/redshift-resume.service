@@ -1,0 +1,7 @@
+# See https://github.com/jonls/redshift/issues/217
+[Unit]
+Description=Restart redshift on resume
+After=suspend.target
+
+[Service]
+ExecStart=/usr/bin/systemctl --user restart redshift.service
