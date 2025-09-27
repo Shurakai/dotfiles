@@ -386,7 +386,7 @@ SCHEDULED: %^t" )
 
    (setq org-agenda-sorting-strategy
      (quote
-      ((agenda habit-down time-up priority-down category-up deadline-up effort-up alpha-up)
+      ((agenda habit-down scheduled-up time-up priority-down category-up deadline-up effort-up alpha-up)
        (todo priority-down category-up effort-up)
        (tags priority-down category-up effort-up)
        (search category-keep))))
