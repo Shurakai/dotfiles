@@ -22,10 +22,10 @@ import XMonad.Actions.WindowGo
 -- import XMonad.Actions.DynamicWorkspaces
 
 import XMonad.Layout.CenteredMaster
-import XMonad.Layout.Circle
+import XMonad.Layout.CircleEx
 import XMonad.Layout.Grid
 import XMonad.Layout.Mosaic
-import XMonad.Layout.Named
+import XMonad.Layout.Renamed
 import XMonad.Layout.NoBorders
 import XMonad.Layout.PerWorkspace
 import XMonad.Layout.ResizableTile
@@ -44,7 +44,7 @@ import XMonad.Prompt.Pass
 import XMonad.Util.Dzen
 import XMonad.Util.EZConfig(additionalKeys)
 import XMonad.Util.Run(spawnPipe)
-import XMonad.Util.Scratchpad
+import XMonad.Util.NamedScratchpad
 import XMonad.Util.XSelection
 
 import XMonad.Actions.DynamicWorkspaces
@@ -112,6 +112,9 @@ myLayoutHook = avoidStruts $ toggleLayouts Full $ -- toggle to "Full" when meta-
 --    delta   = 0.01
     delta   = 0.03
 
+myScratchpads :: [NamedScratchpad]
+myScratchpads = [ NS "terminal" myTerminal (className =? myTerminal) (customFloating $ W.RationalRect 0.05 0.1 0.9 0.8)  ]
+
 
 myWorkspaces = ["1:web", "2:term", "3:mail", "4:vocabulary", "5:pdf", "6:diverse", "7:media", "8:VM", "9:chrome"]
 
@@ -123,10 +126,11 @@ myManageHook = (composeAll [ isFullscreen --> doF W.focusDown <+> doFullFloat
                           , className =? "Firefox"         --> doShift "1:web"
                           , className =? "Iceweasel"       --> doShift "1:web"
                           , className =? "Firefox-esr"       --> doShift "1:web"
+                          , className =? "firefox-esr"       --> doShift "1:web"
                           , className =? myTerminal        --> doShift "2:term"
-                          , className =? "Evolution"       --> doShift "3:mail"
+                          , className =? "Org.gnome.Evolution"       --> doShift "3:mail"
                           , className =? "Skype"           --> doShift "6:skype"
-                          , className =? "chromium"        --> doShift "9:chrome"
+                          , className =? "Chromium"        --> doShift "9:chrome"
                           , className =? "jmemorize-core-Main" --> doShift "4:vocabulary"
                           , className =? "VirtualBox"      --> doShift "8:VirtualBox"
                           , className =? "Gimp"            --> doFloat
@@ -206,7 +210,7 @@ myKeys = [
          , ((modm .|. shiftMask,   xK_s     ), safePromptSelection "firefox")
 
          -- Shows/hides my terminal
-         , ((modm, xK_c), scratchpadSpawnAction def {terminal = map toLower myTerminal } )
+         , ((modm, xK_c), namedScratchpadAction myScratchpads "terminal"   )
          , ((modm .|. shiftMask, xK_a      ), addWorkspacePrompt myXPConfig)
          , ((modm .|. shiftMask, xK_r      ), removeEmptyWorkspace)
          , ((modm .|. shiftMask, xK_v      ), selectWorkspace myXPConfig)
